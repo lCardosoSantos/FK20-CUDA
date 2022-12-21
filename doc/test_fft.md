@@ -21,8 +21,8 @@ Input file to be parsed by the CUDA FFT code will be presented in the following 
 
 ```
 
-`line0` contains the concrete values used to generate the code: The keyword `setup` followed by the 256 decimal integer used to generate the fk20 setup. Following, there will be two lines per case:
-the fist line will have the keyword `polynomial` followed by 256 integers, representing the indexes of the poly, separated by spaces, and ending with a linefeed character. The following line will have the keyword `fftTestInput_i` where i is an integer with the test id. Following, separated by spaces, there will the the 512 curve points in affine format, following blst/zcash standard representation.
+`line0` contains the concrete values used to generate the code: The keyword `setup` followed by the 256 hexadecimal unsigned integer used to generate the fk20 setup. Following, there will be two lines per case:
+the fist line will have the keyword `polynomial` followed by 256 hexadecimal unsigned integer, representing the indexes of the poly, separated by spaces, and ending with a linefeed character. The following line will have the keyword `fftTestInput_i` where i is an integer with the test id. Following, separated by spaces, there will the the 512 curve points in affine format, following blst/zcash standard representation.
 
 ### P1 representation <a name="p1"></a>
 
