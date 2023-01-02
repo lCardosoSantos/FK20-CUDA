@@ -3,7 +3,7 @@
 
 #include "fp.cuh"
 
-__device__ void fp_reduce6(uint64_t *z) {
+__device__ void fp_reduce6(fp_t &z) {
     uint64_t
         z0 = z[0],
         z1 = z[1],

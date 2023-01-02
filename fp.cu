@@ -5,19 +5,19 @@
 
 #include "fp.cuh"
 
-__device__ void fp_zero(uint64_t *z) {
+__device__ void fp_zero(fp_t &z) {
     for (int i=0; i<6; i++)
         z[i] = 0;
 }
 
-__device__ void fp_one(uint64_t *z) {
+__device__ void fp_one(fp_t &z) {
     z[0] = 1;
     for (int i=1; i<6; i++)
         z[i] = 0;
 }
 
-__device__ void fp_print(const uint64_t *x) {
-    uint64_t t[6];
+__device__ void fp_print(const fp_t &x) {
+    fp_t t;
     fp_cpy(t, x);
     fp_reduce6(t);
     printf("0x%016lx%016lx%016lx%016lx%016lx%016lx\n",

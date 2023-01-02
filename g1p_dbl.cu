@@ -13,12 +13,12 @@
 #include "fp_mul.cuh"
 #include "fp_reduce12.cuh"
 
-__device__ void g1p_dbl(uint64_t *p) {
+__device__ void g1p_dbl(g1p_t &p) {
 
     uint64_t
-        x0 = p[ 0], x1 = p[ 1], x2 = p[ 2], x3 = p[ 3], x4 = p[ 4], x5 = p[ 5],
-        y0 = p[ 6], y1 = p[ 7], y2 = p[ 8], y3 = p[ 9], y4 = p[10], y5 = p[11],
-        z0 = p[12], z1 = p[13], z2 = p[14], z3 = p[15], z4 = p[16], z5 = p[17];
+        x0 = p.x[0], x1 = p.x[1], x2 = p.x[2], x3 = p.x[3], x4 = p.x[4], x5 = p.x[5],
+        y0 = p.y[0], y1 = p.y[1], y2 = p.y[2], y3 = p.y[3], y4 = p.y[4], y5 = p.y[5],
+        z0 = p.z[0], z1 = p.z[1], z2 = p.z[2], z3 = p.z[3], z4 = p.z[4], z5 = p.z[5];
 
     asm volatile (
     "\n\t{"
@@ -175,9 +175,9 @@ __device__ void g1p_dbl(uint64_t *p) {
     "+l"(z0), "+l"(z1), "+l"(z2), "+l"(z3), "+l"(z4), "+l"(z5)
     );
 
-    p[ 0] = x0; p[ 1] = x1; p[ 2] = x2; p[ 3] = x3; p[ 4] = x4; p[ 5] = x5;
-    p[ 6] = y0; p[ 7] = y1; p[ 8] = y2; p[ 9] = y3; p[10] = y4; p[11] = y5;
-    p[12] = z0; p[13] = z1; p[14] = z2; p[15] = z3; p[16] = z4; p[17] = z5;
+    p.x[0] = x0; p.x[1] = x1; p.x[2] = x2; p.x[3] = x3; p.x[4] = x4; p.x[5] = x5;
+    p.y[0] = y0; p.y[1] = y1; p.y[2] = y2; p.y[3] = y3; p.y[4] = y4; p.y[5] = y5;
+    p.z[0] = z0; p.z[1] = z1; p.z[2] = z2; p.z[3] = z3; p.z[4] = z4; p.z[5] = z5;
 }
 
 // vim: ts=4 et sw=4 si

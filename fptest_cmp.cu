@@ -14,12 +14,12 @@ __global__ void FpTestCmp(testval_t *testval) {
     for (int i=500; i<770; i++) {
         uint64_t x[6];
 
-        fp_cpy(x, &testval[i].val[0]);
+        fp_cpy(x, testval[i].val);
 
         for (int j=500; j<770; j++) {
             uint64_t y[6];
 
-            fp_cpy(y, &testval[j].val[0]);
+            fp_cpy(y, testval[j].val);
 
             uint64_t
                 eq  = fp_eq (x, y),

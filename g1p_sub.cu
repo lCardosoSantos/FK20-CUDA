@@ -8,20 +8,20 @@
 
 // p ← p-q
 // projective p and q
-__device__ void g1p_sub(uint64_t *p, const uint64_t *q) {
+__device__ void g1p_sub(g1p_t &p, const g1p_t &q) {
 
-    uint64_t
-        X1[6], Y1[6], Z1[6],
-        X2[6], Y2[6], Z2[6],
-        t0[6], t1[6], t2[6], t3[6];
+    fp_t
+        X1, Y1, Z1,
+        X2, Y2, Z2,
+        t0, t1, t2, t3;
 
-    fp_cpy(X1, p+ 0);
-    fp_cpy(Y1, p+ 6);
-    fp_cpy(Z1, p+12);
+    fp_cpy(X1, p.x);
+    fp_cpy(Y1, p.y);
+    fp_cpy(Z1, p.z);
 
-    fp_cpy(X2, q+ 0);
-    fp_cpy(Y2, q+ 6);
-    fp_cpy(Z2, q+12);
+    fp_cpy(X2, q.x);
+    fp_cpy(Y2, q.y);
+    fp_cpy(Z2, q.z);
 
     if (!g1p_isInf(q))
         fp_neg(Y2, Y2);
@@ -164,9 +164,9 @@ __device__ void g1p_sub(uint64_t *p, const uint64_t *q) {
     //printf("Y4 = "); fp_print(Y1);
     //printf("Z4 = "); fp_print(Z1);
 
-    fp_cpy(p+ 0, X1);
-    fp_cpy(p+ 6, Y1);
-    fp_cpy(p+12, Z1);
+    fp_cpy(p.x, X1);
+    fp_cpy(p.y, Y1);
+    fp_cpy(p.z, Z1);
 }
 
 // vim: ts=4 et sw=4 si

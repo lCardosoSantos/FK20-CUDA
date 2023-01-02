@@ -4,7 +4,7 @@
 #include "fp.cuh"
 #include "fp_x3.cuh"
 
-__device__ void fp_x3(uint64_t *z, const uint64_t *x) {
+__device__ void fp_x3(fp_t &z, const fp_t &x) {
     uint64_t
         x0 = x[0], z0,
         x1 = x[1], z1,

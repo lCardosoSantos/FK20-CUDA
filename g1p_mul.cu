@@ -6,12 +6,12 @@
 #include "g1.cuh"
 
 // p ← k·p
-__device__ void g1p_mul(uint64_t *p, uint64_t *k) {
+__device__ void g1p_mul(g1p_t &p, fr_t &k) {
     // TODO: Use 4-bit lookup table to reduce additions by a factor 4.
 
     fr_reduce4(k);  // Ensure k<r, hence only 255 bits long
 
-    uint64_t q[18];
+    g1p_t q;
 
     g1p_inf(q); // q = inf
 

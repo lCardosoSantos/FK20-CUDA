@@ -14,17 +14,17 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_cpy
 
     if (pass) {
-        __const__ uint64_t
-            q[][4] = {
+        __const__ fr_t
+            q[] = {
                 { 0x9d419b78b22bbf1d, 0x69d3e1a350bcb984, 0x9382535ba5388d0f, 0x805e1591d721e13a },
                 { 0x32fa2230c45f3875, 0xdbd975eb0f0b10e3, 0xd69dbc9539ca9a98, 0x3c9fe7c9da36fc18 },
             },
-            a[][4] = {
+            a[] = {
                 { 0x9d419b78b22bbf1d, 0x69d3e1a350bcb984, 0x9382535ba5388d0f, 0x805e1591d721e13a },
                 { 0x32fa2230c45f3875, 0xdbd975eb0f0b10e3, 0xd69dbc9539ca9a98, 0x3c9fe7c9da36fc18 },
             };
 
-        __shared__ uint64_t t[4];
+        __shared__ fr_t t;
 
         for (int i=0; pass && (i<2); i++) {
             fr_cpy(t, q[i]);
@@ -45,8 +45,8 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_reduce4
 
     if (pass) {
-        __const__ uint64_t
-            q[][4] = {
+        __const__ fr_t
+            q[] = {
                 { 0xFFFFFFFF00000000, 0x53BDA402FFFE5BFE, 0x3339D80809A1D805, 0x73EDA753299D7D48 }, // r-1
                 { 0xFFFFFFFF00000001, 0x53BDA402FFFE5BFE, 0x3339D80809A1D805, 0x73EDA753299D7D48 }, // r
                 { 0xFFFFFFFF00000002, 0x53BDA402FFFE5BFE, 0x3339D80809A1D805, 0x73EDA753299D7D48 }, // r+1
@@ -59,7 +59,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x7c9921ccff9fc38c, 0xdb84203d7e11de61, 0xa03712056f09f5b6, 0xba1104f592facb0d },
                 { 0x792a8035f135d8aa, 0xb5f66d21c0c92895, 0xa85a6dcdc58457d5, 0x755bb1f21e2fcba1 },
             },
-            a[][4] = {
+            a[] = {
                 { 0xFFFFFFFF00000000, 0x53BDA402FFFE5BFE, 0x3339D80809A1D805, 0x73EDA753299D7D48 }, // r-1
                 { 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 }, // r
                 { 0x0000000000000001, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 }, // r+1
@@ -73,10 +73,10 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x792a8036f135d8a9, 0x6238c91ec0cacc96, 0x752095c5bbe27fd0, 0x016e0a9ef4924e59 },
             };
 
-        __shared__ uint64_t t[4];
+        __shared__ fr_t t;
 
         for (int i=0; pass && (i<11); i++) {
-            fr_cpy(t, &q[i][0]);
+            fr_cpy(t, q[i]);
 
             fr_reduce4(t);
 
@@ -95,14 +95,14 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_eq, fr_neq
 
     if (pass) {
-        uint64_t
-            t[][4] = {
+        fr_t
+            t[] = {
                 { 0xFFFFFFFF00000000, 0x53BDA402FFFE5BFE, 0x3339D80809A1D805, 0x73EDA753299D7D48 }, // r-1
                 { 0xFFFFFFFF00000001, 0x53BDA402FFFE5BFE, 0x3339D80809A1D805, 0x73EDA753299D7D48 }, // r
                 { 0xFFFFFFFF00000002, 0x53BDA402FFFE5BFE, 0x3339D80809A1D805, 0x73EDA753299D7D48 }, // r+1
                 { 0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff }, // 2^256-1
             },
-            u[][4] = {
+            u[] = {
                 { 0xfffffffe00000001, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2r-1
                 { 0xfffffffe00000002, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2r
                 { 0xfffffffe00000003, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2r+1
@@ -110,23 +110,23 @@ __global__ void FrTestKAT(testval_t *) {
             };
 
         for (int i=0; pass && i<4; i++) {
-            __shared__ uint64_t x[4];
+            __shared__ fr_t x;
 
             fr_cpy(x, t[i]);
 
             for (int j=0; pass && j<4; j++) {
-                __shared__ uint64_t y[4];
+                __shared__ fr_t y;
 
                 fr_cpy(y, u[j]);
 
-                uint64_t
+                int
                     eq  = fr_eq (x, y),
                     neq = fr_neq(x, y);
 
                 if (eq == neq) {
                     pass = false;
 
-                    printf("%d,%d: FAILED: inconsistent result, eq = %lx, neq = %lx\n", i, j, eq, neq);
+                    printf("%d,%d: FAILED: inconsistent result, eq = %x, neq = %x\n", i, j, eq, neq);
                 }
 
                 if ((i == j) && !eq) {
@@ -146,7 +146,7 @@ __global__ void FrTestKAT(testval_t *) {
                     printf("\t%016lX%016lX%016lX%016lX%016lX%016lX\n",
                     y[5], y[4], y[3], y[2], y[1], y[0]);
 
-                    printf("eq = %lx, neq = %lx\n", eq, neq);
+                    printf("eq = %x, neq = %x\n", eq, neq);
                 }
 
                 if ((i != j) && eq) {
@@ -166,7 +166,7 @@ __global__ void FrTestKAT(testval_t *) {
                     printf("\t%016lX%016lX%016lX%016lX%016lX%016lX\n",
                     y[5], y[4], y[3], y[2], y[1], y[0]);
 
-                    printf("eq = %lx, neq = %lx\n", eq, neq);
+                    printf("eq = %x, neq = %x\n", eq, neq);
                 }
 
                 if ((i == j) && neq) {
@@ -186,7 +186,7 @@ __global__ void FrTestKAT(testval_t *) {
                     printf("\t%016lX%016lX%016lX%016lX%016lX%016lX\n",
                     y[5], y[4], y[3], y[2], y[1], y[0]);
 
-                    printf("eq = %lx, neq = %lx\n", eq, neq);
+                    printf("eq = %x, neq = %x\n", eq, neq);
                 }
 
                 if ((i != j) && !neq) {
@@ -206,7 +206,7 @@ __global__ void FrTestKAT(testval_t *) {
                     printf("\t%016lX%016lX%016lX%016lX%016lX%016lX\n",
                     y[5], y[4], y[3], y[2], y[1], y[0]);
 
-                    printf("eq = %lx, neq = %lx\n", eq, neq);
+                    printf("eq = %x, neq = %x\n", eq, neq);
                 }
                 ++count;
             }
@@ -216,8 +216,8 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_neg
 
     if (pass) {
-        uint64_t
-            q[][4] = {
+        fr_t
+            q[] = {
                 { 0xfffffffe00000001, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2p-1
                 { 0xfffffffe00000002, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2p
                 { 0xfffffffe00000003, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2p+1
@@ -227,7 +227,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x85ac30859e8635ac, 0x27ebab61ee73762a, 0xd4343677f1ce5870, 0xa7b2394c1e305a80 },
                 { 0x5cf091ced52b5918, 0xbb40a07f7d360d4b, 0xbdc07041d2317755, 0x17d1f4993f9bfd51 },
             },
-            a[][4] = {
+            a[] = {
                 { 0x0000000000000001, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 }, // r+1
                 { 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 }, // r
                 { 0xffffffff00000000, 0x53bda402fffe5bfe, 0x3339d80809a1d805, 0x73eda753299d7d48 }, // r-1
@@ -238,10 +238,10 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0xa30f6e302ad4a6e9, 0x987d038382c84eb3, 0x757967c6377060af, 0x5c1bb2b9ea017ff6 },
             };
 
-        __shared__ uint64_t t[4];
+        __shared__ fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
-            fr_cpy(t, &q[i][0]);
+            fr_cpy(t, q[i]);
 
             fr_neg(t);
 
@@ -268,8 +268,8 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_x2
 
     if (pass) {
-        uint64_t
-            q[][4] = {
+        fr_t
+            q[] = {
                 { 0xffffffff00000000, 0x53bda402fffe5bfe, 0x3339d80809a1d805, 0x73eda753299d7d48 }, // r-1
                 { 0xffffffff00000001, 0x53bda402fffe5bfe, 0x3339d80809a1d805, 0x73eda753299d7d48 }, // r
                 { 0xffffffff00000002, 0x53bda402fffe5bfe, 0x3339d80809a1d805, 0x73eda753299d7d48 }, // r+1
@@ -279,7 +279,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x2a05f2556d58ede0, 0xd5347f13e6e27df5, 0x05276cfe630c9247, 0x524f0ac0e3bb7b9d },
                 { 0xe2b5ffe82724e8f5, 0x47c1ec58ef0c159a, 0xdb1ccaa41fa78db2, 0x04c99214cc172e77 },
             },
-            a[][4] = {
+            a[] = {
                 { 0xfffffffe00000000, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2r-2
                 { 0xfffffffe00000002, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2r
                 { 0xfffffffe00000004, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2r+2
@@ -290,10 +290,10 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0xc56bffd04e49d1ea, 0x8f83d8b1de182b35, 0xb63995483f4f1b64, 0x09932429982e5cef },
             };
 
-        __shared__ uint64_t t[4];
+        __shared__ fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
-            fr_cpy(t, &q[i][0]);
+            fr_cpy(t, q[i]);
 
             fr_x2(t);
 
@@ -319,8 +319,8 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_x3
 
     if (pass) {
-        uint64_t
-            q[][4] = {
+        fr_t
+            q[] = {
                 { 0xffffffff00000000, 0x53bda402fffe5bfe, 0x3339d80809a1d805, 0x73eda753299d7d48 }, // r-1
                 { 0xffffffff00000001, 0x53bda402fffe5bfe, 0x3339d80809a1d805, 0x73eda753299d7d48 }, // r
                 { 0xffffffff00000002, 0x53bda402fffe5bfe, 0x3339d80809a1d805, 0x73eda753299d7d48 }, // r+1
@@ -330,7 +330,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0xc30ce006eb7c626f, 0xa9ec82098b214407, 0x19a27683d6e13e1c, 0xe2193f2301ead151 },
                 { 0x336eda9dd2484c45, 0xda56edce88b8077a, 0x5696673b95c09810, 0x636811703bb2ce69 },
             },
-            a[][4] = {
+            a[] = {
                 { 0xfffffffdffffffff, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2p-3
                 { 0xfffffffe00000002, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2p
                 { 0xfffffffe00000005, 0xa77b4805fffcb7fd, 0x6673b0101343b00a, 0xe7db4ea6533afa90 }, // 2p+3
@@ -341,10 +341,10 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x9a4c8fdb76d8e4cd, 0xe78981659a2b5e70, 0x9d4f85a2adfe1827, 0x425ce5aa5fdd70ab },
             };
 
-        __shared__ uint64_t t[4];
+        __shared__ fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
-            fr_cpy(t, &q[i][0]);
+            fr_cpy(t, q[i]);
 
             fr_x3(t);
 
@@ -370,8 +370,8 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_add
 
     if (pass) {
-        uint64_t
-            x[][4] = {
+        fr_t
+            x[] = {
                 { 0xa9adcd7739bd74cf, 0xb53be4eb9f0aba5b, 0xf39db86dd74ba55e, 0x205eeb7c38dbbf9d },
                 { 0x1228a231f10f3969, 0x2f2fb5eebf0bbbe7, 0x0712c334b66a5db8, 0xebc3269a81507575 },
                 { 0xb600a76ec90fb9ed, 0x07e79b33160b873e, 0x5a9d273d378355e4, 0x44583bcadb79bbb9 },
@@ -381,7 +381,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x1f5ceaaf4f7d6de4, 0x4c2caf2b9b11fa95, 0xbff1464b3d3d6939, 0x795aa4384f5ab137 },
                 { 0xf74a8f42e7f91926, 0x068815eb1cb349ca, 0xea0f7df125f638d4, 0x05dfc520280b525e },
             },
-            y[][4] = {
+            y[] = {
                 { 0xc4fec1d957afa21a, 0x620cdaf477088c3e, 0x81c14702fd352d79, 0x579c2cab14ba5662 },
                 { 0x49031305fd08b422, 0x95247c6c292eafce, 0x66e5a460cc82bc8c, 0x8a6620ebfcebd51b },
                 { 0xd7a40e39d1285b4b, 0xf2ea148ea21f8495, 0x33ccff2766b4f4c9, 0x719912e5a5aba394 },
@@ -391,7 +391,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x7db61267bd4d87f2, 0x364422505bd94d9e, 0x3196afb585723831, 0x900e218d7c6fa297 },
                 { 0xa801fa7b481d5cca, 0x5e6809f0b1c9659f, 0x0087ad3b21681d47, 0xdf54afe9bc80f448 },
             },
-            a[][4] = {
+            a[] = {
                 { 0x6eac8f51916d16e8, 0xc38b1bdd1614ea9b, 0x42252768cadefad2, 0x040d70d423f898b8 },
                 { 0x5b2bb53aee17ed88, 0xc91b4651e83f57b8, 0xd44adf7d66079234, 0x1a60518d0163d2b7 },
                 { 0x8da4b5a99a381537, 0xa7140bbeb82cafd5, 0x5b304e5c949672a8, 0x4203a75d5787e205 },
@@ -402,7 +402,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x9f4c89bf301675ef, 0x11327bd8ce7e536b, 0xb75d53243dbc7e16, 0x7146cdb6baeec95e },
             };
 
-        __shared__ uint64_t t[4];
+        __shared__ fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fr_cpy(t, x[i]);
@@ -432,8 +432,8 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_sub
 
     if (pass) {
-        uint64_t
-            x[][4] = {
+        fr_t
+            x[] = {
                 { 0x79c2dcd6c072a0eb, 0x5938348c63e5ee03, 0x2571278e41d8d960, 0x5cd48d8914135670 },
                 { 0xdd0e7887bd1fae7d, 0x496ce21047d6852e, 0x6257ac6e44173664, 0x2c7ec7596a88e143 },
                 { 0x4d1ae12876563e2f, 0x3544b4a08022241b, 0xdd5ac0fc26829b45, 0xde8c9d728a65a66b },
@@ -443,7 +443,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0xe69ee87aff35023d, 0x1153b798996a5f4c, 0xde5d2875e048c920, 0x9932233eb0565fcd },
                 { 0xa9d696814e42f2d7, 0x803049704c5e877a, 0xc4873604dbd43251, 0xe5096ba7b364ef06 },
             },
-            y[][4] = {
+            y[] = {
                 { 0x0525d4660db16d22, 0x5676c850dc0abe6a, 0x01d9e767cde7761d, 0x6adb7627e9f6aeef },
                 { 0x00b82535d67c3d30, 0x4726bb54e06ddf10, 0x4e6c6c189328a37c, 0x500f5f5b67ab1495 },
                 { 0x1a85df184987b062, 0x1f46f673e00873a1, 0x402323c56b47ff4d, 0xb56748bca526c301 },
@@ -453,7 +453,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x05aa619987706308, 0x9f3f454d588f659b, 0x17ed638bbc19695b, 0xccbf478a6c2b8bec },
                 { 0x1e827c98a11f5038, 0xc8ea30df2b736be2, 0x280a417b3dcd44d1, 0x85f8ca724eb03970 },
             },
-            a[][4] = {
+            a[] = {
                 { 0x749d086fb2c133ca, 0x567f103e87d98b98, 0x56d1182e7d933b48, 0x65e6beb453ba24c9 },
                 { 0xdc565350e6a3714e, 0x5603cabe6767021d, 0x4725185dba906aed, 0x505d0f512c7b49f6 },
                 { 0x329502102cce8dcd, 0x15fdbe2ca019b07a, 0x9d379d36bb3a9bf8, 0x292554b5e53ee36a },
@@ -464,7 +464,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x8b5419e8ad23a29f, 0xb746189120eb1b98, 0x9c7cf4899e06ed7f, 0x5f10a13564b4b596 },
             };
 
-        __shared__ uint64_t t[4];
+        __shared__ fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fr_cpy(t, x[i]);
@@ -494,8 +494,8 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_sqr
 
     if (pass) {
-        uint64_t
-            q[][4] = {
+        fr_t
+            q[] = {
                 { 0x8a28bc7a23b8ca27, 0x2d5a18614d5d87dc, 0x0b5170efac5b0908, 0x5d142f76332013e5 },
                 { 0x9e34a7d7bfd03f35, 0x3f8e1db0ff84a316, 0xc9041e4e1182ee8e, 0x24a6e8f76c1c85af },
                 { 0x023f831fe9692b89, 0x8e0c0ea2e6efeccc, 0x4f7ef565a60c3557, 0x25407371bb909e31 },
@@ -505,7 +505,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0xee35cf214032be18, 0x81248cd6767199a1, 0xaabeba2bc6b6700c, 0x16c0e36fc3e8a70a },
                 { 0x2e0a1d0a32832d8e, 0xe7f1740cb372b6b8, 0xe92045e05b0b1ae1, 0x4f4034af157ec725 },
             },
-            a[][4] = {
+            a[] = {
                 { 0xead982e107652210, 0x46dd627d4957c30e, 0xa85d9d7f02a8b745, 0x4b38e9a5e46488a3 },
                 { 0xc80b548070daf52c, 0x8eb33df3acf0542f, 0xb8b8b20de4b3d213, 0x034e5e23bf2e943f },
                 { 0x8266bc13d1addffd, 0x77b3de68740601b0, 0x65db94345d920468, 0x46d10123c4906c55 },
@@ -516,7 +516,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x6c88a33e467d0436, 0x68de5bc32cb4b83d, 0x87e0d71ed13a8549, 0x0c6657a5ee1898ca },
             };
 
-        __shared__ uint64_t t[4];
+        __shared__ fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fr_cpy(t, q[i]);
@@ -545,8 +545,8 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_mul
 
     if (pass) {
-        uint64_t
-            x[][4] = {
+        fr_t
+            x[] = {
                 { 0x3b44a96c59c690bb, 0x8697e87a732713a0, 0x945bea4e11648d71, 0x0c0aeeaacd9fdd46 },
                 { 0x3b68c9ecd7f475dc, 0x8fcbf94cc47a7712, 0x98262bc012006f6b, 0xcc59b69c6a11800e },
                 { 0x1c11a0b514009531, 0xbc79f3857c2d3e80, 0xb1b9ad274c9a1565, 0xabf34c7ef950991a },
@@ -557,7 +557,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x57c3d05787a089e4, 0x05923cbbec717106, 0xebb314273a513815, 0x68504f715af9afe4 },
                 { 0x8775f85fefd3a3f7, 0x3d31cc4a7d359614, 0x0cbd12859051d3be, 0x18a286425c6a4f2a },
             },
-            y[][4] = {
+            y[] = {
                 { 0xa5acba7322aca411, 0x53166475e534bae2, 0x3c01f18e78a68d32, 0x2b26e44aea71c03d },
                 { 0x390a4072d4249068, 0xed40e399d16d6bad, 0x6f45d1101c20d7c8, 0xf3892c2f5a40184b },
                 { 0x772b7b7c9b803667, 0x8fb29be985c830d0, 0x40a28d850e1b986b, 0x0378847e6b358f44 },
@@ -568,7 +568,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x8bc3d4b107836984, 0xc274e53e00b19348, 0x86fcdbc0577d64e0, 0x534a17e34d281cd5 },
                 { 0x0000000000000020, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
             },
-            a[][4] = {
+            a[] = {
                 { 0xde192398090105ca, 0xe59404bcd11fa709, 0xd92001ee4c393c0a, 0x139b5547381bff91 },
                 { 0x2de6763e47381e72, 0xf94e924974a5b1df, 0xaa3357e41e101621, 0x3461aff32809ad73 },
                 { 0x4b71a9acca4e8875, 0xcddb78d0cef1b76b, 0x498a2f1c6ab8c71d, 0x12be85e3b1f369e7 },
@@ -580,7 +580,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0xeebf0c03fa747eda, 0xafc7b13da6bc9a96, 0x64474081d06f67a7, 0x5cbedc589398f590 },
             };
 
-        __shared__ uint64_t t[4];
+        __shared__ fr_t t;
 
         for (int i=0; pass && (i<9); i++) {
             fr_cpy(t, x[i]);
@@ -610,8 +610,8 @@ __global__ void FrTestKAT(testval_t *) {
     // fr_inv
 
     if (pass) {
-        uint64_t
-            q[][4] = {
+        fr_t
+            q[] = {
                 { 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
                 { 0x0000000000000001, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
                 { 0x0000000000000002, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
@@ -621,7 +621,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x1a89fc6e8c94daed, 0x4db2fe4cec35a193, 0x46b68ee421699ad4, 0x664a986da9e91629 },
                 { 0x7e26ae14d79bcb20, 0xca9b6bd2f2c0d033, 0x3cdef4136ccab1d9, 0x5039948ba7d60a02 },
             },
-            a[][4] = {
+            a[] = {
                 { 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
                 { 0x0000000000000001, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
                 { 0x7fffffff80000001, 0xa9ded2017fff2dff, 0x199cec0404d0ec02, 0x39f6d3a994cebea4 },
@@ -632,10 +632,10 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x6abb0a53dcaacf19, 0x8f9169fb559d59c1, 0xfc2bb52133daa733, 0x6476eac140621485 },
             };
 
-        __shared__ uint64_t t[4];
+        __shared__ fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
-            fr_cpy(t, &q[i][0]);
+            fr_cpy(t, q[i]);
 
             fr_inv(t);
 

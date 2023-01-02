@@ -3,8 +3,12 @@
 
 #include "fp.cuh"
 
-__device__ bool fp_nonzero(const uint64_t *z) {
-    return ((z[5] | z[4] | z[3] | z[2] | z[1] | z[0]) != 0);
+__device__ bool fp_nonzero(const fp_t &x) {
+    fp_t t;
+    fp_cpy(t, x);
+    fp_reduce6(t);
+
+    return (t[5] | t[4] | t[3] | t[2] | t[1] | t[0]) != 0;
 }
 
 // vim: ts=4 et sw=4 si

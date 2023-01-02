@@ -4,10 +4,10 @@
 #include "fp.cuh"
 #include "g1.cuh"
 
-__device__ void g1p_scale(uint64_t *p, const uint64_t *s) {
-    fp_mul(p+ 0, p+ 0, s);
-    fp_mul(p+ 6, p+ 6, s);
-    fp_mul(p+12, p+12, s);
+__device__ void g1p_scale(g1p_t &p, const fp_t &s) {
+    fp_mul(p.x, p.x, s);
+    fp_mul(p.y, p.y, s);
+    fp_mul(p.z, p.z, s);
 }
 
 // vim: ts=4 et sw=4 si

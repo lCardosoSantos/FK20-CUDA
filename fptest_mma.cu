@@ -14,23 +14,23 @@ __global__ void FpTestMMA(testval_t *testval) {
     for (int i=880; i<TESTVALS; i++) {
         uint64_t v[6];
 
-        fp_cpy(v, &testval[i].val[0]);
+        fp_cpy(v, testval[i].val);
 
         for (int j=i+1; j<TESTVALS; j++) {
             uint64_t w[6], t[6];
 
-            fp_cpy(w, &testval[j].val[0]);
+            fp_cpy(w, testval[j].val);
             fp_mul(t, v, w);
 
             for (int k=j+1; k<TESTVALS; k++) {
                 uint64_t x[6];
 
-                fp_cpy(x, &testval[k].val[0]);
+                fp_cpy(x, testval[k].val);
 
                 for (int l=k+1; l<TESTVALS; l++) {
                     uint64_t y[6], u[6];
 
-                    fp_cpy(y, &testval[l].val[0]);
+                    fp_cpy(y, testval[l].val);
                     fp_mul(u, x, y);
                     fp_add(u, u, t);
 

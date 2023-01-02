@@ -4,23 +4,34 @@ NVOPTS=--compile
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86
 COPTS=-O2
 
-FP_OBJS=fp.o fp_cpy.o fp_reduce6.o fp_eq.o fp_neq.o fp_neg.o fp_x2.o fp_x3.o fp_x4.o fp_x8.o fp_x12.o fp_add.o fp_sub.o fp_sqr.o fp_mul.o fp_inv.o fp_isone.o fp_iszero.o fp_nonzero.o fp_mma.o
-FR_OBJS=fr.o fr_cpy.o fr_reduce4.o fr_eq.o fr_neq.o fr_neg.o fr_x2.o fr_x3.o fr_x4.o fr_x8.o fr_x12.o fr_add.o fr_sub.o fr_sqr.o fr_mul.o fr_inv.o fr_isone.o fr_iszero.o
-G1_OBJS=g1a.o g1p.o g1p_compare.o g1p_add.o g1p_dbl.o g1p_mul.o g1p_neg.o g1p_scale.o g1p_ispoint.o g1p_sub.o g1p_addsub.o
-FK20_OBJS=fk20_fft.o
+FP=fp fp_cpy fp_reduce6 fp_eq fp_neq fp_neg fp_x2 fp_x3 fp_x4 fp_x8 fp_x12 fp_add fp_sub fp_sqr fp_mul fp_inv fp_isone fp_iszero fp_nonzero fp_mma
+FR=fr fr_cpy fr_reduce4 fr_eq fr_neq fr_neg fr_x2 fr_x3 fr_x4 fr_x8 fr_x12 fr_add fr_sub fr_sqr fr_mul fr_inv fr_isone fr_iszero fr_nonzero
+G1=g1a g1p g1p_compare g1p_add g1p_dbl g1p_mul g1p_neg g1p_scale g1p_ispoint g1p_sub g1p_addsub
+FK20=fk20_fft
+
+FPTEST=fptest fptest_kat fptest_cmp fptest_mma
+FRTEST=frtest frtest_kat frtest_cmp
+G1TEST=g1test g1test_kat g1test_fibonacci
+FK20TEST=fk20test fk20test_kat
+
+FP_OBJS=$(FP:%=%.o)
+FR_OBJS=$(FR:%=%.o)
+G1_OBJS=$(G1:%=%.o)
+FK20_OBJS=$(FK20:%=%.o)
+
+FP_CUBIN=$(FP:%=%.cubin)
+FR_CUBIN=$(FR:%=%.cubin)
+G1_CUBIN=$(G1:%=%.cubin)
+FK20_CUBIN=$(FK20:%=%.cubin)
+
+FPTEST_OBJS=$(FPTEST:%=%.o)
+FRTEST_OBJS=$(FRTEST:%=%.o)
+G1TEST_OBJS=$(G1TEST:%=%.o)
+FK20TEST_OBJS=$(FK20TEST:%=%.o)
+
 OBJS=$(FP_OBJS) $(FR_OBJS) $(G1_OBJS) $(FK20_OBJS)
-
-FPTEST_OBJS=fptest.o fptest_kat.o fptest_cmp.o fptest_mma.o
-FRTEST_OBJS=frtest.o frtest_kat.o frtest_cmp.o
-G1TEST_OBJS=g1test.o g1test_kat.o g1test_fibonacci.o
-FK20TEST_OBJS=fk20test.o fk20test_kat.o
-TEST_OBJS=$(FPTEST_OBJS) $(FRTEST_OBJS) $(G1TEST_OBJS) $(FK20TEST_OBJS)
-
-FP_CUBIN=fp_cpy.cubin fp_reduce6.cubin fp_eq.cubin fp_neq.cubin fp_neg.cubin fp_x2.cubin fp_x3.cubin fp_x4.cubin fp_x8.cubin fp_x12.cubin fp_add.cubin fp_sub.cubin fp_sqr.cubin fp_mul.cubin fp_inv.cubin fp_isone.cubin fp_iszero.cubin
-FR_CUBIN=fr_cpy.cubin fr_reduce4.cubin fr_eq.cubin fr_neq.cubin fr_neg.cubin fr_x2.cubin fr_x3.cubin fr_x4.cubin fr_x8.cubin fr_x12.cubin fr_add.cubin fr_sub.cubin fr_sqr.cubin fr_mul.cubin fr_inv.cubin fr_isone.cubin fr_iszero.cubin
-G1_CUBIN=g1a.cubin g1p.cubin g1p_compare.cubin g1p_add.cubin g1p_dbl.cubin g1p_mul.cubin g1p_neg.cubin g1p_scale.cubin g1p_ispoint.cubin g1p_sub.cubin
-FK20_CUBIN=fk20_fft.cubin
 CUBIN=$(FP_CUBIN) $(FR_CUBIN) $(G1_CUBIN) $(FK20_CUBIN)
+TEST_OBJS=$(FPTEST_OBJS) $(FRTEST_OBJS) $(G1TEST_OBJS) $(FK20TEST_OBJS)
 
 all: fptest frtest g1test fk20test # $(OBJS) $(TEST_OBJS)
 

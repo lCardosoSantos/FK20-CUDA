@@ -8,31 +8,31 @@
 
 typedef uint64_t fr_t[4];
 
-extern __device__ void fr_fromUint64(uint64_t *z, const uint64_t *x);
-extern __device__ void fr_toUint64(uint64_t *x, const uint64_t *z);
-extern __device__ void fr_cpy(uint64_t *z, const uint64_t *x);
-extern __device__ void fr_reduce4(uint64_t *z);
-extern __device__ void fr_neg(uint64_t *z);
-extern __device__ void fr_x2(uint64_t *z);
-extern __device__ void fr_x3(uint64_t *z);
-extern __device__ void fr_x4(uint64_t *z);
-extern __device__ void fr_x8(uint64_t *z);
-extern __device__ void fr_x12(uint64_t *z);
-extern __device__ void fr_add(uint64_t *z, const uint64_t *x);
-extern __device__ void fr_sub(uint64_t *z, const uint64_t *x);
-extern __device__ void fr_sqr(uint64_t *z);
-extern __device__ void fr_mul(uint64_t *z, const uint64_t *x);
-extern __device__ void fr_inv(uint64_t *z);
-extern __device__ void fr_zero(uint64_t *z);
-extern __device__ void fr_one(uint64_t *z);
+extern __device__ void fr_fromUint64(fr_t &z, const uint64_t *x);
+extern __device__ void fr_toUint64(const fr_t &x, uint64_t *z);
+extern __device__ void fr_cpy(fr_t &z, const fr_t &x);
+extern __device__ void fr_reduce4(fr_t &z);
+extern __device__ void fr_neg(fr_t &z);
+extern __device__ void fr_x2(fr_t &z);
+extern __device__ void fr_x3(fr_t &z);
+extern __device__ void fr_x4(fr_t &z);
+extern __device__ void fr_x8(fr_t &z);
+extern __device__ void fr_x12(fr_t &z);
+extern __device__ void fr_add(fr_t &z, const fr_t &x);
+extern __device__ void fr_sub(fr_t &z, const fr_t &x);
+extern __device__ void fr_sqr(fr_t &z);
+extern __device__ void fr_mul(fr_t &z, const fr_t &x);
+extern __device__ void fr_inv(fr_t &z);
+extern __device__ void fr_zero(fr_t &z);
+extern __device__ void fr_one(fr_t &z);
 
-extern __device__ bool fr_eq(uint64_t *x, uint64_t *y);
-extern __device__ bool fr_neq(uint64_t *x, uint64_t *y);
-extern __device__ bool fr_nonzero(const uint64_t *x);
-extern __device__ bool fr_iszero(const uint64_t *x);
-extern __device__ bool fr_isone(const uint64_t *x);
+extern __device__ bool fr_eq(const fr_t &x, const fr_t &y);
+extern __device__ bool fr_neq(const fr_t &x, const fr_t &y);
+extern __device__ bool fr_nonzero(const fr_t &x);
+extern __device__ bool fr_iszero(const fr_t &x);
+extern __device__ bool fr_isone(const fr_t &x);
 
-extern __device__ void fr_print(const uint64_t *x);
+extern __device__ void fr_print(const fr_t &x);
 
 #endif
 

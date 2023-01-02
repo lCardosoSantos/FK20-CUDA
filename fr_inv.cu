@@ -7,7 +7,7 @@
 // Raise the argument to the power r-2.
 // This avoids control flow divergence.
 // 258 squarings, 55 multiplications.
-__device__ void fr_inv(uint64_t *z) {
+__device__ void fr_inv(fr_t &z) {
 
     // r-2 = 52435875175126190479447740508185965837690552500527637822603658699938581184511
     // = 111001111101101101001110101001100101001100111010111\

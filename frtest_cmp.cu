@@ -12,14 +12,14 @@ __global__ void FrTestCmp(testval_t *testval) {
     size_t  count   = 0;
 
     for (int i=2; i<514; i++) {
-        uint64_t x[6];
+        fr_t x;
 
-        fr_cpy(x, &testval[i].val[0]);
+        fr_cpy(x, testval[i].val);
 
         for (int j=2; j<514; j++) {
-            uint64_t y[6];
+            fr_t y;
 
-            fr_cpy(y, &testval[j].val[0]);
+            fr_cpy(y, testval[j].val);
 
             uint64_t
                 eq  = fr_eq (x, y),

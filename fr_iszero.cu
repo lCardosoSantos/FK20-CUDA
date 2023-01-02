@@ -3,8 +3,12 @@
 
 #include "fr.cuh"
 
-__device__ bool fr_iszero(const uint64_t *z) {
-    return ((z[3] | z[2] | z[1] | z[0]) == 0);
+__device__ bool fr_iszero(const fr_t &x) {
+    fr_t t;
+    fr_cpy(t, x);
+    fr_reduce4(t);
+
+    return ((t[3] | t[2] | t[1] | t[0]) == 0);
 }
 
 // vim: ts=4 et sw=4 si

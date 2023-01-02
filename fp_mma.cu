@@ -5,7 +5,7 @@
 #include "fp_mul.cuh"
 #include "fp_reduce12.cuh"
 
-__device__ void fp_mma(uint64_t *z, const uint64_t *v, const uint64_t *w, const uint64_t *x, const uint64_t *y) {
+__device__ void fp_mma(fp_t &z, const fp_t &v, const fp_t &w, const fp_t &x, const fp_t &y) {
     uint64_t
         v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3], v4 = v[4], v5 = v[5],
         w0 = w[0], w1 = w[1], w2 = w[2], w3 = w[3], w4 = w[4], w5 = w[5],

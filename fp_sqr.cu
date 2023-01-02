@@ -5,7 +5,7 @@
 #include "fp_sqr.cuh"
 #include "fp_reduce12.cuh"
 
-__device__ void fp_sqr(uint64_t *z, const uint64_t *x) {
+__device__ void fp_sqr(fp_t &z, const fp_t &x) {
     uint64_t
         x0 = x[0], x1 = x[1], x2 = x[2], x3 = x[3], x4 = x[4], x5 = x[5],
         z0 = z[0], z1 = z[1], z2 = z[2], z3 = z[3], z4 = z[4], z5 = z[5];

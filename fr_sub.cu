@@ -3,7 +3,7 @@
 
 #include "fr.cuh"
 
-__device__ void fr_sub(uint64_t *z, const uint64_t *x) {
+__device__ void fr_sub(fr_t &z, const fr_t &x) {
     uint64_t
         z0 = z[0], x0 = x[0],
         z1 = z[1], x1 = x[1],

@@ -3,7 +3,7 @@
 
 #include "fr.cuh"
 
-__device__ void fr_x4(uint64_t *z) {
+__device__ void fr_x4(fr_t &z) {
     uint64_t
         z0 = z[0],
         z1 = z[1],

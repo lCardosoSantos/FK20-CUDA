@@ -5,7 +5,7 @@
 #include "fp_mul.cuh"
 #include "fp_reduce12.cuh"
 
-__device__ void fp_mul(uint64_t *z, const uint64_t *x, const uint64_t *y) {
+__device__ void fp_mul(fp_t &z, const fp_t &x, const fp_t &y) {
     uint64_t
         x0 = x[0], x1 = x[1], x2 = x[2], x3 = x[3], x4 = x[4], x5 = x[5],
         y0 = y[0], y1 = y[1], y2 = y[2], y3 = y[3], y4 = y[4], y5 = y[5],

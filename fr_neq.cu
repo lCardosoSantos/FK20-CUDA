@@ -3,17 +3,13 @@
 
 #include "fr.cuh"
 
-__device__ bool fr_neq(uint64_t *x, uint64_t *y) {
-        uint64_t t;
+__device__ bool fr_neq(const fr_t &x, const fr_t &y) {
+        fr_t t;
 
-        fr_reduce4(x);
-        fr_reduce4(y);
+        fr_cpy(t, x);
+        fr_sub(t, y);
 
-        t  = x[0] ^ y[0];
-        t |= x[1] ^ y[1];
-        t |= x[2] ^ y[2];
-        t |= x[3] ^ y[3];
-        return t != 0;
+        return fr_nonzero(t);
 }
 
 // vim: ts=4 et sw=4 si

@@ -286,23 +286,23 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     // dst = 9 last bits of src reversed
     asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(dst) : "r"(src << (32-9)));
 
-    g1p_cpy((uint64_t *)&t[dst], (const uint64_t *)&input[stride*(src)]);
+    g1p_cpy(t[dst], input[stride*(src)]);
 
     // Extend input vector
 
     dst = 2*tid+1;
-    g1p_inf((uint64_t *)&t[dst]);
+    g1p_inf(t[dst]);
 
     __syncthreads();
 
     //// Stage 0
 
-    w = 0; // & -1U;
+    w = 0;
     l = 2 * tid;
     r = l | 1;
 
-    //g1p_mul((uint64_t *)&t[r], (uint64_t *)&roots[w]);
-    g1p_addsub((uint64_t *)&t[l], (uint64_t *)&t[r]);
+    //g1p_mul(t[r], roots[w]);
+    g1p_addsub(t[l], t[r]);
 
     __syncthreads();
 
@@ -312,8 +312,8 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     l = tid + (tid & -2U);
     r = l | 2;
 
-    if (w) g1p_mul((uint64_t *)&t[r], (uint64_t *)&roots[w]);
-    g1p_addsub((uint64_t *)&t[l], (uint64_t *)&t[r]);
+    if (w) g1p_mul(t[r], roots[w]);
+    g1p_addsub(t[l], t[r]);
 
     __syncthreads();
 
@@ -323,8 +323,8 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     l = tid + (tid & -4U);
     r = l | 4;
 
-    g1p_mul((uint64_t *)&t[r], (uint64_t *)&roots[w]);
-    g1p_addsub((uint64_t *)&t[l], (uint64_t *)&t[r]);
+    g1p_mul(t[r], roots[w]);
+    g1p_addsub(t[l], t[r]);
 
     __syncthreads();
 
@@ -334,8 +334,8 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     l = tid + (tid & -8U);
     r = l | 8;
 
-    g1p_mul((uint64_t *)&t[r], (uint64_t *)&roots[w]);
-    g1p_addsub((uint64_t *)&t[l], (uint64_t *)&t[r]);
+    g1p_mul(t[r], roots[w]);
+    g1p_addsub(t[l], t[r]);
 
     __syncthreads();
 
@@ -345,8 +345,8 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     l = tid + (tid & -16U);
     r = l | 16;
 
-    g1p_mul((uint64_t *)&t[r], (uint64_t *)&roots[w]);
-    g1p_addsub((uint64_t *)&t[l], (uint64_t *)&t[r]);
+    g1p_mul(t[r], roots[w]);
+    g1p_addsub(t[l], t[r]);
 
     __syncthreads();
 
@@ -356,8 +356,8 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     l = tid + (tid & -32U);
     r = l | 32;
 
-    g1p_mul((uint64_t *)&t[r], (uint64_t *)&roots[w]);
-    g1p_addsub((uint64_t *)&t[l], (uint64_t *)&t[r]);
+    g1p_mul(t[r], roots[w]);
+    g1p_addsub(t[l], t[r]);
 
     __syncthreads();
 
@@ -367,8 +367,8 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     l = tid + (tid & -64U);
     r = l | 64;
 
-    g1p_mul((uint64_t *)&t[r], (uint64_t *)&roots[w]);
-    g1p_addsub((uint64_t *)&t[l], (uint64_t *)&t[r]);
+    g1p_mul(t[r], roots[w]);
+    g1p_addsub(t[l], t[r]);
 
     __syncthreads();
 
@@ -378,8 +378,8 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     l = tid + (tid & -128U);
     r = l | 128;
 
-    g1p_mul((uint64_t *)&t[r], (uint64_t *)&roots[w]);
-    g1p_addsub((uint64_t *)&t[l], (uint64_t *)&t[r]);
+    g1p_mul(t[r], roots[w]);
+    g1p_addsub(t[l], t[r]);
 
     __syncthreads();
 
@@ -389,8 +389,8 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     l = tid + (tid & -256U);
     r = l | 256;
 
-    g1p_mul((uint64_t *)&t[r], (uint64_t *)&roots[w]);
-    g1p_addsub((uint64_t *)&t[l], (uint64_t *)&t[r]);
+    g1p_mul(t[r], roots[w]);
+    g1p_addsub(t[l], t[r]);
 
     __syncthreads();
 
@@ -400,13 +400,13 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     dst = src;
     //asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(r) : "r"(l << (32-9)));
 
-    g1p_cpy((uint64_t *)&output[stride*dst], (const uint64_t *)&t[src]);
+    g1p_cpy(output[stride*dst], t[src]);
     //printf("%3d -> %3d\n", l, r);
 
     src = tid+256;
     dst = src;
     //asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(r) : "r"(l << (32-9)));
 
-    g1p_cpy((uint64_t *)&output[stride*dst], (const uint64_t *)&t[src]);
+    g1p_cpy(output[stride*dst], t[src]);
     //printf("%3d -> %3d\n", l, r);
 }

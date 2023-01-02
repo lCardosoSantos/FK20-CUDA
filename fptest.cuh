@@ -11,7 +11,7 @@
 #define TESTVALS 896
 
 typedef struct {
-    uint64_t val[6];
+    fp_t val;
 } testval_t;
 
 #define TESTFUN(X) extern __global__ void X(testval_t *testval)

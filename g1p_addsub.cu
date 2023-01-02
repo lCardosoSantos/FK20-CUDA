@@ -8,12 +8,12 @@
 
 // p,q ← p+q,p-q
 // projective p and q
-__device__ void g1p_addsub(uint64_t *p, uint64_t *q) {
+__device__ void g1p_addsub(g1p_t &p, g1p_t &q) {
 
-    uint64_t
-        *X1 = p, *Y1 = p+6, *Z1 = p+12,
-        *X2 = q, *Y2 = q+6, *Z2 = q+12,
-        t0[6], t1[6], t2[6], t3[6];
+    fp_t
+        &X1 = p.x, &Y1 = p.y, &Z1 = p.z,
+        &X2 = q.x, &Y2 = q.y, &Z2 = q.z,
+        t0, t1, t2, t3;
 
     //printf("X1 = "); fp_print(X1);
     //printf("Y1 = "); fp_print(Y1);

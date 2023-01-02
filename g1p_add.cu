@@ -6,20 +6,19 @@
 
 // p ← p+q
 // projective p and q
-__device__ void g1p_add(uint64_t *p, const uint64_t *q) {
+__device__ void g1p_add(g1p_t &p, const g1p_t &q) {
+    fp_t
+        X1, Y1, Z1,
+        X2, Y2, Z2,
+        t0, t1, t2, t3;
 
-    uint64_t
-        X1[6], Y1[6], Z1[6],
-        X2[6], Y2[6], Z2[6],
-        t0[6], t1[6], t2[6], t3[6];
+    fp_cpy(X1, p.x);
+    fp_cpy(Y1, p.y);
+    fp_cpy(Z1, p.z);
 
-    fp_cpy(X1, p+ 0);
-    fp_cpy(Y1, p+ 6);
-    fp_cpy(Z1, p+12);
-
-    fp_cpy(X2, q+ 0);
-    fp_cpy(Y2, q+ 6);
-    fp_cpy(Z2, q+12);
+    fp_cpy(X2, q.x);
+    fp_cpy(Y2, q.y);
+    fp_cpy(Z2, q.z);
 
     // Adapted from eprint 2015-1060, algorithm 7.
     // Modified to avoid overwriting inputs and remove one temp value.
@@ -68,9 +67,9 @@ __device__ void g1p_add(uint64_t *p, const uint64_t *q) {
     fp_add(Y1, Y1, Z2); // Y3
     fp_add(Z1, Z1, X2); // Z3
 
-    fp_cpy(p+ 0, X1);
-    fp_cpy(p+ 6, Y1);
-    fp_cpy(p+12, Z1);
+    fp_cpy(p.x, X1);
+    fp_cpy(p.y, Y1);
+    fp_cpy(p.z, Z1);
 }
 
 // vim: ts=4 et sw=4 si

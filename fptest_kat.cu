@@ -45,8 +45,8 @@ __global__ void FpTestKAT(testval_t *) {
     // fp_reduce6
 
     if (pass) {
-        __const__ uint64_t
-            q[][6] = {
+        __const__ fp_t
+            q[] = {
                 { 0xb9feffffffffaaaa, 0x1eabfffeb153ffff, 0x6730d2a0f6b0f624, 0x64774b84f38512bf, 0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a }, // p-1
                 { 0xb9feffffffffaaab, 0x1eabfffeb153ffff, 0x6730d2a0f6b0f624, 0x64774b84f38512bf, 0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a }, // p
                 { 0xb9feffffffffaaac, 0x1eabfffeb153ffff, 0x6730d2a0f6b0f624, 0x64774b84f38512bf, 0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a }, // p+1
@@ -56,7 +56,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x02044569c8b77a3e, 0x32973f4932540003, 0x7c9921ccff9fc38c, 0xdb84203d7e11de61, 0xa03712056f09f5b6, 0xba1104f592facb0d },
                 { 0x4ddb0ff47d437f82, 0xbd2d3980fd8ff97d, 0x792a8035f135d8aa, 0xb5f66d21c0c92895, 0xa85a6dcdc58457d5, 0x755bb1f21e2fcba1 },
             },
-            a[][6] = {
+            a[] = {
                 { 0xb9feffffffffaaaa, 0x1eabfffeb153ffff, 0x6730d2a0f6b0f624, 0x64774b84f38512bf, 0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a }, // p-1
                 { 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 }, // p
                 { 0x0000000000000001, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 }, // p+1
@@ -67,10 +67,10 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x65df0ff47d44d4d6, 0x427d3986383ff97e, 0xdc6735b21672001a, 0x24193f0df2b4dd97, 0x7bebcef4b855a478, 0x0d576a4938303138 },
             };
 
-        __shared__ uint64_t t[6];
+        __shared__ fp_t t;
 
         for (int i=0; pass && (i<8); i++) {
-            fp_cpy(t, &q[i][0]);
+            fp_cpy(t, q[i]);
 
             fp_reduce6(t);
 
@@ -232,10 +232,10 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0xef98701e7cd40b3d, 0x50b2de8856980a24, 0x84f155ea9b27db3f, 0xd41cbdd1fbe2d3a8, 0x712dfe598ff8a611, 0x0b13b5da10d44150 },
             };
 
-        __shared__ uint64_t t[6];
+        __shared__ fp_t t;
 
         for (int i=0; pass && (i<8); i++) {
-            fp_neg(t, &q[i][0]);
+            fp_neg(t, q[i]);
 
             if (fp_neq(t, a[i]))
                 pass = false;
@@ -260,8 +260,8 @@ __global__ void FpTestKAT(testval_t *) {
     // fp_x2
 
     if (pass) {
-        uint64_t
-            q[][6] = {
+        fp_t
+            q[] = {
                 { 1, 0, 0, 0, 0, 0 }, // 1
                 { 0xb9feffffffffaaaa, 0x1eabfffeb153ffff, 0x6730d2a0f6b0f624, 0x64774b84f38512bf, 0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a }, // p-1
                 { 0xb9feffffffffaaab, 0x1eabfffeb153ffff, 0x6730d2a0f6b0f624, 0x64774b84f38512bf, 0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a }, // p
@@ -272,7 +272,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0xdae1039a70b38fcb, 0xbcd53e042b308b8b, 0x524f0ac0e3bb7b9d, 0x05276cfe630c9247, 0xd5347f13e6e27df5, 0x2a05f2556d58ede0 },
                 { 0xc2ee2ab900606d09, 0x6ddc945ea786dfdd, 0x04c99214cc172e77, 0xdb1ccaa41fa78db2, 0x47c1ec58ef0c159a, 0xe2b5ffe82724e8f5 },
             },
-            a[][6] = {
+            a[] = {
                 { 2, 0, 0, 0, 0, 0 }, // 2
                 { 0x73fdffffffff5554, 0x3d57fffd62a7ffff, 0xce61a541ed61ec48, 0xc8ee9709e70a257e, 0x96374f6c869759ae, 0x340223d472ffcd34 }, // 2p-2
                 { 0xe7fbfffffffeaaac, 0x7aaffffac54ffffe, 0x9cc34a83dac3d890, 0x91dd2e13ce144afd, 0x2c6e9ed90d2eb35d, 0x680447a8e5ff9a69 }, // 4p
@@ -284,10 +284,10 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x2bed557200c684b7, 0xd24d28d38879bfc0, 0x2f552779366e0488, 0x0a4d91741378dcae, 0x92adb5976611b0e8, 0x0b59cf427ccb81ab },
             };
 
-        __shared__ uint64_t t[6];
+        __shared__ fp_t t;
 
         for (int i=0; pass && (i<9); i++) {
-            fp_x2(t, &q[i][0]);
+            fp_x2(t, q[i]);
 
             if (fp_neq(t, a[i]))
                 pass = false;
@@ -311,8 +311,8 @@ __global__ void FpTestKAT(testval_t *) {
     // fp_x3
 
     if (pass) {
-        uint64_t
-            q[][6] = {
+        fp_t
+            q[] = {
                 { 1, 0, 0, 0, 0, 0 }, // 1
                 { 0xb9feffffffffaaaa, 0x1eabfffeb153ffff, 0x6730d2a0f6b0f624, 0x64774b84f38512bf, 0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a }, // p-1
                 { 0xb9feffffffffaaab, 0x1eabfffeb153ffff, 0x6730d2a0f6b0f624, 0x64774b84f38512bf, 0x4b1ba7b6434bacd7, 0x1a0111ea397fe69a }, // p
@@ -323,7 +323,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x67d526d71fceee49, 0xa124d619a4cffd53, 0xe2193f2301ead151, 0x19a27683d6e13e1c, 0xa9ec82098b214407, 0xc30ce006eb7c626f },
                 { 0xd8239146411d27b4, 0x2e46cfc4603a7e43, 0x636811703bb2ce69, 0x5696673b95c09810, 0xda56edce88b8077a, 0x336eda9dd2484c45 },
             },
-            a[][6] = {
+            a[] = {
                 { 3, 0, 0, 0, 0, 0 }, // 3
                 { 0x2DFCFFFFFFFEFFFE, 0x5C03FFFC13FBFFFF, 0x359277E2E412E26C, 0x2D65E28EDA8F383E, 0xE152F722C9E30686, 0x4E0335BEAC7FB3CE }, // 3p-3
                 { 0x5BF9FFFFFFFE0002, 0xB807FFF827F7FFFE, 0x6B24EFC5C825C4D8, 0x5ACBC51DB51E707C, 0xC2A5EE4593C60D0C, 0x9C066B7D58FF679D }, // 6p
@@ -335,10 +335,10 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0xE66FB3D2C35921C5, 0xF1786F53AA0B7ACC, 0x2644172BE1A39C86, 0x0D6EBC19FFA86A74, 0x177A82DC49ADB63A, 0x18473646575963CE },
             };
 
-        __shared__ uint64_t t[6];
+        __shared__ fp_t t;
 
         for (int i=0; pass && (i<9); i++) {
-            fp_x3(t, &q[i][0]);
+            fp_x3(t, q[i]);
 
             if (fp_neq(t, a[i]))
                 pass = false;
@@ -362,8 +362,8 @@ __global__ void FpTestKAT(testval_t *) {
     // fp_add
 
     if (pass) {
-        uint64_t
-            x[][6] = {
+        fp_t
+            x[] = {
                 { 0xf9eb49b8c7a56a91, 0x0ef126fc4e085685, 0x205eeb7c38dbbf9d, 0xf39db86dd74ba55e, 0xb53be4eb9f0aba5b, 0xa9adcd7739bd74cf },
                 { 0xfe2acbd68b1dab4c, 0xc887627968616adb, 0xebc3269a81507575, 0x0712c334b66a5db8, 0x2f2fb5eebf0bbbe7, 0x1228a231f10f3969 },
                 { 0xb5d627d5148d5ee4, 0x9f90924cf9a20f59, 0x44583bcadb79bbb9, 0x5a9d273d378355e4, 0x07e79b33160b873e, 0xb600a76ec90fb9ed },
@@ -373,7 +373,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0xcc2acd2768c764cf, 0x5dc0ecf1246274c2, 0x795aa4384f5ab137, 0xbff1464b3d3d6939, 0x4c2caf2b9b11fa95, 0x1f5ceaaf4f7d6de4 },
                 { 0x10e18a590b63d8e6, 0x2b19856f169e090c, 0x05dfc520280b525e, 0xea0f7df125f638d4, 0x068815eb1cb349ca, 0xf74a8f42e7f91926 },
             },
-            y[][6] = {
+            y[] = {
                 { 0x517cb18f6844fe73, 0xbf8c5be950010a8e, 0x579c2cab14ba5662, 0x81c14702fd352d79, 0x620cdaf477088c3e, 0xc4fec1d957afa21a },
                 { 0x4a8cd70deb76aebb, 0x9e7a6dec7050c6e4, 0x8a6620ebfcebd51b, 0x66e5a460cc82bc8c, 0x95247c6c292eafce, 0x49031305fd08b422 },
                 { 0x544ba69e20b1ad57, 0x00f67b5f1c5b61c7, 0x719912e5a5aba394, 0x33ccff2766b4f4c9, 0xf2ea148ea21f8495, 0xd7a40e39d1285b4b },
@@ -383,7 +383,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0xc7c641fafcc5c79a, 0xe33e72638d433936, 0x900e218d7c6fa297, 0x3196afb585723831, 0x364422505bd94d9e, 0x7db61267bd4d87f2 },
                 { 0x0a287d49e03b3a16, 0x7885df1173b1f516, 0xdf54afe9bc80f448, 0x0087ad3b21681d47, 0x5e6809f0b1c9659f, 0xa801fa7b481d5cca },
             },
-            a[][6] = {
+            a[] = {
                 { 0x1f75fb482fef13aa, 0x211582f7eb716118, 0xd34f9359cfe8a006, 0xf6d8de2b8339cc5f, 0xfbc593e867efd2d2, 0x029d94816c6e7a79 },
                 { 0x1abaa2e476955a06, 0x0afdd069c4b631c1, 0x4096cfa39a296825, 0x40928506a85de207, 0xe3013b381e57652f, 0x0d287f79419839bc },
                 { 0x2430ce7335440c36, 0xd4730dbfb2117125, 0xaa14f7420cc6f32f, 0xab6cb99a596c3176, 0x9432dc13c6bbeb34, 0x0794a8ef3bb9922e },
@@ -394,7 +394,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x351907a2eba412f7, 0xd78b64942663fe26, 0xd9581d9b702dda88, 0x0799be6202923ce4, 0xfe514c2ddd0d8ecb, 0x193c7d04d197f2e5 },
             };
 
-        __shared__ uint64_t t[6];
+        __shared__ fp_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fp_cpy(t, x[i]);
@@ -599,8 +599,8 @@ __global__ void FpTestKAT(testval_t *) {
     // fp_inv
 
     if (pass) {
-        uint64_t
-            q[][6] = {
+        fp_t
+            q[] = {
                 { 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
                 { 0x0000000000000001, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
                 { 0x0000000000000002, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
@@ -610,7 +610,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x49da829f778038d1, 0x854634fbd4c444f0, 0x664a986da9e91629, 0x46b68ee421699ad4, 0x4db2fe4cec35a193, 0x1a89fc6e8c94daed },
                 { 0x9e9ab0f689270b06, 0xd6b509821b199072, 0x5039948ba7d60a02, 0x3cdef4136ccab1d9, 0xca9b6bd2f2c0d033, 0x7e26ae14d79bcb20 },
             },
-            a[][6] = {
+            a[] = {
                 { 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
                 { 0x0000000000000001, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
                 { 0xDCFF7FFFFFFFD556, 0x0F55FFFF58A9FFFF, 0xB39869507B587B12, 0xB23BA5C279C2895F, 0x258DD3DB21A5D66B, 0x0D0088F51CBFF34D },
@@ -621,10 +621,10 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x5FB388A220997B22, 0x6FDD9EEF36C6EF99, 0x2B0E3C9B46BEE64D, 0xFBAE3CCB5C9D6AE7, 0xFFFCB6D3F89BB725, 0x0EC41F3C16BB37FF },
             };
 
-        __shared__ uint64_t t[6];
+        __shared__ fp_t t;
 
         for (int i=0; pass && (i<8); i++) {
-            fp_inv(t, &q[i][0]);
+            fp_inv(t, q[i]);
 
             for (int j=0; j<6; j++)
                 if (t[j] != a[i][j])
