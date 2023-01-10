@@ -14,7 +14,7 @@ def pointToHexString(i : FK20Py.blst.P1) -> str:
     return '{:0192x}'.format(integer)
 
 MAX_DEGREE_POLY = FK20Py.MODULUS-1
-N_POINTS = 4#512 #Number of points in the Poly
+N_POINTS = 512 #Number of points in the Poly
 N_TESTS = 10 #Number of tests to generate
 
 def stringfyFFT_Trace(fft) -> str:
@@ -63,7 +63,7 @@ def printExpectedOutput(test, skip=True):
 
 if __name__ == '__main__':
     random.seed(0) #remove after debug
-    test = generateAllTest(3)
+    test = generateAllTest(N_TESTS)
     with open("testfft.pickle", 'wb') as f:
         pickle.dump(test, f)
 

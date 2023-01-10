@@ -5,7 +5,7 @@
 #include<stdint.h>
 #include<string.h>
 
-#define POLYLEN 4//512 //The test for GPU code is expected to have always the same input lenght
+#define POLYLEN 512 //The test for GPU code is expected to have always the same input length
 
 typedef struct uint768 {uint64_t word[12];} uint768_t;
 typedef struct uint256 {uint64_t word[4];} uint256_t;
@@ -18,7 +18,7 @@ struct FFTTestCase{
 
 typedef struct FFTTest{
     unsigned int nTest;
-    unsigned int polynomialLenght;
+    unsigned int polynomialLength;
     uint256_t setup;
     struct FFTTestCase *testCase;
 } ffttest_t;
@@ -29,13 +29,14 @@ void freeffttest_t( ffttest_t* fftTest){
 }
 
 void parsePoly(char *line, ffttest_t *fftTest, ssize_t line_read_size){
+    fprintf(stderr, "<%s>\n", __func__);
     char tmp[16];
     if(strncmp(line, "polynomial ", 11) != 0){
         printf("Fatal, malformed input: Expected polynomial keyword\n");
         exit(1);
     }
 
-    ssize_t expectedLineSize = 11+(64*fftTest->polynomialLenght)+fftTest->polynomialLenght;
+    ssize_t expectedLineSize = 11+(64*fftTest->polynomialLength)+fftTest->polynomialLength;
     if(line_read_size != expectedLineSize){
         printf("Fatal, malformed input: Expected %ld input size, read %ld\n", expectedLineSize, line_read_size);
         exit(1);
@@ -48,7 +49,7 @@ void parsePoly(char *line, ffttest_t *fftTest, ssize_t line_read_size){
     memset(&(fftTest->testCase[testIdx]), 0x00, sizeof(struct FFTTestCase));
     fftTest->testCase[testIdx].idx = testIdx;
 
-    for(int poly_i = 0; poly_i<fftTest->polynomialLenght; poly_i++){
+    for(int poly_i = 0; poly_i<fftTest->polynomialLength; poly_i++){
         for(int i=0; i<4; i++){
             strncpy(tmp, line,  16);
             fftTest->testCase[testIdx].polynomial[poly_i].word[3-i] = strtoul(tmp, NULL, 16);
@@ -60,6 +61,7 @@ void parsePoly(char *line, ffttest_t *fftTest, ssize_t line_read_size){
 }
 
 void parsefftInput(char *line, ffttest_t *fftTest){
+    fprintf(stderr, "<%s>\n", __func__);
     char tmp[16];
 
     if(strncmp(line, "fftTestInput", 12) != 0){
@@ -69,12 +71,15 @@ void parsefftInput(char *line, ffttest_t *fftTest){
 
     int testIdx = fftTest->nTest;
     line = memchr(line, ' ', 32)+sizeof(char);
-    for(int fft_i = 0; fft_i<fftTest->polynomialLenght*2; fft_i++){
+    for(int fft_i = 0; fft_i<fftTest->polynomialLength*2; fft_i++){
         for(int i=0; i<12; i++){
             strncpy(tmp, line,  16);
             fftTest->testCase[testIdx].fftInputp[fft_i].word[11-i] = strtoul(tmp, NULL, 16);
             line+=16*sizeof(char);
         }
+
+        // Remove flag bits from coordinates
+        fftTest->testCase[testIdx].fftInputp[fft_i].word[11] &= (1ULL << 61) - 1;
 
         line+=1*sizeof(char);
     }
@@ -82,6 +87,7 @@ void parsefftInput(char *line, ffttest_t *fftTest){
 }
 
 void parseSetup(char *line, ffttest_t *fftTest){
+    fprintf(stderr, "<%s>\n", __func__);
     char tmp[32];
     if(strncmp(line, "setup ", 6) != 0){
         printf("Fatal, setup malformed >> %s", line);
@@ -96,10 +102,11 @@ void parseSetup(char *line, ffttest_t *fftTest){
         line+=16*sizeof(char);
     }
 
-    //printf("%lx %lx %lx %lx", fftTest->setup.word[0], fftTest->setup.word[1], fftTest->setup.word[2], fftTest->setup.word[3] );
+    fprintf(stderr, "%lx %lx %lx %lx\n", fftTest->setup.word[0], fftTest->setup.word[1], fftTest->setup.word[2], fftTest->setup.word[3] );
 }
 
 ffttest_t parseFFTTest(char *filename){
+    fprintf(stderr, "<%s>\n", __func__);
     FILE *fp;
     fp = fopen(filename, "r");
     if (fp == NULL){
@@ -107,7 +114,7 @@ ffttest_t parseFFTTest(char *filename){
     }
 
     ffttest_t fftTest;
-    fftTest.nTest=0; fftTest.polynomialLenght=POLYLEN;
+    fftTest.nTest=0; fftTest.polynomialLength=POLYLEN;
     fftTest.testCase = malloc(sizeof(struct FFTTestCase));
 
     char *line = NULL;
@@ -122,8 +129,13 @@ ffttest_t parseFFTTest(char *filename){
 
     do{
         line_read_size = getline(&line, &line_buff_size, fp);
+
+        //stop reading at a hashmark
+        if (line[0]=='#')
+            break;
         if(line_read_size < 0)
             break;
+
         parsePoly(line, &fftTest, line_read_size);
 
         line_read_size = getline(&line, &line_buff_size, fp);
@@ -132,14 +144,10 @@ ffttest_t parseFFTTest(char *filename){
         }
             
         parsefftInput(line, &fftTest);
-        fftTest.nTest++;
+        fprintf(stderr, "%016lx\n", fftTest.testCase[0].fftInputp[511].word[11]);
 
-        //stop reading at a hashmark
-        if (line[0]=='#')
-            break;
-        if(line_read_size < 0)
-            break;
-        }while(1);
+        fftTest.nTest++;
+    }while(1);
 
     fclose(fp);
 }

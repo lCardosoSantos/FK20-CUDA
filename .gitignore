@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# VIM temporary files
+.*.sw?
+
+# Object files
+*.o
