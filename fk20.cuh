@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-__global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride);
+__global__ void fk20_fft(g1p_t *output, const g1p_t *input);
 
 #endif
 

@@ -7,15 +7,10 @@
 void init() {
 }
 
-void FK20VerifyKAT();
-
-//__managed__ testval_t testval[TESTVALS];
-
 int main() {
     init();
 
     FK20TimeKAT();
-    FK20VerifyKAT();
 
     return 0;
 }

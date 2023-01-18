@@ -267,18 +267,24 @@ __constant__ fr_t roots[256] = {
 
 extern __shared__ g1p_t t[];   // Workspace in shared memory
 
-__global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
-    // No multi-dimensional layout, only one FFT of size 512 for now
+__global__ void fk20_fft(g1p_t *output, const g1p_t *input) {
+    // One FFT of size 512 per thread block
+    // No interleaving of data for different FFTs
 
-    if (gridDim.x  !=   1) return;
     if (gridDim.y  !=   1) return;
     if (gridDim.z  !=   1) return;
     if (blockDim.x != 256) return;
     if (blockDim.y !=   1) return;
     if (blockDim.z !=   1) return;
 
-    unsigned tid = threadIdx.x;  // Thread number
+    unsigned tid = threadIdx.x; // Thread number
+    unsigned bid = blockIdx.x;  // Block number
     unsigned l, r, w, src, dst;
+
+    // Adjust IO pointers to point at each thread block's data
+
+    input  += 512*bid;
+    output += 512*bid;
 
     // Copy inputs to workspace
 
@@ -286,12 +292,12 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
     // dst = 9 last bits of src reversed
     asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(dst) : "r"(src << (32-9)));
 
-    g1p_cpy(t[dst], input[stride*(src)]);
+    g1p_cpy(t[dst], input[src]);
 
-    // Extend input vector
+    src |= 256;
+    dst |= 1;
 
-    dst = 2*tid+1;
-    g1p_inf(t[dst]);
+    g1p_cpy(t[dst], input[src]);
 
     __syncthreads();
 
@@ -398,15 +404,13 @@ __global__ void fk20_fft(g1p_t *output, const g1p_t *input, int stride) {
 
     src = tid;
     dst = src;
-    //asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(r) : "r"(l << (32-9)));
 
-    g1p_cpy(output[stride*dst], t[src]);
-    //printf("%3d -> %3d\n", l, r);
+    g1p_cpy(output[dst], t[src]);
 
     src = tid+256;
     dst = src;
-    //asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(r) : "r"(l << (32-9)));
 
-    g1p_cpy(output[stride*dst], t[src]);
-    //printf("%3d -> %3d\n", l, r);
+    g1p_cpy(output[dst], t[src]);
 }
+
+// vim: ts=4 et sw=4 si
