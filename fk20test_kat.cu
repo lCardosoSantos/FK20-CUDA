@@ -14,8 +14,13 @@
 #include "fk20.cuh"
 #include "fk20test.cuh"
 
+__managed__ fr_t
+    fr_input[512],
+    fr_output[512],
+    fr_correct[512];
+
 __managed__ g1p_t
-    input[512] = {
+    g1p_input[512] = {
         {
             { 0x4ED70B0B3BB6F475, 0x543C6C724550764B, 0xF45D28A1A10ED88B, 0x391AD62D1A1FA355, 0x7B873F56B6C41B8E, 0x18517B106A68E9A9, },
             { 0xF3DB0C4E2ADBE2E2, 0x4CEB21E484447A09, 0x8C5CD2C86101D872, 0x8E155DC5D27CB0C2, 0x4046CD0C83778365, 0x102A8F0080EFCFBC, },
@@ -1300,8 +1305,8 @@ __managed__ g1p_t
         { { 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 } },
         { { 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0 } },
     },
-    output[512],
-    correct[512] = {
+    g1p_output[512],
+    g1p_correct[512] = {
         {
             { 0x4E1C3DC9AF04B6BC, 0x4107AE386420434E, 0x38C5C78E1ECA2919, 0xF632DA3FAFEA2241, 0x76C46F91D25972B8, 0xBFC89358AFC4790, },
             { 0x18CDE90D10453E49, 0xBCDC77C36D1AAC71, 0xC496F6874E2D3CF0, 0x02B0C9497B6007E6, 0x15D925170AF9149B, 0x587ED8B3BEF3AA7, },
@@ -3352,10 +3357,10 @@ __managed__ g1p_t
             { 0x3DDE7E3AD59BF94D, 0xD8DDC89A0E382AD6, 0x169E49BA5785B5CE, 0x93412FE79E58A4A6, 0x7169FBB54DAEFE38, 0x62B9E31F1904971, },
         }
     };
-
+
 ////////////////////////////////////////////////////////////
 
-__global__ void fk20_fft_verify() {
+__global__ void g1p_fft_verify() {
     // 1 thread only
     if ((blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) != 0)
         return;
@@ -3366,24 +3371,163 @@ __global__ void fk20_fft_verify() {
 
     // Check input
 
-    for (int i=0; i<256; i++) {
-        if (!g1p_isPoint(input[i])) {
+    for (int i=0; i<512; i++) {
+        if (!g1p_isPoint(g1p_input[i])) {
             printf("Input %d not on the curve:\n", i);
-            g1p_print("", input[i]);
+            g1p_print("", g1p_input[i]);
             return;
         }
     }
 
     for (int i=0; i<512; i++) {
-        if (g1p_neq(output[i], correct[i])) {
-            printf("\nError at %d\n", i);
-            g1p_print("expected", correct[i]);
-            g1p_print("received", output[i]);
+        if (g1p_neq(g1p_output[i], g1p_correct[i])) {
+            printf("Error at %d\n", i);
+            g1p_print("expected", g1p_correct[i]);
+            g1p_print("received", g1p_output[i]);
             ok = false;
         }
     }
 
-    printf(ok ? "PASS\n" : "FAIL\n");
+    for (int i=0; i<512; i++) {
+        if (!g1p_isPoint(g1p_output[i])) {
+            printf("Output %d not on the curve:\n", i);
+            g1p_print("", g1p_output[i]);
+            return;
+        }
+    }
+
+    printf(ok ? "g1p_fft: PASS\n" : "g1p_fft: FAIL\n");
+}
+
+__global__ void g1p_ift_verify() {
+    // 1 thread only
+    if ((blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) != 0)
+        return;
+
+//  printf("<g1p_ift>\n");
+
+    bool ok = true;
+    g1a_t a;
+
+    //// FFT-512
+
+    // Check input
+
+    for (int i=0; i<512; i++) {
+        if (!g1p_isPoint(g1p_correct[i])) {
+            printf("Input %d not on the curve:\n", i);
+            g1p_print("", g1p_correct[i]);
+            return;
+        }
+    }
+
+    for (int i=0; i<512; i++) {
+        if (g1p_neq(g1p_output[i], g1p_input[i])) {
+            printf("Error at %d\n", i);
+            g1a_fromG1p(a, g1p_input[i]); g1a_print("expected", a);
+            g1a_fromG1p(a, g1p_output[i]); g1a_print("received", a);
+            ok = false;
+        } else {
+//          printf("OK: %3d", i);
+//          g1a_fromG1p(a, g1p_input[i]); g1a_print("\t", a);
+        }
+    }
+
+    printf(ok ? "g1p_ift: PASS\n" : "g1p_ift: FAIL\n");
+}
+
+////////////////////////////////////////////////////////////
+
+__global__ void fr_fft_verify() {
+    // 1 thread only
+    if ((blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) != 0)
+        return;
+
+    bool ok = true;
+
+    //// FFT-512
+
+    for (int i=0; i<512; i++) {
+        if (fr_neq(fr_output[i], fr_correct[i])) {
+            printf("Error at %d\n", i);
+            printf("expected "); fr_print(fr_correct[i]);
+            printf("received "); fr_print(fr_output[i]);
+            ok = false;
+        }
+    }
+
+    printf(ok ? "fr_fft: PASS\n" : "fr_fft: FAIL\n");
+}
+
+__global__ void fr_ift_verify() {
+    // 1 thread only
+    if ((blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) != 0)
+        return;
+
+    printf("<fr_ift>\n");
+
+    bool ok = true;
+
+    //// Inverse FFT-512
+
+    for (int i=0; i<512; i++) {
+        if (fr_neq(fr_output[i], fr_input[i])) {
+            printf("Error at %d\n", i);
+            printf("expected "); fr_print(fr_input[i]);
+            printf("received "); fr_print(fr_output[i]);
+            ok = false;
+        }
+    }
+
+    printf(ok ? "fr_ift: PASS\n" : "fr_ift: FAIL\n");
+}
+
+////////////////////////////////////////////////////////////
+
+__global__ void gen_roots() {
+    fr_t x = { 0x0000000000000001, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 };
+    fr_t y = { 0x33811ea1fe0c65f4, 0x15c1ad4c687f28a2, 0xecfbede342dee7f4, 0x1bb466679a5d88b1 };
+
+    for (int i=0; i<=512; i++) {
+        printf("{ 0x%016lx, 0x%016lx, 0x%016lx, 0x%016lx },\n", x[0], x[1], x[2], x[3]);
+        fr_mul(x, y);
+        fr_reduce4(x);
+    }
+}
+
+__global__ void g1p_fft_test() {
+    g1p_t x, y;
+    fr_t
+        w = { 0x33811ea1fe0c65f4, 0x15c1ad4c687f28a2, 0xecfbede342dee7f4, 0x1bb466679a5d88b1 }, // w
+        i = { 0xfb350dbef02a116e, 0x1c510ebfb4543a3e, 0xf675522e37ad4eca, 0x1907a56e80f82b2d }, // w^-1
+        h = { 0x7fffffff80000001, 0xa9ded2017fff2dff, 0x199cec0404d0ec02, 0x39f6d3a994cebea4 }, // 2**-1
+        hi;
+
+    fr_cpy(hi, h); fr_mul(hi, i);   // hi = h * i = (2w)**-1
+
+    g1p_cpy(x, g1p_input[0]); // g1a_fromG1p(a, x); g1a_print("x =", a);
+    g1p_cpy(y, g1p_input[1]); // g1a_fromG1p(a, y); g1a_print("y =", a);
+
+    // Forward butterfly
+
+    g1p_mul(y, w);      // g1a_fromG1p(a, y); g1a_print("wy =", a);
+    g1p_addsub(x, y);
+                        // g1a_fromG1p(a, x); g1a_print("x+wy =", a);
+                        // g1a_fromG1p(a, y); g1a_print("x-wy =", a);
+
+    // Reverse butterfly
+
+    g1p_addsub(x, y);
+                        // g1a_fromG1p(a, x); g1a_print("2x  =", a);
+                        // g1a_fromG1p(a, y); g1a_print("2wy =", a);
+
+    g1p_mul(x, h);      // g1a_fromG1p(a, x); g1a_print("x =", a);
+    g1p_mul(y, hi);     // g1a_fromG1p(a, y); g1a_print("y =", a);
+
+    if (g1p_eq(x, g1p_input[0]) && g1p_eq(y, g1p_input[1]))
+        printf("g1p_fft_test: PASS\n");
+    else
+        printf("g1p_fft_test: FAIL\n");
 }
 
 ////////////////////////////////////////////////////////////
@@ -3397,31 +3541,44 @@ void FK20TimeKAT() {
     clock_t start, end;
     cudaError_t err;
 
+    bool pass = true;
+
+    g1p_fft_test<<<1, 1>>>();
+
     // Wipe output
 
     for (int i=0; i<512*sizeof(g1p_t); i++)
-        ((char *)output)[i] = 0;
+        ((char *)g1p_output)[i] = 0;
 
-    // Set shared memory size (> 64 KiB, requiring dynamic shared memory)
+    // Set shared memory size (> 48 KiB, requiring dynamic shared memory)
 
-    err = cudaFuncSetAttribute(fk20_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, sharedmem);
+    err = cudaFuncSetAttribute(g1p_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, sharedmem);
+    if (err != cudaSuccess) printf("Error %d (%s)\n", err, cudaGetErrorName(err));
+
+    err = cudaFuncSetAttribute(g1p_ift, cudaFuncAttributeMaxDynamicSharedMemorySize, sharedmem);
     if (err != cudaSuccess) printf("Error %d (%s)\n", err, cudaGetErrorName(err));
 
     // Run timed single-FFT test
 
     start = clock();
-    fk20_fft<<<1, block, sharedmem>>> (output, input);
+    g1p_fft<<<1, block, sharedmem>>> (g1p_output, g1p_input);
     err = cudaDeviceSynchronize();
     end = clock();
 
     // Report timing
 
     if (err != cudaSuccess) printf("Error %d (%s)\n", err, cudaGetErrorName(err));
-    printf("fk20_fft   1: %.3f s\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
+    printf("g1p_fft   1: %.3f s\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
 
-    // Verify result (on GPU)
+    // Verify forward FFT
 
-    fk20_fft_verify<<<1, 1>>>();
+    g1p_fft_verify<<<1, 1>>>();
+    err = cudaDeviceSynchronize();
+
+    // Verify inverse FFT
+
+    g1p_ift<<<1, block, sharedmem>>> (g1p_output, g1p_correct);
+    g1p_ift_verify<<<1, 1>>>();
 
 
     //// Multi-FFT ////
@@ -3438,30 +3595,28 @@ void FK20TimeKAT() {
 
     // Copy input
 
-    for (int i=0; i<grid.x; i++) memcpy(in+i*512, input, fftsize);
+    for (int i=0; i<grid.x; i++) memcpy(in+i*512, g1p_input, fftsize);
 
     // Run timed multi-FFT test
 
     start = clock();
-    fk20_fft<<<grid, block, sharedmem>>> (out, in);
+    g1p_fft<<<grid, block, sharedmem>>> (out, in);
     err = cudaDeviceSynchronize();
     end = clock();
 
     // Verify outputs (on CPU)
 
-    bool pass = true;
-
     for (int i=0; i<grid.x; i++)
-        if (0 != memcmp(out+i*512, output, fftsize)) {
+        if (0 != memcmp(out+i*512, g1p_output, fftsize)) {
             pass = false;
-            printf("Error in FFT %3d\n", i);
+//          printf("Error in FFT %3d\n", i);
         }
 
     // Report timing
 
     if (err != cudaSuccess) printf("Error %d (%s)\n", err, cudaGetErrorName(err));
 
-    printf("fk20_fft %3d: %.3f s\n", grid.x, (end - start) * (1.0 / CLOCKS_PER_SEC));
+    printf("g1p_fft %3d: %.3f s\n", grid.x, (end - start) * (1.0 / CLOCKS_PER_SEC));
     printf("%s\n", pass ? "PASS" : "FAIL");
 
     // Deallocate memory

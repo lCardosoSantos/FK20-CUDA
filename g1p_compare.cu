@@ -5,8 +5,8 @@
 #include "fr.cuh"
 #include "g1.cuh"
 
-// g1p_equal compares one point to another, returns true when equal.
-__device__ bool g1p_equal(g1p_t &p, g1p_t &q) {
+// g1p_eq compares one point to another, returns true when equal.
+__device__ bool g1p_eq(g1p_t &p, g1p_t &q) {
     fp_t px, py, qx, qy;
 
     // (X1/Z1 == X2/Z2) && (Y1/Z1 == Y2/Z2)

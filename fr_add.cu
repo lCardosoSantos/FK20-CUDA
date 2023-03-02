@@ -14,7 +14,7 @@ __device__ void fr_add(fr_t &z, const fr_t &x) {
     "\n\t{"
     "\n\t.reg .u64 t0, t1, t2, t3;"
     "\n\t.reg .u32 cf;"
-    "\n\t.reg .pred cp, bp;"
+    "\n\t.reg .pred cp;"
 
     // z,c = z + x
 

@@ -6,7 +6,10 @@
 
 #include <stdint.h>
 
-__global__ void fk20_fft(g1p_t *output, const g1p_t *input);
+__global__ void g1p_fft(g1p_t *output, const g1p_t *input);
+__global__ void g1p_ift(g1p_t *output, const g1p_t *input);
+__global__ void fr_fft(fr_t *output, const fr_t *input);
+__global__ void fr_ift(fr_t *output, const fr_t *input);
 
 #endif
 
