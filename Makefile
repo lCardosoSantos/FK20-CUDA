@@ -1,11 +1,11 @@
 CXX=g++
-NVCC=nvcc -rdc=true
-NVOPTS=--compile
+NVCC=nvcc -rdc=true -g -G
+NVOPTS=--compile 
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86
-COPTS=-O2
+COPTS= #-O2
 
 FP=fp fp_cpy fp_reduce6 fp_eq fp_neq fp_neg fp_x2 fp_x3 fp_x4 fp_x8 fp_x12 fp_add fp_sub fp_sqr fp_mul fp_inv fp_isone fp_iszero fp_nonzero fp_mma
-FR=fr fr_cpy fr_reduce4 fr_eq fr_neq fr_neg fr_x2 fr_x3 fr_x4 fr_x8 fr_x12 fr_add fr_sub fr_sqr fr_mul fr_inv fr_isone fr_iszero fr_nonzero fr_roots
+FR=fr fr_cpy fr_reduce4 fr_eq fr_neq fr_neg fr_x2 fr_x3 fr_x4 fr_x8 fr_x12 fr_add fr_sub fr_sqr fr_mul fr_inv fr_isone fr_iszero fr_nonzero fr_roots fr_addsub
 G1=g1a g1p g1p_compare g1p_add g1p_dbl g1p_mul g1p_neg g1p_scale g1p_ispoint g1p_sub g1p_addsub
 FK20=fk20_fft
 
@@ -13,6 +13,7 @@ FPTEST=fptest fptest_kat fptest_cmp fptest_mma
 FRTEST=frtest frtest_kat frtest_cmp
 G1TEST=g1test g1test_kat g1test_fibonacci
 FK20TEST=fk20test fk20test_kat
+FFTTEST=fftTest parseFFTTest
 
 FP_OBJS=$(FP:%=%.o)
 FR_OBJS=$(FR:%=%.o)
@@ -28,12 +29,13 @@ FPTEST_OBJS=$(FPTEST:%=%.o)
 FRTEST_OBJS=$(FRTEST:%=%.o)
 G1TEST_OBJS=$(G1TEST:%=%.o)
 FK20TEST_OBJS=$(FK20TEST:%=%.o)
+FFTTEST_OBJS=$(FFTTEST:%=%.o)
 
 OBJS=$(FP_OBJS) $(FR_OBJS) $(G1_OBJS) $(FK20_OBJS)
 CUBIN=$(FP_CUBIN) $(FR_CUBIN) $(G1_CUBIN) $(FK20_CUBIN)
 TEST_OBJS=$(FPTEST_OBJS) $(FRTEST_OBJS) $(G1TEST_OBJS) $(FK20TEST_OBJS)
 
-all: fptest frtest g1test fk20test # $(OBJS) $(TEST_OBJS)
+all: fptest frtest g1test fk20test ffttest# $(OBJS) $(TEST_OBJS)
 
 run: fp-run fr-run g1-run fk20-run
 
@@ -96,6 +98,12 @@ g1test.o: g1test.cu g1.cuh fp.cuh fr.cuh
 fk20test.o: fk20test.cu fk20.cuh g1.cuh fp.cuh fr.cuh
 	$(NVCC) $(COPTS) -o $@ -c $<
 
+parseFFTTest.o: parseFFTTest.c
+	gcc -g3 -ggdb $(COPTS) -o $@ -c $<
+
+ffttest.o: fftTest.cu fk20.cuh g1.cuh fp.cuh fr.cuh parseFFTTest.c
+	$(NVCC) $(COPTS) -o $@ -c $<
+
 fptest: $(FPTEST_OBJS) $(FP_OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
@@ -106,6 +114,9 @@ g1test: $(G1TEST_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
 fk20test: $(FK20TEST_OBJS) $(OBJS)
+	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
+
+ffttest: $(FFTTEST_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
 fp%.cubin: fp%.cu fp.cuh
