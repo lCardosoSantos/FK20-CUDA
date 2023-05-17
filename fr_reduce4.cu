@@ -13,16 +13,16 @@ __device__ void fr_reduce4(fr_t &z) {
     asm volatile (
     "\n\t{"
     "\n\t.reg .u64 t<5>;"
-    "\n\t.reg .pred bp;"
+    "\n\t.reg .pred cp;"
 
     // If z > 2^192*floor(r/2^192), then z -= r
 
-    "\n\tsetp.gt.u64    bp, %3, 0x73EDA753299D7D48U;"
+    "\n\tsetp.gt.u64    cp, %3, 0x73EDA753299D7D48U;"
 
-    "\n@bp\tsub.u64.cc  %0, %0, 0xFFFFFFFF00000001U;"
-    "\n@bp\tsubc.u64.cc %1, %1, 0x53BDA402FFFE5BFEU;"
-    "\n@bp\tsubc.u64.cc %2, %2, 0x3339D80809A1D805U;"
-    "\n@bp\tsubc.u64.cc %3, %3, 0x73EDA753299D7D48U;"
+    "\n@cp\tsub.u64.cc  %0, %0, 0xFFFFFFFF00000001U;"
+    "\n@cp\tsubc.u64.cc %1, %1, 0x53BDA402FFFE5BFEU;"
+    "\n@cp\tsubc.u64.cc %2, %2, 0x3339D80809A1D805U;"
+    "\n@cp\tsubc.u64.cc %3, %3, 0x73EDA753299D7D48U;"
 
     // t = z - r
 
@@ -34,12 +34,12 @@ __device__ void fr_reduce4(fr_t &z) {
 
     // If no underflow, then z = t
 
-    "\n\tsetp.eq.u64    bp, t4, 0;"
+    "\n\tsetp.eq.u64    cp, t4, 0;"
 
-    "\n@bp\tmov.u64     %0, t0;"
-    "\n@bp\tmov.u64     %1, t1;"
-    "\n@bp\tmov.u64     %2, t2;"
-    "\n@bp\tmov.u64     %3, t3;"
+    "\n@cp\tmov.u64     %0, t0;"
+    "\n@cp\tmov.u64     %1, t1;"
+    "\n@cp\tmov.u64     %2, t2;"
+    "\n@cp\tmov.u64     %3, t3;"
 
     "\n\t}"
     :

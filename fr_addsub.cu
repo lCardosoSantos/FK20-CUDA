@@ -2,10 +2,19 @@
 // Copyright 2022-2023 Dag Arne Osvik
 
 #include "fr.cuh"
+#include "fr_add.cuh"
+#include "fr_sub.cuh"
 
 // (x,y) := (x+y,x-y)
 
 __device__ void fr_addsub(fr_t &x, fr_t &y) {
+    unsigned tid = 0;   tid += blockIdx.z;
+    tid *= gridDim.y;   tid += blockIdx.y;
+    tid *= gridDim.x;   tid += blockIdx.x;
+    tid *= blockDim.z;  tid += threadIdx.z;
+    tid *= blockDim.y;  tid += threadIdx.y;
+    tid *= blockDim.x;  tid += threadIdx.x;
+
     uint64_t
         x0 = x[0], y0 = y[0],
         x1 = x[1], y1 = y[1],
@@ -14,66 +23,32 @@ __device__ void fr_addsub(fr_t &x, fr_t &y) {
 
     asm volatile (
     "\n\t{"
-    "\n\t.reg .u64 t<4>;"
-    "\n\t.reg .u32 cf;"
-    "\n\t.reg .pred cp, bp;"
+    "\n\t.reg .u64 t<4>, x<4>, y<4>;"
+    "\n\t.reg .u32 t4;"
+    "\n\t.reg .pred cp;"
 
-    // t,b = x - y
+    "\n\tmov.u64 x0, %0;"
+    "\n\tmov.u64 x1, %1;"
+    "\n\tmov.u64 x2, %2;"
+    "\n\tmov.u64 x3, %3;"
 
-    "\n\tsub.u64.cc  t0, %0,  %4;"
-    "\n\tsubc.u64.cc t1, %1,  %5;"
-    "\n\tsubc.u64.cc t2, %2,  %6;"
-    "\n\tsubc.u64.cc t3, %3,  %7;"
-    "\n\tsubc.u32    cf,  0, 0;" // store carry flag in u32
-    "\n\tsetp.ne.u32 bp, cf, 0;" // store carry flag in borrow predicate
+    "\n\tmov.u64 y0, %4;"
+    "\n\tmov.u64 y1, %5;"
+    "\n\tmov.u64 y2, %6;"
+    "\n\tmov.u64 y3, %7;"
 
-    // if borrow then t += rmmu0
+    FR_ADD(t, x, y)
+    FR_SUB(y, x, y)
 
-    "\n@bp\tadd.u64.cc  t0, t0, 0xFFFFFFFE00000002U;"
-    "\n@bp\taddc.u64.cc t1, t1, 0xA77B4805FFFCB7FDU;"
-    "\n@bp\taddc.u64.cc t2, t2, 0x6673B0101343B00AU;"
-    "\n@bp\taddc.u64.cc t3, t3, 0xE7DB4EA6533AFA90U;"
-    "\n@bp\taddc.u32    cf,  0, 0;"
-    "\n@bp\tsetp.eq.and.u32 bp, cf, 0, bp;" // bp = bp & (cf ? 0 : 1)
+    "\n\tmov.u64 %0, t0;"
+    "\n\tmov.u64 %1, t1;"
+    "\n\tmov.u64 %2, t2;"
+    "\n\tmov.u64 %3, t3;"
 
-    // if not carry then t += r
-
-    "\n@bp\tadd.u64.cc  t0, t0, 0xFFFFFFFF00000001U;"
-    "\n@bp\taddc.u64.cc t1, t1, 0x53BDA402FFFE5BFEU;"
-    "\n@bp\taddc.u64.cc t2, t2, 0x3339D80809A1D805U;"
-    "\n@bp\taddc.u64    t3, t3, 0x73EDA753299D7D48U;"
-
-    // x,c = x + y
-
-    "\n\tadd.u64.cc  %0, %0,  %4;"
-    "\n\taddc.u64.cc %1, %1,  %5;"
-    "\n\taddc.u64.cc %2, %2,  %6;"
-    "\n\taddc.u64.cc %3, %3,  %7;"
-    "\n\taddc.u32    cf,  0, 0;" // store carry flag in u32
-    "\n\tsetp.ne.u32 cp, cf, 0;" // store carry flag in carry predicate
-
-    // if carry then x -= rmmu0
-
-    "\n@cp\tsub.u64.cc  %0, %0, 0xFFFFFFFE00000002U;"
-    "\n@cp\tsubc.u64.cc %1, %1, 0xA77B4805FFFCB7FDU;"
-    "\n@cp\tsubc.u64.cc %2, %2, 0x6673B0101343B00AU;"
-    "\n@cp\tsubc.u64.cc %3, %3, 0xE7DB4EA6533AFA90U;"
-    "\n@cp\tsubc.u32    cf,  0, 0;"
-    "\n@cp\tsetp.eq.and.u32 cp, cf, 0, cp;" // cp = cp & (cf ? 0 : 1)
-
-    // if not borrow then x -= r
-
-    "\n@cp\tsub.u64.cc  %0, %0, 0xFFFFFFFF00000001U;"
-    "\n@cp\tsubc.u64.cc %1, %1, 0x53BDA402FFFE5BFEU;"
-    "\n@cp\tsubc.u64.cc %2, %2, 0x3339D80809A1D805U;"
-    "\n@cp\tsubc.u64    %3, %3, 0x73EDA753299D7D48U;"
-
-    // y = t
-
-    "\n@bp\tmov.u64 %4, t0;"
-    "\n@bp\tmov.u64 %5, t1;"
-    "\n@bp\tmov.u64 %6, t2;"
-    "\n@bp\tmov.u64 %7, t3;"
+    "\n\tmov.u64 %4, y0;"
+    "\n\tmov.u64 %5, y1;"
+    "\n\tmov.u64 %6, y2;"
+    "\n\tmov.u64 %7, y3;"
 
     "\n\t}"
     :

@@ -17,8 +17,31 @@ __device__ void fr_one(fr_t &z) {
 }
 
 __device__ void fr_print(const fr_t &x) {
-    printf("%016lx%016lx%016lx%016lx\n",
-    x[3], x[2], x[1], x[0]);
+    fr_t t;
+    fr_cpy(t, x);
+    fr_reduce4(t);
+//  printf("#x%016lx%016lx%016lx%016lx\n",  // clisp
+    printf("%016lX%016lX%016lX%016lX\n",    // dc
+//  printf("0x%016lx%016lx%016lx%016lx\n",  // python
+    t[3], t[2], t[1], t[0]);
+}
+
+////////////////////////////////////////////////////////////
+
+__global__ void fr_eq_wrapper(uint8_t *eq, int count, const fr_t *x, const fr_t *y) {
+
+    unsigned tid = 0;   tid += blockIdx.z;
+    tid *= gridDim.y;   tid += blockIdx.y;
+    tid *= gridDim.x;   tid += blockIdx.x;
+    tid *= blockDim.z;  tid += threadIdx.z;
+    tid *= blockDim.y;  tid += threadIdx.y;
+    tid *= blockDim.x;  tid += threadIdx.x;
+
+    unsigned step = gridDim.z * gridDim.y * gridDim.x
+                * blockDim.z * blockDim.y * blockDim.x;
+
+    for (unsigned i=tid; i<count; i+=step)
+        eq[i] = fr_eq(x[i], y[i]) ? 1 : 0;
 }
 
 // vim: ts=4 et sw=4 si

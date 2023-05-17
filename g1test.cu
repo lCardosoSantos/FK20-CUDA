@@ -55,8 +55,8 @@ int main() {
 
     init();
 
-    TEST(G1TestKAT);
     TEST(G1TestFibonacci);
+    TEST(G1TestKAT);
 
     return err;
 }

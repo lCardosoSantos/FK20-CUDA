@@ -8,18 +8,20 @@
 
 #include "fr.cuh"
 
-#define TESTVALS 768
+#define TESTVALS 576
 
-typedef struct {
-    uint64_t val[4];
-} testval_t;
+typedef fr_t testval_t;
+
+void FrTestFFT();
 
 #define TESTFUN(X) extern __global__ void X(testval_t *testval)
 
 TESTFUN(FrTestKAT);
+TESTFUN(FrTestFibonacci);
 TESTFUN(FrTestCmp);
+TESTFUN(FrTestSub);
+TESTFUN(FrTestAddSub);
 TESTFUN(FrTestCopy);
-TESTFUN(FrTestEqNeq);
 TESTFUN(FrTestReflexivity);
 TESTFUN(FrTestSymmetry);
 TESTFUN(FrTestAdditiveIdentity);
@@ -30,8 +32,10 @@ TESTFUN(FrTestCommutativeAdd);
 TESTFUN(FrTestCommutativeMul);
 TESTFUN(FrTestAssociativeAdd);
 TESTFUN(FrTestAssociativeMul);
-TESTFUN(FrTestDistributiveLeft);
-TESTFUN(FrTestDistributiveRight);
+TESTFUN(FrTestAddDistributiveLeft);
+TESTFUN(FrTestAddDistributiveRight);
+TESTFUN(FrTestSubDistributiveLeft);
+TESTFUN(FrTestSubDistributiveRight);
 TESTFUN(FrTestDouble);
 TESTFUN(FrTestSquare);
 

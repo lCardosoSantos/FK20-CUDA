@@ -18,12 +18,13 @@ __device__ void g1a_fromFp(g1a_t &a, const fp_t &x, const fp_t &y) {
 }
 
 __device__ void g1a_fromG1p(g1a_t &a, const g1p_t &p) {
-    fp_t inv;
 
-    fp_inv(inv, p.z);
+    // uses a.y as temporary storage for the inverse
 
-    fp_mul(a.x, p.x, inv);
-    fp_mul(a.y, p.y, inv);
+    fp_inv(a.y, p.z);
+
+    fp_mul(a.x, p.x, a.y);
+    fp_mul(a.y, p.y, a.y);
 }
 
 __device__ void g1a_cpy(g1a_t &a, const g1a_t &b) {
@@ -31,10 +32,12 @@ __device__ void g1a_cpy(g1a_t &a, const g1a_t &b) {
     fp_cpy(a.y, b.y);
 }
 
-__device__ void g1a_print(const char *s, const g1a_t &a) {
-    printf("%s ", s);
-    printf("0x%016lx%016lx%016lx%016lx%016lx%016lx ",  a.x[5], a.x[4], a.x[3], a.x[2], a.x[1], a.x[0]);
-    printf("0x%016lx%016lx%016lx%016lx%016lx%016lx\n", a.y[5], a.y[4], a.y[3], a.y[2], a.y[1], a.y[0]);
+__device__ __host__ void g1a_print(const char *s, const g1a_t &a) {
+//  printf("%s #x%016lx%016lx%016lx%016lx%016lx%016lx #x%016lx%016lx%016lx%016lx%016lx%016lx\n", s, // clisp
+    printf("%s %016lX%016lX%016lX%016lX%016lX%016lX %016lX%016lX%016lX%016lX%016lX%016lX\n", s, // dc
+//  printf("%s 0x%016lx%016lx%016lx%016lx%016lx%016lx 0x%016lx%016lx%016lx%016lx%016lx%016lx\n", s, // python
+    a.x[5], a.x[4], a.x[3], a.x[2], a.x[1], a.x[0],
+    a.y[5], a.y[4], a.y[3], a.y[2], a.y[1], a.y[0]);
 }
 
 

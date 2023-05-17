@@ -24,7 +24,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x362aedb2cbb4e15f, 0xb26d4e38e2068ff5, 0x32fa2230c45f3875, 0xdbd975eb0f0b10e3, 0xd69dbc9539ca9a98, 0x3c9fe7c9da36fc18 },
             };
 
-        __shared__ uint64_t t[6];
+        uint64_t t[6];
 
         for (int i=0; pass && (i<2); i++) {
             fp_cpy(t, q[i]);
@@ -67,7 +67,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x65df0ff47d44d4d6, 0x427d3986383ff97e, 0xdc6735b21672001a, 0x24193f0df2b4dd97, 0x7bebcef4b855a478, 0x0d576a4938303138 },
             };
 
-        __shared__ fp_t t;
+        fp_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fp_cpy(t, q[i]);
@@ -104,12 +104,12 @@ __global__ void FpTestKAT(testval_t *) {
             };
 
         for (int i=0; pass && i<4; i++) {
-            __shared__ uint64_t x[6];
+            uint64_t x[6];
 
             fp_cpy(x, t[i]);
 
             for (int j=0; pass && j<4; j++) {
-                __shared__ uint64_t y[6];
+                uint64_t y[6];
 
                 fp_cpy(y, u[j]);
 
@@ -232,7 +232,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0xef98701e7cd40b3d, 0x50b2de8856980a24, 0x84f155ea9b27db3f, 0xd41cbdd1fbe2d3a8, 0x712dfe598ff8a611, 0x0b13b5da10d44150 },
             };
 
-        __shared__ fp_t t;
+        fp_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fp_neg(t, q[i]);
@@ -284,7 +284,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x2bed557200c684b7, 0xd24d28d38879bfc0, 0x2f552779366e0488, 0x0a4d91741378dcae, 0x92adb5976611b0e8, 0x0b59cf427ccb81ab },
             };
 
-        __shared__ fp_t t;
+        fp_t t;
 
         for (int i=0; pass && (i<9); i++) {
             fp_x2(t, q[i]);
@@ -335,7 +335,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0xE66FB3D2C35921C5, 0xF1786F53AA0B7ACC, 0x2644172BE1A39C86, 0x0D6EBC19FFA86A74, 0x177A82DC49ADB63A, 0x18473646575963CE },
             };
 
-        __shared__ fp_t t;
+        fp_t t;
 
         for (int i=0; pass && (i<9); i++) {
             fp_x3(t, q[i]);
@@ -394,7 +394,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x351907a2eba412f7, 0xd78b64942663fe26, 0xd9581d9b702dda88, 0x0799be6202923ce4, 0xfe514c2ddd0d8ecb, 0x193c7d04d197f2e5 },
             };
 
-        __shared__ fp_t t;
+        fp_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fp_cpy(t, x[i]);
@@ -456,7 +456,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0xe2c19497665be498, 0xf75ef283419f4e2d, 0x5b1c8410933fe6e0, 0xa6287af0dc6d8fc3, 0x3fbbd201d070bb63, 0x094ec0558da4219b },
             };
 
-        __shared__ uint64_t t[6];
+        uint64_t t[6];
 
         for (int i=0; pass && (i<8); i++) {
             fp_cpy(t, x[i]);
@@ -508,7 +508,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0xcd07fb540a8570bc, 0x60f82168ad689e4a, 0xb0c7f9ac3d394ce3, 0xa558401dfa315d8f, 0xa2dbbc76eaeb3da3, 0x0996d53b8bac8ef4 },
             };
 
-        __shared__ uint64_t t[6];
+        uint64_t t[6];
 
         for (int i=0; pass && (i<8); i++) {
             fp_cpy(t, q[i]);
@@ -569,7 +569,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x5f939b44f29e11d6, 0xcf44a5cff9efcb4a, 0x6659ba0622225dd6, 0xf39d2be3fac1a543, 0x8518de69b37ad17f, 0x07ba6ec3062b23d3 },
             };
 
-        __shared__ uint64_t t[6];
+        uint64_t t[6];
 
         for (int i=0; pass && (i<8); i++) {
             fp_cpy(t, x[i]);
@@ -621,7 +621,7 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x5FB388A220997B22, 0x6FDD9EEF36C6EF99, 0x2B0E3C9B46BEE64D, 0xFBAE3CCB5C9D6AE7, 0xFFFCB6D3F89BB725, 0x0EC41F3C16BB37FF },
             };
 
-        __shared__ fp_t t;
+        fp_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fp_inv(t, q[i]);

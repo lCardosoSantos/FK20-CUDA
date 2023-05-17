@@ -8,7 +8,7 @@
 
 #include "fp.cuh"
 
-#define TESTVALS 896
+#define TESTVALS 928
 
 typedef struct {
     fp_t val;
@@ -19,7 +19,10 @@ typedef struct {
 TESTFUN(FpTestKAT);
 TESTFUN(FpTestCmp);
 TESTFUN(FpTestMMA);
+TESTFUN(FpTestAdd);
+TESTFUN(FpTestSub);
 TESTFUN(FpTestMul);
+TESTFUN(FpTestInv);
 TESTFUN(FpTestCopy);
 TESTFUN(FpTestEqNeq);
 TESTFUN(FpTestReflexivity);

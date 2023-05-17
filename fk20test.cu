@@ -1,16 +1,12 @@
 // bls12_381: Arithmetic for BLS12-381
 // Copyright 2022 Dag Arne Osvik
 
-#include "g1.cuh"
 #include "fk20test.cuh"
 
-void init() {
-}
-
 int main() {
-    init();
 
-    FK20TimeKAT();
+    FK20TestPoly();
+    FK20TestFFT();
 
     return 0;
 }

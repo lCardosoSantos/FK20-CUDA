@@ -4,25 +4,15 @@
 #ifndef FK20_TEST_CUH
 #define FK20_TEST_CUH
 
-#include <stdio.h>
+// Shared memory sizes
 
-#include "g1.cuh"
-#include "fk20.cuh"
+const size_t g1p_sharedmem = 512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
+const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes/word = 16 KiB
 
-/*
-#define TESTVALS 256
+// Tests
 
-typedef struct {
-    fp_t in[256];
-    fp_t out[256];
-} fft_testval_t;
-*/
-
-//#define TESTFUN(X) extern __global__ void X(testval_t *testval)
-#define TESTFUN(X) extern void X()
-
-TESTFUN(FK20TimeKAT);
-TESTFUN(FK20VerifyKAT);
+void FK20TestFFT();
+void FK20TestPoly();
 
 #endif // FK20_TEST_CUH
 

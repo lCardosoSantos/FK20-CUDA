@@ -1,12 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
 // Copyright 2022 Dag Arne Osvik
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
 #include "fp.cuh"
 #include "fptest.cuh"
 
@@ -73,9 +67,9 @@ void init() {
         return;
 
     size_t result = fread(&testval[i], sizeof(testval_t), TESTVALS-i, pf);
-
-    // Print all the random values
 #if 0
+    // Print all the random values
+
     for (int j=i; j<TESTVALS; j++) {
         auto t = &testval[j];
         printf("0x%016lx%016lx%016lx%016lx%016lx%016lx\n",
@@ -102,19 +96,25 @@ int main() {
 
     init();
 
-    dim3 block(1,1,1);
+    dim3 block = 1;
 
     TEST(FpTestKAT);
 
-    sleep(1);
+    err = cudaDeviceSynchronize();
 
-    if (err != cudaSuccess)
+    if (err != cudaSuccess) {
         fprintf(stderr, "Error %d\n", err);
+        return err;
+    }
 
     TEST(FpTestCmp);
     TEST(FpTestMMA);
-    /*
+
+    TEST(FpTestInv);
+    TEST(FpTestAdd);
+    TEST(FpTestSub);
     TEST(FpTestMul);
+    /*
     TEST(FpTestCopy);
     TEST(FpTestNeg);
     TEST(FpTestDouble);
@@ -123,7 +123,6 @@ int main() {
     TEST(FpTestSub);
     TEST(FpTestSquare);
     TEST(FpTestMul);
-    TEST(FpTestInv);
 
     TEST(FpTestReflexivity);
     TEST(FpTestSymmetry);
@@ -138,8 +137,6 @@ int main() {
     TEST(FpTestDistributiveLeft);
     TEST(FpTestDistributiveRight);
 */
-    sleep(1);
-
     err = cudaDeviceSynchronize();
 
     if (err != cudaSuccess)

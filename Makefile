@@ -1,19 +1,20 @@
 CXX=g++
-NVCC=nvcc -rdc=true -g -G
-NVOPTS=--compile 
+NVCC=nvcc -rdc=true #-g -G
+NVOPTS=--compile
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86
 COPTS= #-O2
 
 FP=fp fp_cpy fp_reduce6 fp_eq fp_neq fp_neg fp_x2 fp_x3 fp_x4 fp_x8 fp_x12 fp_add fp_sub fp_sqr fp_mul fp_inv fp_isone fp_iszero fp_nonzero fp_mma
-FR=fr fr_cpy fr_reduce4 fr_eq fr_neq fr_neg fr_x2 fr_x3 fr_x4 fr_x8 fr_x12 fr_add fr_sub fr_sqr fr_mul fr_inv fr_isone fr_iszero fr_nonzero fr_roots fr_addsub
-G1=g1a g1p g1p_compare g1p_add g1p_dbl g1p_mul g1p_neg g1p_scale g1p_ispoint g1p_sub g1p_addsub
-FK20=fk20_fft
+FR=fr fr_cpy fr_reduce4 fr_eq fr_neq fr_neg fr_x2 fr_x3 fr_x4 fr_x8 fr_x12 fr_add fr_sub fr_sqr fr_mul fr_inv fr_isone fr_iszero fr_nonzero fr_roots fr_fft fr_addsub
+G1=g1a g1p g1p_compare g1p_add g1p_dbl g1p_mul g1p_neg g1p_scale g1p_ispoint g1p_sub g1p_addsub g1p_fft
+FK20=fk20
 
-FPTEST=fptest fptest_kat fptest_cmp fptest_mma
-FRTEST=frtest frtest_kat frtest_cmp
+FPTEST=fptest fptest_kat fptest_cmp fptest_mma fptest_inv fptest_add fptest_sub fptest_mul
+FRTEST=frtest frtest_kat frtest_cmp frtest_add frtest_mul frtest_sub frtest_addsub frtest_fibonacci frtest_distributive frtest_fft
 G1TEST=g1test g1test_kat g1test_fibonacci
 FK20TEST=fk20test fk20test_kat
 FFTTEST=fftTest parseFFTTest
+FK20TEST=fk20test_fft fk20test fk20test_poly fk20_testvector
 
 FP_OBJS=$(FP:%=%.o)
 FR_OBJS=$(FR:%=%.o)
@@ -87,16 +88,16 @@ frtest_%.o: frtest_%.cu frtest.cuh
 	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $<
 
 fptest.o: fptest.cu fp.cuh
-	$(NVCC) $(COPTS) -o $@ -c $<
+	$(NVCC) $(NVOPTS) -o $@ -c $<
 
 frtest.o: frtest.cu fr.cuh
-	$(NVCC) $(COPTS) -o $@ -c $<
+	$(NVCC) $(NVOPTS) -o $@ -c $<
 
 g1test.o: g1test.cu g1.cuh fp.cuh fr.cuh
-	$(NVCC) $(COPTS) -o $@ -c $<
+	$(NVCC) $(NVOPTS) -o $@ -c $<
 
 fk20test.o: fk20test.cu fk20.cuh g1.cuh fp.cuh fr.cuh
-	$(NVCC) $(COPTS) -o $@ -c $<
+	$(NVCC) $(NVOPTS) -o $@ -c $<
 
 parseFFTTest.o: parseFFTTest.c
 	gcc -g3 -ggdb $(COPTS) -o $@ -c $<
