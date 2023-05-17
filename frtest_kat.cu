@@ -24,7 +24,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x32fa2230c45f3875, 0xdbd975eb0f0b10e3, 0xd69dbc9539ca9a98, 0x3c9fe7c9da36fc18 },
             };
 
-        __shared__ fr_t t;
+        fr_t t;
 
         for (int i=0; pass && (i<2); i++) {
             fr_cpy(t, q[i]);
@@ -73,7 +73,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x792a8036f135d8a9, 0x6238c91ec0cacc96, 0x752095c5bbe27fd0, 0x016e0a9ef4924e59 },
             };
 
-        __shared__ fr_t t;
+        fr_t t;
 
         for (int i=0; pass && (i<11); i++) {
             fr_cpy(t, q[i]);
@@ -110,12 +110,12 @@ __global__ void FrTestKAT(testval_t *) {
             };
 
         for (int i=0; pass && i<4; i++) {
-            __shared__ fr_t x;
+            fr_t x;
 
             fr_cpy(x, t[i]);
 
             for (int j=0; pass && j<4; j++) {
-                __shared__ fr_t y;
+                fr_t y;
 
                 fr_cpy(y, u[j]);
 
@@ -238,7 +238,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0xa30f6e302ad4a6e9, 0x987d038382c84eb3, 0x757967c6377060af, 0x5c1bb2b9ea017ff6 },
             };
 
-        __shared__ fr_t t;
+        fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fr_cpy(t, q[i]);
@@ -254,11 +254,8 @@ __global__ void FrTestKAT(testval_t *) {
                 printf("%d: 0x%016lx%016lx%016lx%016lx\n", i,
                 q[i][3], q[i][2], q[i][1], q[i][0]);
 
-                printf("Expected 0x%016lx%016lx%016lx%016lx\n",
-                a[i][3], a[i][2], a[i][1], a[i][0]);
-
-                printf("Received 0x%016lx%016lx%016lx%016lx\n",
-                t[3], t[2], t[1], t[0]);
+                printf("Expected "); fr_print(a[i]);
+                printf("Received "); fr_print(t);
         }
 
             ++count;
@@ -290,7 +287,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0xc56bffd04e49d1ea, 0x8f83d8b1de182b35, 0xb63995483f4f1b64, 0x09932429982e5cef },
             };
 
-        __shared__ fr_t t;
+        fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fr_cpy(t, q[i]);
@@ -305,11 +302,8 @@ __global__ void FrTestKAT(testval_t *) {
                 printf("2 * 0x%016lx%016lx%016lx%016lx\n",
                 q[i][3], q[i][2], q[i][1], q[i][0]);
 
-                printf("Expected 0x%016lx%016lx%016lx%016lx\n",
-                a[i][3], a[i][2], a[i][1], a[i][0]);
-
-                printf("Received 0x%016lx%016lx%016lx%016lx\n",
-                t[3], t[2], t[1], t[0]);
+                printf("Expected "); fr_print(a[i]);
+                printf("Received "); fr_print(t);
             }
 
             ++count;
@@ -341,7 +335,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x9a4c8fdb76d8e4cd, 0xe78981659a2b5e70, 0x9d4f85a2adfe1827, 0x425ce5aa5fdd70ab },
             };
 
-        __shared__ fr_t t;
+        fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fr_cpy(t, q[i]);
@@ -356,11 +350,8 @@ __global__ void FrTestKAT(testval_t *) {
                 printf("3 * 0x%016lx%016lx%016lx%016lx\n",
                 q[i][3], q[i][2], q[i][1], q[i][0]);
 
-                printf("Expected 0x%016lx%016lx%016lx%016lx\n",
-                a[i][3], a[i][2], a[i][1], a[i][0]);
-
-                printf("Received 0x%016lx%016lx%016lx%016lx\n",
-                t[3], t[2], t[1], t[0]);
+                printf("Expected "); fr_print(a[i]);
+                printf("Received "); fr_print(t);
             }
 
             ++count;
@@ -402,27 +393,22 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x9f4c89bf301675ef, 0x11327bd8ce7e536b, 0xb75d53243dbc7e16, 0x7146cdb6baeec95e },
             };
 
-        __shared__ fr_t t;
+        fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fr_cpy(t, x[i]);
-
             fr_add(t, y[i]);
 
-            if (fr_neq(t, a[i]))
+            if (fr_neq(t, a[i])) {
                 pass = false;
 
-            if (!pass) {
                 printf("fr_add: FAIL\n");
                 printf("0x%016lx%016lx%016lx%016lx + 0x%016lx%016lx%016lx%016lx\n",
                 x[i][3], x[i][2], x[i][1], x[i][0],
                 y[i][3], y[i][2], y[i][1], y[i][0]);
 
-                printf("Expected 0x%016lx%016lx%016lx%016lx\n",
-                a[i][3], a[i][2], a[i][1], a[i][0]);
-
-                printf("Received 0x%016lx%016lx%016lx%016lx\n",
-                t[3], t[2], t[1], t[0]);
+                printf("Expected "); fr_print(a[i]);
+                printf("Received "); fr_print(t);
             }
 
             ++count;
@@ -464,7 +450,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x8b5419e8ad23a29f, 0xb746189120eb1b98, 0x9c7cf4899e06ed7f, 0x5f10a13564b4b596 },
             };
 
-        __shared__ fr_t t;
+        fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fr_cpy(t, x[i]);
@@ -480,11 +466,8 @@ __global__ void FrTestKAT(testval_t *) {
                 x[i][5], x[i][4], x[i][3], x[i][2], x[i][1], x[i][0],
                 y[i][5], y[i][4], y[i][3], y[i][2], y[i][1], y[i][0]);
 
-                printf("Expected 0x%016lx%016lx%016lx%016lx%016lx%016lx\n",
-                a[i][5], a[i][4], a[i][3], a[i][2], a[i][1], a[i][0]);
-
-                printf("Received 0x%016lx%016lx%016lx%016lx%016lx%016lx\n",
-                t[5], t[4], t[3], t[2], t[1], t[0]);
+                printf("Expected "); fr_print(a[i]);
+                printf("Received "); fr_print(t);
             }
 
             ++count;
@@ -516,7 +499,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x6c88a33e467d0436, 0x68de5bc32cb4b83d, 0x87e0d71ed13a8549, 0x0c6657a5ee1898ca },
             };
 
-        __shared__ fr_t t;
+        fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fr_cpy(t, q[i]);
@@ -531,11 +514,8 @@ __global__ void FrTestKAT(testval_t *) {
                 printf("0x%016lx%016lx%016lx%016lx^2\n",
                 q[i][3], q[i][2], q[i][1], q[i][0]);
 
-                printf("Expected 0x%016lx%016lx%016lx%016lx\n",
-                a[i][3], a[i][2], a[i][1], a[i][0]);
-
-                printf("Received 0x%016lx%016lx%016lx%016lx\n",
-                t[3], t[2], t[1], t[0]);
+                printf("Expected "); fr_print(a[i]);
+                printf("Received "); fr_print(t);
             }
 
             ++count;
@@ -580,7 +560,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0xeebf0c03fa747eda, 0xafc7b13da6bc9a96, 0x64474081d06f67a7, 0x5cbedc589398f590 },
             };
 
-        __shared__ fr_t t;
+        fr_t t;
 
         for (int i=0; pass && (i<9); i++) {
             fr_cpy(t, x[i]);
@@ -596,11 +576,8 @@ __global__ void FrTestKAT(testval_t *) {
                 x[i][3], x[i][2], x[i][1], x[i][0],
                 y[i][3], y[i][2], y[i][1], y[i][0]);
 
-                printf("Expected 0x%016lx%016lx%016lx%016lx\n",
-                a[i][3], a[i][2], a[i][1], a[i][0]);
-
-                printf("Received 0x%016lx%016lx%016lx%016lx\n",
-                t[3], t[2], t[1], t[0]);
+                printf("Expected "); fr_print(a[i]);
+                printf("Received "); fr_print(t);
             }
 
             ++count;
@@ -632,7 +609,7 @@ __global__ void FrTestKAT(testval_t *) {
                 { 0x6abb0a53dcaacf19, 0x8f9169fb559d59c1, 0xfc2bb52133daa733, 0x6476eac140621485 },
             };
 
-        __shared__ fr_t t;
+        fr_t t;
 
         for (int i=0; pass && (i<8); i++) {
             fr_cpy(t, q[i]);
@@ -649,11 +626,8 @@ __global__ void FrTestKAT(testval_t *) {
                 printf("1 / 0x%016lx%016lx%016lx%016lx\n",
                 q[i][3], q[i][2], q[i][1], q[i][0]);
 
-                printf("Expected 0x%016lx%016lx%016lx%016lx\n",
-                a[i][3], a[i][2], a[i][1], a[i][0]);
-
-                printf("Received 0x%016lx%016lx%016lx%016lx\n",
-                t[3], t[2], t[1], t[0]);
+                printf("Expected "); fr_print(a[i]);
+                printf("Received "); fr_print(t);
             }
 
             ++count;

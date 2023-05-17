@@ -37,6 +37,17 @@ extern __device__ bool fr_isone(const fr_t &x);
 
 extern __device__ void fr_print(const fr_t &x);
 
+// Device-side FFT functions
+
+extern __device__ void fr_fft(fr_t *output, const fr_t *input);
+extern __device__ void fr_ift(fr_t *output, const fr_t *input);
+
+// Kernel wrappers for device-side FFT functions
+
+__global__ void fr_fft_wrapper(fr_t *output, const fr_t *input);
+__global__ void fr_ift_wrapper(fr_t *output, const fr_t *input);
+__global__ void fr_eq_wrapper(uint8_t *eq, int count, const fr_t *x, const fr_t *y);
+
 #endif
 
 // vim: ts=4 et sw=4 si

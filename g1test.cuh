@@ -4,8 +4,6 @@
 #ifndef G1_TEST_CUH
 #define G1_TEST_CUH
 
-#include <stdio.h>
-
 #include "g1.cuh"
 
 #define TESTVALS 256

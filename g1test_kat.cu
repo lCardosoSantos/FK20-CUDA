@@ -7,6 +7,11 @@
 #include "g1test.cuh"
 
 __managed__ g1p_t
+    g1p_x0 = {
+        { 0, 0, 0, 0, 0, 0 },
+        { 1, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 0, 0, 0 },
+    },
     g1p_x2 = {
         { 0x8a13c2b29f4325ad, 0x7803e16723f9f147, 0x6e7f23d4350c60bd, 0x062e48a6104cc52f, 0x9b6d4dac3f33e92c, 0x05dff4ac6726c6cb, }, // 0x05dff4ac6726c6cb9b6d4dac3f33e92c062e48a6104cc52f6e7f23d4350c60bd7803e16723f9f1478a13c2b29f4325ad
         { 0x2aa4d8e1b1df7ca5, 0x599a8782a1bea48a, 0x395952af0b6a0dbd, 0xd6093a00bb3e2bc9, 0x3c604c0410e5fc01, 0x14e4b429606d02bc, }, // 0x14e4b429606d02bc3c604c0410e5fc01d6093a00bb3e2bc9395952af0b6a0dbd599a8782a1bea48a2aa4d8e1b1df7ca5
@@ -37,6 +42,20 @@ __global__ void G1TestKAT(testval_t *) {
 
     g1p_t p, q, r;
 
+    // 0=0
+
+    if (pass) {
+
+        g1p_inf(p);     // p  = 0
+
+        if (g1p_neq(p, g1p_x0)) {
+            pass = false;
+
+            g1p_print("0=0: FAIL: 0 != ", p);
+        }
+        ++count;
+    }
+
     // 0+0
 
     if (pass) {
@@ -49,6 +68,27 @@ __global__ void G1TestKAT(testval_t *) {
             pass = false;
 
             g1p_print("0+0: FAIL: 0 != ", p);
+        }
+        ++count;
+    }
+
+    // G+0 = 0+G = G
+
+    if (pass) {
+
+        g1p_inf(p);         // p  = 0
+        g1p_gen(q);         // q  = G
+        g1p_gen(r);         // r  = G
+
+        g1p_add(p, q);      // p += G
+        g1p_add(q, g1p_x0); // q += 0
+
+        if (g1p_neq(p, r) || g1p_neq(q, r)) {
+            pass = false;
+
+            g1p_print("0+G: = ", p);
+            g1p_print("G+0: = ", q);
+            g1p_print("  G: = ", r);
         }
         ++count;
     }

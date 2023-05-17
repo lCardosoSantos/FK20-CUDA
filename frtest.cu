@@ -1,11 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
 // Copyright 2022 Dag Arne Osvik
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "fr.cuh"
 #include "frtest.cuh"
 
@@ -24,36 +19,40 @@ void init() {
     int i = 0;
 
     for (int j=0; j<TESTVALS; j++) {
-        testval[j].val[0] = 0;
-        testval[j].val[1] = 0;
-        testval[j].val[2] = 0;
-        testval[j].val[3] = 0;
+        testval[j][0] = 0;
+        testval[j][1] = 0;
+        testval[j][2] = 0;
+        testval[j][3] = 0;
     }
 
     {
-        testval_t t = { p0, p1, p2, p3 };
-        testval[i] = t;
+        testval[i][0] = p0;
+        testval[i][1] = p1;
+        testval[i][2] = p2;
+        testval[i][3] = p3;
     }
     i++;
 
     {
-        testval_t t = { ~p0, ~p1, ~p2, ~p3 };
-        testval[i] = t;
+        testval[i][0] = ~p0;
+        testval[i][1] = ~p1;
+        testval[i][2] = ~p2;
+        testval[i][3] = ~p3;
     }
     i++;
 
     i++;    // The third value is 0
 
-    for (int j=0; j<64; i++,j++) { testval[i].val[0] = 1ULL << j; }
-    for (int j=0; j<64; i++,j++) { testval[i].val[1] = 1ULL << j; }
-    for (int j=0; j<64; i++,j++) { testval[i].val[2] = 1ULL << j; }
-    for (int j=0; j<64; i++,j++) { testval[i].val[3] = 1ULL << j; }
+    for (int j=0; j<64; i++,j++) { testval[i][0] = 1ULL << j; }
+    for (int j=0; j<64; i++,j++) { testval[i][1] = 1ULL << j; }
+    for (int j=0; j<64; i++,j++) { testval[i][2] = 1ULL << j; }
+    for (int j=0; j<64; i++,j++) { testval[i][3] = 1ULL << j; }
 
     for (int j=2; j<258; i++,j++) {
-        testval[i].val[0] = ~testval[j].val[0];
-        testval[i].val[1] = ~testval[j].val[1];
-        testval[i].val[2] = ~testval[j].val[2];
-        testval[i].val[3] = ~testval[j].val[3];
+        testval[i][0] = ~testval[j][0];
+        testval[i][1] = ~testval[j][1];
+        testval[i][2] = ~testval[j][2];
+        testval[i][3] = ~testval[j][3];
     }
 
     FILE *pf = fopen("/dev/urandom", "r");
@@ -94,16 +93,30 @@ int main() {
 
     dim3 block(1,1,1);
 
+    FrTestFFT();
+
     TEST(FrTestKAT);
     TEST(FrTestCmp);
+    TEST(FrTestCommutativeAdd);
+    TEST(FrTestSub);
+    TEST(FrTestCommutativeMul);
+    TEST(FrTestFibonacci);
+    TEST(FrTestAddSub);
+    TEST(FrTestAssociativeAdd);
+    TEST(FrTestAssociativeMul);
+    TEST(FrTestAddDistributiveLeft);
+    TEST(FrTestAddDistributiveRight);
+    TEST(FrTestSubDistributiveLeft);
+    TEST(FrTestSubDistributiveRight);
+
 /*
     TEST(FrTestCopy);
     TEST(FrTestNeg);
-    TEST(FrTestDouble);
-    TEST(FrTestTriple);
-    TEST(FrTestAdd);
-    TEST(FrTestSub);
-    TEST(FrTestSquare);
+    TEST(FrTestX2);
+    TEST(FrTestX3);
+    TEST(FrTestX4);
+    TEST(FrTestX8);
+    TEST(FrTestX12);
     TEST(FrTestMul);
     TEST(FrTestInv);
 
@@ -113,12 +126,6 @@ int main() {
     TEST(FrTestMultiplicativeIdentity);
     TEST(FrTestAdditiveInverse);
     TEST(FrTestMultiplicativeInverse);
-    TEST(FrTestCommutativeAdd);
-    TEST(FrTestCommutativeMul);
-    TEST(FrTestAssociativeAdd);
-    TEST(FrTestAssociativeMul);
-    TEST(FrTestDistributiveLeft);
-    TEST(FrTestDistributiveRight);
 */
 
     return 0;

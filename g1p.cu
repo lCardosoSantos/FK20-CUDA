@@ -33,11 +33,11 @@ __device__ void g1p_cpy(g1p_t &p, const g1p_t &q) {
     fp_cpy(p.z, q.z);
 }
 
-__device__ void g1p_print(const char *s, const g1p_t &p) {
+__device__ __host__ void g1p_print(const char *s, const g1p_t &p) {
     printf("%s ", s);
-    printf("0x%016lx%016lx%016lx%016lx%016lx%016lx ",  p.x[5], p.x[4], p.x[3], p.x[2], p.x[1], p.x[0]);
-    printf("0x%016lx%016lx%016lx%016lx%016lx%016lx ",  p.y[5], p.y[4], p.y[3], p.y[2], p.y[1], p.y[0]);
-    printf("0x%016lx%016lx%016lx%016lx%016lx%016lx\n", p.z[5], p.z[4], p.z[3], p.z[2], p.z[1], p.z[0]);
+    printf("#x%016lx%016lx%016lx%016lx%016lx%016lx ",  p.x[5], p.x[4], p.x[3], p.x[2], p.x[1], p.x[0]);
+    printf("#x%016lx%016lx%016lx%016lx%016lx%016lx ",  p.y[5], p.y[4], p.y[3], p.y[2], p.y[1], p.y[0]);
+    printf("#x%016lx%016lx%016lx%016lx%016lx%016lx\n", p.z[5], p.z[4], p.z[3], p.z[2], p.z[1], p.z[0]);
 }
 
 __device__ void g1p_inf(g1p_t &p) {
@@ -69,5 +69,41 @@ __device__ void g1p_gen(g1p_t &p) {
     p.z[1] = 0;
     p.z[0] = 1;
 };
+
+// Kernel wrappers for device-side functions
+
+__global__ void g1p_eq_wrapper(uint8_t *eq, size_t count, const g1p_t *p, const g1p_t *q) {
+
+    unsigned tid = 0;   tid += blockIdx.z;
+    tid *= gridDim.y;   tid += blockIdx.y;
+    tid *= gridDim.x;   tid += blockIdx.x;
+    tid *= blockDim.z;  tid += threadIdx.z;
+    tid *= blockDim.y;  tid += threadIdx.y;
+    tid *= blockDim.x;  tid += threadIdx.x;
+
+    __syncthreads();
+
+    unsigned step = gridDim.z * gridDim.y * gridDim.x
+                * blockDim.z * blockDim.y * blockDim.x;
+
+    for (unsigned i=tid; i<count; i+=step)
+        eq[i] = g1p_eq(p[i], q[i]) ? 1 : 0;
+}
+
+__global__ void g1a_fromG1p_wrapper(g1a_t *a, size_t count, const g1p_t *p) {
+
+    unsigned tid = 0;   tid += blockIdx.z;
+    tid *= gridDim.y;   tid += blockIdx.y;
+    tid *= gridDim.x;   tid += blockIdx.x;
+    tid *= blockDim.z;  tid += threadIdx.z;
+    tid *= blockDim.y;  tid += threadIdx.y;
+    tid *= blockDim.x;  tid += threadIdx.x;
+
+    unsigned step = gridDim.z * gridDim.y * gridDim.x
+                * blockDim.z * blockDim.y * blockDim.x;
+
+    for (unsigned i=tid; i<count; i+=step)
+        g1a_fromG1p(*a, *p);
+}
 
 // vim: ts=4 et sw=4 si

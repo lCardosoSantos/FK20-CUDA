@@ -14,12 +14,12 @@ __global__ void FrTestCmp(testval_t *testval) {
     for (int i=2; i<514; i++) {
         fr_t x;
 
-        fr_cpy(x, testval[i].val);
+        fr_cpy(x, testval[i]);
 
         for (int j=2; j<514; j++) {
             fr_t y;
 
-            fr_cpy(y, testval[j].val);
+            fr_cpy(y, testval[j]);
 
             uint64_t
                 eq  = fr_eq (x, y),
@@ -37,13 +37,13 @@ __global__ void FrTestCmp(testval_t *testval) {
                 printf("%d,%d: FAIL A: fr_eq claims inequality between these values:\n", i, j);
 
                 printf("\t%016lX%016lX%016lX%016lX/\n",
-                testval[i].val[3], testval[i].val[2], testval[i].val[1], testval[i].val[0]);
+                testval[i][3], testval[i][2], testval[i][1], testval[i][0]);
 
                 printf("\t%016lX%016lX%016lX%016lX\n",
                 x[3], x[2], x[1], x[0]);
 
                 printf("\t%016lX%016lX%016lX%016lX/\n",
-                testval[j].val[3], testval[j].val[2], testval[j].val[1], testval[j].val[0]);
+                testval[j][3], testval[j][2], testval[j][1], testval[j][0]);
 
                 printf("\t%016lX%016lX%016lX%016lX\n",
                 y[3], y[2], y[1], y[0]);
@@ -57,13 +57,13 @@ __global__ void FrTestCmp(testval_t *testval) {
                 printf("%d,%d: FAIL B: fr_eq claims equality between these values:\n", i, j);
 
                 printf("\t%016lX%016lX%016lX%016lX/\n",
-                testval[i].val[3], testval[i].val[2], testval[i].val[1], testval[i].val[0]);
+                testval[i][3], testval[i][2], testval[i][1], testval[i][0]);
 
                 printf("\t%016lX%016lX%016lX%016lX\n",
                 x[3], x[2], x[1], x[0]);
 
                 printf("\t%016lX%016lX%016lX%016lX/\n",
-                testval[j].val[3], testval[j].val[2], testval[j].val[1], testval[j].val[0]);
+                testval[j][3], testval[j][2], testval[j][1], testval[j][0]);
 
                 printf("\t%016lX%016lX%016lX%016lX\n",
                 y[3], y[2], y[1], y[0]);
@@ -77,13 +77,13 @@ __global__ void FrTestCmp(testval_t *testval) {
                 printf("%d,%d: FAIL C: fr_neq claims inequality between these values:\n", i, j);
 
                 printf("\t%016lX%016lX%016lX%016lX/\n",
-                testval[i].val[3], testval[i].val[2], testval[i].val[1], testval[i].val[0]);
+                testval[i][3], testval[i][2], testval[i][1], testval[i][0]);
 
                 printf("\t%016lX%016lX%016lX%016lX\n",
                 x[3], x[2], x[1], x[0]);
 
                 printf("\t%016lX%016lX%016lX%016lX/\n",
-                testval[j].val[3], testval[j].val[2], testval[j].val[1], testval[j].val[0]);
+                testval[j][3], testval[j][2], testval[j][1], testval[j][0]);
 
                 printf("\t%016lX%016lX%016lX%016lX\n",
                 y[3], y[2], y[1], y[0]);
@@ -97,13 +97,13 @@ __global__ void FrTestCmp(testval_t *testval) {
                 printf("%d,%d: FAIL D: fr_neq claims equality between these values:\n", i, j);
 
                 printf("\t%016lX%016lX%016lX%016lX/\n",
-                testval[i].val[3], testval[i].val[2], testval[i].val[1], testval[i].val[0]);
+                testval[i][3], testval[i][2], testval[i][1], testval[i][0]);
 
                 printf("\t%016lX%016lX%016lX%016lX\n",
                 x[3], x[2], x[1], x[0]);
 
                 printf("\t%016lX%016lX%016lX%016lX/\n",
-                testval[j].val[3], testval[j].val[2], testval[j].val[1], testval[j].val[0]);
+                testval[j][3], testval[j][2], testval[j][1], testval[j][0]);
 
                 printf("\t%016lX%016lX%016lX%016lX\n",
                 y[3], y[2], y[1], y[0]);
