@@ -11,7 +11,8 @@ extern __shared__ fr_t fr[];
 // input and output may freely overlap
 
 __device__ void fr_fft(fr_t *output, const fr_t *input) {
-    // One FFT of size 512 per thread block
+    // One FFT of size 512 elements per thread block
+    // Must be called with 256threads per block
     // No interleaving of data for different FFTs
 
     if (gridDim.y  !=   1) return;

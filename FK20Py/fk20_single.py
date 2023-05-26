@@ -1,7 +1,7 @@
-from . import blst
-from .fft import fft
-from . import kzg_proofs
-from .kzg_proofs import (
+from py_ecc import optimized_bls12_381 as b
+from fft import fft
+import kzg_proofs
+from kzg_proofs import (
     MODULUS,
     check_proof_single,
     generate_setup,
@@ -10,9 +10,9 @@ from .kzg_proofs import (
     get_root_of_unity,
     reverse_bit_order,
     is_power_of_two,
-    eval_poly_at,
-    P1_INF 
+    eval_poly_at
 )
+import toByte
 
 # FK20 Method to compute all proofs
 # Toeplitz multiplication via http://www.netlib.org/utk/people/JackDongarra/etemplates/node384.html
@@ -52,7 +52,7 @@ def toeplitz_part1(x):
     root_of_unity = get_root_of_unity(len(x) * 2)
     
     # Extend x with zeros (neutral element of G1)
-    xext = x + [P1_INF.dup() for _ in range(len(x))]
+    xext = x + [b.Z1] * len(x)
 
     xext_fft = fft(xext, MODULUS, root_of_unity, inv=False)
     
@@ -69,7 +69,10 @@ def toeplitz_part2(toeplitz_coefficients, xext_fft):
     root_of_unity = get_root_of_unity(len(xext_fft))
 
     toeplitz_coefficients_fft = fft(toeplitz_coefficients, MODULUS, root_of_unity, inv=False)
-    hext_fft = [v.dup().mult(w) for v, w in zip(xext_fft, toeplitz_coefficients_fft)]
+
+    toByte.g_toeplitz_coefficients_fft.append(toeplitz_coefficients_fft.copy())
+
+    hext_fft = [b.multiply(v, w) for v, w in zip(xext_fft, toeplitz_coefficients_fft)]
 
     return hext_fft
 
@@ -89,7 +92,7 @@ def fk20_single(polynomial, setup):
     assert is_power_of_two(len(polynomial))
     n = len(polynomial)
     
-    x = setup[0][n - 2::-1] + [P1_INF.dup()]
+    x = setup[0][n - 2::-1] + [b.Z1]
     xext_fft = toeplitz_part1(x)
     
     toeplitz_coefficients = polynomial[-1::] + [0] * (n + 1) + polynomial[1:-1]
@@ -100,8 +103,9 @@ def fk20_single(polynomial, setup):
     # The proofs are the DFT of the h vector
     return fft(h, MODULUS, get_root_of_unity(n))
 
+
 # Compute all n (single) proofs according to FK20 method
-def fk20_single_data_availability_optimized(polynomial: list[int], setup: tuple[list[blst.P1], list[blst.P2]]) -> list[blst.P1]:
+def fk20_single_data_availability_optimized(polynomial, setup):
     """
     Special version of the FK20 for the situation of data availability checks:
     The upper half of the polynomial coefficients is always 0, so we do not need to extend to twice the size
@@ -116,7 +120,7 @@ def fk20_single_data_availability_optimized(polynomial: list[int], setup: tuple[
     
     # Preprocessing part -- this is independent from the polynomial coefficients and can be
     # done before the polynomial is known, it only needs to be computed once
-    x = setup[0][n - 2::-1] + [P1_INF]
+    x = setup[0][n - 2::-1] + [b.Z1]
     xext_fft = toeplitz_part1(x)
     
     toeplitz_coefficients = reduced_polynomial[-1::] + [0] * (n + 1) + reduced_polynomial[1:-1]
@@ -124,15 +128,13 @@ def fk20_single_data_availability_optimized(polynomial: list[int], setup: tuple[
     # Compute the vector h from the paper using a Toeplitz matric multiplication
     h = toeplitz_part3(toeplitz_part2(toeplitz_coefficients, xext_fft))
     
-    h = h + [P1_INF.dup() for _ in range(n)] 
+    h = h + [b.Z1] * n
 
     # The proofs are the DFT of the h vector
-    res = fft(h, MODULUS, get_root_of_unity(2 * n))
-    FFT_TRACE = (h, res)
-    return res
+    return fft(h, MODULUS, get_root_of_unity(2 * n))
 
 
-def data_availabilty_using_fk20(polynomial: list[int], setup: tuple[list[blst.P1], list[blst.P2]]) -> list[blst.P1]:
+def data_availabilty_using_fk20(polynomial, setup):
     """
     Computes all the KZG proofs for data availability checks. This involves sampling on the double domain
     and reordering according to reverse bit order
@@ -145,57 +147,12 @@ def data_availabilty_using_fk20(polynomial: list[int], setup: tuple[list[blst.P1
 
     return list_to_reverse_bit_order(all_proofs)
 
-## fft tracing functions, not present in the original implementation
-def fk20sdaoT(polynomial: list[int], setup: tuple[list[blst.P1], list[blst.P2]]) -> list[blst.P1]:
-
-    assert is_power_of_two(len(polynomial))
-    
-    n = len(polynomial) // 2
-    
-    assert all(x == 0 for x in polynomial[n:])
-    reduced_polynomial = polynomial[:n]
-    
-    # Preprocessing part -- this is independent from the polynomial coefficients and can be
-    # done before the polynomial is known, it only needs to be computed once
-    x = setup[0][n - 2::-1] + [P1_INF]
-    xext_fft = toeplitz_part1(x)
-    
-    toeplitz_coefficients = reduced_polynomial[-1::] + [0] * (n + 1) + reduced_polynomial[1:-1]
-
-    # Compute the vector h from the paper using a Toeplitz matric multiplication
-    h = toeplitz_part3(toeplitz_part2(toeplitz_coefficients, xext_fft))
-    
-    h = h + [P1_INF.dup() for _ in range(n)] 
-
-    # The proofs are the DFT of the h vector
-    res = fft(h, MODULUS, get_root_of_unity(2 * n))
-    return (h, res)
-
-def fftTrace(polynomial: list[int], setup: tuple[list[blst.P1], list[blst.P2]]) -> list[blst.P1]:
-    assert is_power_of_two(len(polynomial))
-    n = len(polynomial)
-    extended_polynomial = polynomial + [0] * n
-
-    return fk20sdaoT(extended_polynomial, setup)
 
 if __name__ == "__main__":
-    #uncomment to report time for the functions
-    #from timer import chrono
-    #generate_setup = chrono(generate_setup)
-    #commit_to_poly = chrono(commit_to_poly)
-    #eval_poly_at = chrono(eval_poly_at)
-    #check_proof_single = chrono(check_proof_single)
-    
-    import random
-    from tqdm import tqdm
+    polynomial = [1, 2, 3, 4, 7, 7, 7, 7, 13, 13, 13, 13, 13, 13, 13, 13]
+    n = len(polynomial)
 
-    MAX_DEGREE_POLY = MODULUS-1
-    N_POINTS = 512
-
-    polynomial = [random.randint(1, MAX_DEGREE_POLY) for _ in range(512)] 
-    n = N_POINTS
-
-    setup = generate_setup(random.getrandbits(256), n)
+    setup = generate_setup(1927409816240961209460912649124, n)
 
     commitment = commit_to_poly(polynomial, setup)
 
@@ -205,11 +162,11 @@ if __name__ == "__main__":
 
     # Now check a random position
 
-    pos = random.randrange(0, len(polynomial))
-    for pos in tqdm(range(n),  desc='Single point check'):
-        root_of_unity = get_root_of_unity(n * 2)
-        x = pow(root_of_unity, pos, MODULUS)
-        y = eval_poly_at(polynomial, x)
-        
-        assert check_proof_single(commitment, all_proofs[reverse_bit_order(pos, 2 * n)], x, y, setup)
-    print(f"Single point check passed for all {n} points")
+    pos = 9
+    root_of_unity = get_root_of_unity(n * 2)
+    x = pow(root_of_unity, pos, MODULUS)
+    y = eval_poly_at(polynomial, x)
+    
+    assert check_proof_single(commitment, all_proofs[reverse_bit_order(pos, 2 * n)], x, y, setup)
+    print("Single point check passed")
+

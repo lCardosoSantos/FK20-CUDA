@@ -95,7 +95,9 @@ void FFTTest(){
 
     //run multi-fft
     elapsedTime = -clock();
-    g1p_fft<<<grid, block, sharedmem>>> (out, in);
+
+    g1p_fft_wrapper<<<grid, block, sharedmem>>>(out, in);
+    
     cudaDeviceSynchronize();
     elapsedTime += clock();
 
