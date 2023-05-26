@@ -7,6 +7,8 @@ int main() {
 
     FK20TestPoly();
     FK20TestFFT();
+    FK20TestFFTRand(NULL);
+
 
     return 0;
 }

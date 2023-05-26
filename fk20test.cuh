@@ -3,7 +3,7 @@
 
 #ifndef FK20_TEST_CUH
 #define FK20_TEST_CUH
-
+#include <stdio.h>
 // Shared memory sizes
 
 const size_t g1p_sharedmem = 512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
@@ -13,6 +13,7 @@ const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes
 
 void FK20TestFFT();
 void FK20TestPoly();
+void FK20TestFFTRand(FILE *inputStream);
 
 #endif // FK20_TEST_CUH
 

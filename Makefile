@@ -1,8 +1,8 @@
 CXX=g++
-NVCC=nvcc -rdc=true #-g -G
+NVCC=nvcc -rdc=true #-g -G -O0
 NVOPTS=--compile
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86
-COPTS= #-O2
+COPTS= -O2
 
 FP=fp fp_cpy fp_reduce6 fp_eq fp_neq fp_neg fp_x2 fp_x3 fp_x4 fp_x8 fp_x12 fp_add fp_sub fp_sqr fp_mul fp_inv fp_isone fp_iszero fp_nonzero fp_mma
 FR=fr fr_cpy fr_reduce4 fr_eq fr_neq fr_neg fr_x2 fr_x3 fr_x4 fr_x8 fr_x12 fr_add fr_sub fr_sqr fr_mul fr_inv fr_isone fr_iszero fr_nonzero fr_roots fr_fft fr_addsub
@@ -14,7 +14,7 @@ FRTEST=frtest frtest_kat frtest_cmp frtest_add frtest_mul frtest_sub frtest_adds
 G1TEST=g1test g1test_kat g1test_fibonacci
 FK20TEST=fk20test fk20test_kat
 FFTTEST=fftTest parseFFTTest
-FK20TEST=fk20test_fft fk20test fk20test_poly fk20_testvector
+FK20TEST=fk20test_fft fk20test fk20test_poly fk20_testvector fk20test_fft_rand
 
 FP_OBJS=$(FP:%=%.o)
 FR_OBJS=$(FR:%=%.o)

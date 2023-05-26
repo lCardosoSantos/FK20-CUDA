@@ -18,6 +18,8 @@ from fk20_single import (
     toeplitz_part2,
     toeplitz_part3
 )
+import toByte
+
 
 # FK20 Method to compute all proofs
 # Toeplitz multiplication via http://www.netlib.org/utk/people/JackDongarra/etemplates/node384.html
@@ -28,7 +30,7 @@ def fk20_multi(polynomial, l, setup):
     For a polynomial of size n, let w be a n-th root of unity. Then this method will return
     k=n/l KZG proofs for the points
         proof[0]: w^(0*l + 0), w^(0*l + 1), ... w^(0*l + l - 1)
-        proof[0]: w^(0*l + 0), w^(0*l + 1), ... w^(0*l + l - 1)
+        proof[1]: w^(1*l + 0), w^(1*l + 1), ... w^(1*l + l - 1)
         ...
         proof[i]: w^(i*l + 0), w^(i*l + 1), ... w^(i*l + l - 1)
         ...
@@ -44,15 +46,15 @@ def fk20_multi(polynomial, l, setup):
     # done before the polynomial is known, it only needs to be computed once
     xext_fft = []
     for i in range(l):
-        x = setup[0][n - l - 1 - i::-l] + [b.Z1]
-        xext_fft.append(toeplitz_part1(x))
+        x = setup[0][n - l - 1 - i::-l] + [b.Z1]	# len(x) == n//l == k
+        xext_fft.append(toeplitz_part1(x))		# len(xext_fft) == 2*k
 
     hext_fft = [b.Z1] * 2 * k
     for i in range(l):
 
         toeplitz_coefficients = polynomial[- i - 1::l] + [0] * (k + 1) + polynomial[2 * l - i - 1: - l - i:l]
 
-        # Compute the vector h from the paper using a Toeplitz matric multiplication
+        # Compute the vector h from the paper using a Toeplitz matrix multiplication
         hext_fft = [b.add(v, w) for v, w in zip(hext_fft, toeplitz_part2(toeplitz_coefficients, xext_fft[i]))]
     
     h = toeplitz_part3(hext_fft)
@@ -77,31 +79,52 @@ def fk20_multi_data_availability_optimized(polynomial, l, setup):
     assert all(x == 0 for x in polynomial[n:])
     reduced_polynomial = polynomial[:n]
 
+    toByte.g_setup = setup[0]
+
     # Preprocessing part -- this is independent from the polynomial coefficients and can be
     # done before the polynomial is known, it only needs to be computed once
     xext_fft = []
     for i in range(l):
-        x = setup[0][n - l - 1 - i::-l] + [b.Z1]
+        x = setup[0][n-l-1-i : : -l] + [b.Z1]
         xext_fft.append(toeplitz_part1(x))
 
-    add_instrumentation()
+    toByte.g_xext_fft = xext_fft
+
+    #add_instrumentation()
 
     hext_fft = [b.Z1] * 2 * k
+
     for i in range(l):
 
         toeplitz_coefficients = reduced_polynomial[- i - 1::l] + [0] * (k + 1) \
              + reduced_polynomial[2 * l - i - 1: - l - i:l]
 
-        # Compute the vector h from the paper using a Toeplitz matric multiplication
+        toByte.g_toeplitz_coefficients.append(toeplitz_coefficients)
+
+    for i in range(l):
+
+        toeplitz_coefficients = reduced_polynomial[- i - 1::l] + [0] * (k + 1) \
+             + reduced_polynomial[2 * l - i - 1: - l - i:l]
+
+        # Compute the vector h from the paper using a Toeplitz matrix multiplication
         hext_fft = [b.add(v, w) for v, w in zip(hext_fft, toeplitz_part2(toeplitz_coefficients, xext_fft[i]))]
+
+
+    toByte.g_hext_fft = hext_fft
 
     # Final FFT done after summing all h vectors
     h = toeplitz_part3(hext_fft)
 
     h = h + [b.Z1] * k
 
+    toByte.g_h = h
+
     # The proofs are the DFT of the h vector
-    return fft(h, MODULUS, get_root_of_unity(2 * k))
+    h_fft = fft(h, MODULUS, get_root_of_unity(2 * k))
+
+    toByte.g_h_fft = h_fft
+
+    return h_fft
 
 
 def data_availabilty_using_fk20_multi(polynomial, l, setup):
@@ -134,34 +157,103 @@ def add_instrumentation():
     b.multiply = multiply_and_count
 
 
-if __name__ == "__main__":
-    polynomial = [1, 2, 3, 4, 7, 8, 9, 10, 13, 14, 1, 15, MODULUS - 1, 1000, MODULUS - 134, 33] * 32
+def genCanonical():
+    '''generate the cannonical testcase'''
+    polynomial = [1, 2, 3, 4, 7, 8, 9, 10, 13, 14, 1, 15, MODULUS - 1, 1000, MODULUS - 134, 33] * 256
     n = len(polynomial)
-
+    toByte.g_polynomial = polynomial
     setup = generate_setup(1927409816240961209460912649124, n)
-
     commitment = commit_to_poly(polynomial, setup)
-
     l = 16
-    
     all_proofs = data_availabilty_using_fk20_multi(polynomial, l, setup)
-    print("All KZG proofs computed for data availability (supersampled by factor 2)")
-    print("Required {0} G1 multiplications".format(multiplication_count))
-    print(n, l, multiplication_count)
 
-    # Now check all positions
-    extended_data = get_extended_data(polynomial)
+def genRandom():
+    '''generate random testCase'''
+    import secrets #uses the most secure source of randomness available in the system.
+    n = 4096 #Lenght of the polynomial
+    polynomial = [secrets.randbelow(MODULUS) for _ in range(n)]
+    toByte.g_polynomial = polynomial
+    setup = generate_setup(secrets.randbits(256), n)
+    commitment = commit_to_poly(polynomial, setup)
+    l = 16
+    all_proofs = data_availabilty_using_fk20_multi(polynomial, l, setup)
 
-    for pos in range(2 * n // l):
-        root_of_unity = get_root_of_unity(n * 2)
-        x = pow(root_of_unity, reverse_bit_order(pos, 2 * n // l), MODULUS)
-        ys = extended_data[l * pos:l * (pos + 1)]
+def dumpData():
+    '''Dump the data stored in the globals to STDIO'''
+    import sys
+    def dump(l):
+        bc=0
+        for i in l:
+            sys.stdout.buffer.write(i)
+            bc+=len(i)
+        return bc
 
-        subgroup_root_of_unity = get_root_of_unity(l)
-        coset = [x * pow(subgroup_root_of_unity, i, MODULUS) for i in range(l)]
-        ys2 = [eval_poly_at(polynomial, z) for z in coset]
-        assert list_to_reverse_bit_order(ys) == ys2
+    #fr_t polynomial[4096]
+    packedData=[]
+    for p in toByte.g_polynomial:
+        packedData.append(toByte.frToByte(p))
+    bc = dump(packedData)
+    print(f'written {bc} bytes for polynomial', file=sys.stderr)
 
-        assert check_proof_multi(commitment, all_proofs[pos], x, list_to_reverse_bit_order(ys), setup)
-        print("Data availability sample check {0} passed".format(pos))
+    #g1p_t setup[4097]
+    packedData=[]
+    for g1 in toByte.g_setup:
+        packedData.append(toByte.g1ToByte(g1))
+    bc = dump(packedData)
+    print(f'written {bc} bytes for setup', file=sys.stderr)
+
+    #g1p_t xext_fft[16][512]
+    packedData=[]
+    for x in toByte.g_xext_fft:
+        for g1 in x:
+            packedData.append(toByte.g1ToByte(g1))
+    bc = dump(packedData)
+    print(f'written {bc} bytes for xext_fft', file=sys.stderr)
+
+    #g1p_t toeplitz_coefficients[16][512]
+    packedData=[]
+    for x in toByte.g_toeplitz_coefficients:
+        for g1 in x:
+            packedData.append(toByte.frToByte(g1))
+    bc = dump(packedData)
+    print(f'written {bc} bytes for toeplitz_coefficients', file=sys.stderr)
+
+    #g1p_t toeplitz_coefficients_fft[16][512]
+    packedData=[]
+    for x in toByte.g_toeplitz_coefficients_fft:
+        for g1 in x:
+            packedData.append(toByte.frToByte(g1))
+    bc = dump(packedData)
+    print(f'written {bc} bytes for g_toeplitz_coefficients_fft', file=sys.stderr)
+
+    #g1p_t hext_fft[512]
+    packedData=[]
+    for g1 in toByte.g_hext_fft:
+        packedData.append(toByte.g1ToByte(g1))
+    bc = dump(packedData)
+    print(f'written {bc} bytes for hext_fft', file=sys.stderr)
+
+    #g1p_t h[512]
+    packedData=[]
+    for g1 in toByte.g_h:
+        packedData.append(toByte.g1ToByte(g1))
+    bc = dump(packedData)
+    print(f'written {bc} bytes for h', file=sys.stderr)
+
+    #g1p_t h_fft[512]
+    packedData=[]
+    for g1 in toByte.g_h_fft:
+        packedData.append(toByte.g1ToByte(g1))
+    bc = dump(packedData)
+    print(f'written {bc} bytes for h_fft', file=sys.stderr)
+    
+    
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1:
+        genCanonical()
+    else:
+        genRandom()
+    dumpData()
     
