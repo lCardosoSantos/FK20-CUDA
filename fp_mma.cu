@@ -50,7 +50,7 @@ __device__ void fp_mma(fp_t &z, const fp_t &v, const fp_t &w, const fp_t &x, con
     "\n\tmov.u64 y4, %28;"
     "\n\tmov.u64 y5, %29;"
 
-FP_MUL(v, w)
+FP_MUL(u, v, w)
 
     "\n\tmov.u64 v0, u0;"
     "\n\tmov.u64 v1, u1;"
@@ -66,7 +66,7 @@ FP_MUL(v, w)
     "\n\tmov.u64 w4, ua;"
     "\n\tmov.u64 w5, ub;"
 
-FP_MUL(x, y)
+FP_MUL(u, x, y)
 
     // Double-width addition
 
@@ -107,7 +107,7 @@ FP_MUL(x, y)
     "\n@cp\tsubc.u64.cc ua, ua, 0xa3f8e5685da91392U;"
     "\n@cp\tsubc.u64.cc ub, ub, 0xea09a13c057f1b6cU;"
 
-FP_REDUCE12()
+FP_REDUCE12(u)
 
     "\n\tmov.u64 %0,  u0;"
     "\n\tmov.u64 %1,  u1;"

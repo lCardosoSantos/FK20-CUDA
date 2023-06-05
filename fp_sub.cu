@@ -16,8 +16,8 @@ __device__ void fp_sub(fp_t &z, const fp_t &x, const fp_t &y) {
     asm volatile (
     "\n\t{"
     "\n\t.reg .u64 z<6>, x<6>, y<6>;"
-    "\n\t.reg .u32 t6;"
-    "\n\t.reg .pred cp;"
+    "\n\t.reg .u32 z6;"
+    "\n\t.reg .pred gt, ne;"
 
     "\n\tmov.u64 x0,  %6;"
     "\n\tmov.u64 x1,  %7;"

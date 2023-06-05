@@ -32,8 +32,8 @@ __device__ void fp_mul(fp_t &z, const fp_t &x, const fp_t &y) {
     "\n\tmov.u64 y4, %16;"
     "\n\tmov.u64 y5, %17;"
 
-FP_MUL(x, y)
-FP_REDUCE12()
+FP_MUL(u, x, y)
+FP_REDUCE12(u)
 
     "\n\tmov.u64 %0,  u0;"
     "\n\tmov.u64 %1,  u1;"

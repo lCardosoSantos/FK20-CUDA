@@ -23,12 +23,12 @@ __device__ void g1p_dbl(g1p_t &p) {
     asm volatile (
     "\n\t{"
     "\n\t.reg .u64 v<6>, w<6>, x<6>, y<6>, z<6>;"
+    "\n\t.reg .u32 z6;"
     "\n\t.reg .u64 u<10>, ua, ub;"
     "\n\t.reg .u64 q<8>;"
     "\n\t.reg .u64 r<7>;"
     "\n\t.reg .u64 t<6>;"
-    "\n\t.reg .u32 t6;"
-    "\n\t.reg .pred cp;"
+    "\n\t.reg .pred ne, gt;"
 
     "\n\tmov.u64 x0,  %0;"
     "\n\tmov.u64 x1,  %1;"
@@ -51,8 +51,8 @@ __device__ void g1p_dbl(g1p_t &p) {
     "\n\tmov.u64 z4, %16;"
     "\n\tmov.u64 z5, %17;"
 
-    FP_MUL(x, y)
-    FP_REDUCE12()
+    FP_MUL(u, x, y)
+    FP_REDUCE12(u)
 
     "\n\tmov.u64 x0,  u0;"
     "\n\tmov.u64 x1,  u1;"
@@ -61,8 +61,8 @@ __device__ void g1p_dbl(g1p_t &p) {
     "\n\tmov.u64 x4,  u4;"
     "\n\tmov.u64 x5,  u5;"
 
-    FP_SQR(z)
-    FP_REDUCE12()
+    FP_SQR(u, z)
+    FP_REDUCE12(u)
 
     "\n\tmov.u64 v0,  u0;"
     "\n\tmov.u64 v1,  u1;"
@@ -73,8 +73,8 @@ __device__ void g1p_dbl(g1p_t &p) {
 
     FP_X12(v, v)
 
-    FP_MUL(z, y)
-    FP_REDUCE12()
+    FP_MUL(u, z, y)
+    FP_REDUCE12(u)
 
     "\n\tmov.u64 z0,  u0;"
     "\n\tmov.u64 z1,  u1;"
@@ -83,8 +83,8 @@ __device__ void g1p_dbl(g1p_t &p) {
     "\n\tmov.u64 z4,  u4;"
     "\n\tmov.u64 z5,  u5;"
 
-    FP_SQR(y)
-    FP_REDUCE12()
+    FP_SQR(u, y)
+    FP_REDUCE12(u)
 
     "\n\tmov.u64 y0,  u0;"
     "\n\tmov.u64 y1,  u1;"
@@ -97,8 +97,8 @@ __device__ void g1p_dbl(g1p_t &p) {
 
     FP_SUB(w, y, w)
 
-    FP_MUL(x, w)
-    FP_REDUCE12()
+    FP_MUL(u, x, w)
+    FP_REDUCE12(u)
 
     "\n\tmov.u64 x0,  u0;"
     "\n\tmov.u64 x1,  u1;"
@@ -109,8 +109,8 @@ __device__ void g1p_dbl(g1p_t &p) {
 
     FP_ADD(y, y, v)
 
-    FP_MUL(w, y)
-    FP_REDUCE12()
+    FP_MUL(u, w, y)
+    FP_REDUCE12(u)
 
     "\n\tmov.u64 w0,  u0;"
     "\n\tmov.u64 w1,  u1;"
@@ -125,8 +125,8 @@ __device__ void g1p_dbl(g1p_t &p) {
 
     FP_X2 (x, x)
 
-    FP_MUL(z, y)
-    FP_REDUCE12()
+    FP_MUL(u, z, y)
+    FP_REDUCE12(u)
 
     "\n\tmov.u64 z0,  u0;"
     "\n\tmov.u64 z1,  u1;"
@@ -135,8 +135,8 @@ __device__ void g1p_dbl(g1p_t &p) {
     "\n\tmov.u64 z4,  u4;"
     "\n\tmov.u64 z5,  u5;"
 
-    FP_MUL(y, v)
-    FP_REDUCE12()
+    FP_MUL(u, y, v)
+    FP_REDUCE12(u)
 
     "\n\tmov.u64 y0,  u0;"
     "\n\tmov.u64 y1,  u1;"
