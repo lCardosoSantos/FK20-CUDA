@@ -9,61 +9,33 @@ __global__ void FpTestSub(testval_t *testval) {
     printf("=== RUN   %s\n", __func__);
 
     bool    pass    = true;
+    size_t  count   = 0;
 
-    unsigned tid = 0;   tid += blockIdx.z;
-    tid *= gridDim.y;   tid += blockIdx.y;
-    tid *= gridDim.x;   tid += blockIdx.x;
-    tid *= blockDim.z;  tid += threadIdx.z;
-    tid *= blockDim.y;  tid += threadIdx.y;
-    tid *= blockDim.x;  tid += threadIdx.x;
+    fp_t x, l, r;
 
-    uint64_t t[6] = { 1L<<33, 0, 0, 0, 0, 0 };
-    uint64_t u[6] = { tid, 0, 0, 0, 0, 0 };
+    // 2x == 3x - x
 
-    fp_t x, y, z;
+    for (int i=0; pass && i<TESTVALS; i++) {
+        fp_cpy(x, testval[i]);
 
-    fp_fromUint64(x, t);    // x = 2**33
-    fp_fromUint64(y, u);    // y = tid
+        fp_x2(l, x);
 
-    if (x[0] != 1L<<33) pass = false;
-    if (x[1] !=      0) pass = false;
-    if (x[2] !=      0) pass = false;
-    if (x[3] !=      0) pass = false;
-    if (x[4] !=      0) pass = false;
-    if (x[5] !=      0) pass = false;
+        fp_x3(r, x);
+        fp_sub(r, r, x);
 
-    if (y[0] != tid) pass = false;
-    if (y[1] !=   0) pass = false;
-    if (y[2] !=   0) pass = false;
-    if (y[3] !=   0) pass = false;
-    if (y[4] !=   0) pass = false;
-    if (y[5] !=   0) pass = false;
+        if (fp_neq(l, r)) {
+            pass = false;
 
-    if (!pass) {
-        printf("%d: FAILED after fp_fromUint64\n", tid);
-        goto done;
+            printf("%d: FAILED\n", i);
+            printf("x    : "); fp_print(x);
+            printf("2x   : "); fp_print(l);
+            printf("3x-x : "); fp_print(r);
+        }
+        ++count;
     }
 
-    fp_sub(z, x, y);    // z = x - y
+    printf("%ld tests\n", count);
 
-    fp_reduce6(z);
-
-    fp_reduce6(z);
-
-    if (z[0] != (1L<<33)-tid) pass = false;
-    if (z[1] !=            0) pass = false;
-    if (z[2] !=            0) pass = false;
-    if (z[3] !=            0) pass = false;
-    if (z[4] !=            0) pass = false;
-    if (z[5] !=            0) pass = false;
-
-    if (!pass) {
-        printf("%d: FAILED after fp_sub\n", tid);
-        printf("0x%016lx%016lx%016lx%016lx%016lx%016lx\n", z[5], z[4], z[3], z[2], z[1], z[0]);
-        goto done;
-    }
-
-done:
     printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
 }
 

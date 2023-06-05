@@ -8,37 +8,54 @@
 
 #include "fp.cuh"
 
-#define TESTVALS 928
+#define TESTVALS 1024
 
-typedef struct {
-    fp_t val;
-} testval_t;
+#if (TESTVALS < 771)
+# undef TESTVALS
+# define TESTVALS 771
+#endif
+
+typedef fp_t testval_t;
 
 #define TESTFUN(X) extern __global__ void X(testval_t *testval)
 
+// Constant
+
 TESTFUN(FpTestKAT);
+
+// Linear
+
 TESTFUN(FpTestCmp);
-TESTFUN(FpTestMMA);
+TESTFUN(FpTestMulConst);
 TESTFUN(FpTestAdd);
 TESTFUN(FpTestSub);
+TESTFUN(FpTestSqr);
 TESTFUN(FpTestMul);
 TESTFUN(FpTestInv);
+TESTFUN(FpTestMMA);
+
+// Quadratic
+
+TESTFUN(FpTestSqr2);
+TESTFUN(FpTestCommutativeAdd);
+TESTFUN(FpTestCommutativeMul);
+
+// Cubic
+
+TESTFUN(FpTestAssociativeAdd);
+TESTFUN(FpTestAssociativeMul);
+TESTFUN(FpTestDistributiveLeft);
+TESTFUN(FpTestDistributiveRight);
+
+// Not implemented
+
 TESTFUN(FpTestCopy);
-TESTFUN(FpTestEqNeq);
 TESTFUN(FpTestReflexivity);
 TESTFUN(FpTestSymmetry);
 TESTFUN(FpTestAdditiveIdentity);
 TESTFUN(FpTestMultiplicativeIdentity);
 TESTFUN(FpTestAdditiveInverse);
 TESTFUN(FpTestMultiplicativeInverse);
-TESTFUN(FpTestCommutativeAdd);
-TESTFUN(FpTestCommutativeMul);
-TESTFUN(FpTestAssociativeAdd);
-TESTFUN(FpTestAssociativeMul);
-TESTFUN(FpTestDistributiveLeft);
-TESTFUN(FpTestDistributiveRight);
-TESTFUN(FpTestDouble);
-TESTFUN(FpTestSquare);
 
 #endif // FP_TEST_CUH
 

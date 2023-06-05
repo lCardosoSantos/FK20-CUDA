@@ -16,8 +16,8 @@ __device__ void fp_x4(fp_t &z, const fp_t &x) {
     asm volatile (
     "\n\t{"
     "\n\t.reg .u64 x<6>, z<6>;"
-    "\n\t.reg .u32 t6;"
-    "\n\t.reg .pred cp;"
+    "\n\t.reg .u32 z6;"
+    "\n\t.reg .pred gt;"
 
     "\n\tmov.u64 x0,  %6;"
     "\n\tmov.u64 x1,  %7;"

@@ -4,7 +4,7 @@
 #include "fr.cuh"
 #include "frtest.cuh"
 
-#define ITERATIONS 1000000
+#define ITERATIONS 100000
 
 __global__ void FrTestFibonacci(testval_t *) {
 

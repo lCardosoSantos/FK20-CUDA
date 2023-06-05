@@ -8,7 +8,12 @@
 
 #include "fr.cuh"
 
-#define TESTVALS 576
+#define TESTVALS 768
+
+#if (TESTVALS < 515)
+# undef TESTVALS
+# define TESTVALS 515
+#endif
 
 typedef fr_t testval_t;
 
@@ -19,6 +24,7 @@ void FrTestFFT();
 TESTFUN(FrTestKAT);
 TESTFUN(FrTestFibonacci);
 TESTFUN(FrTestCmp);
+TESTFUN(FrTestMulConst);
 TESTFUN(FrTestSub);
 TESTFUN(FrTestAddSub);
 TESTFUN(FrTestCopy);

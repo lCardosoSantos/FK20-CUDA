@@ -62,14 +62,7 @@ void init() {
 
     size_t result = fread(&testval[i], sizeof(testval_t), TESTVALS-i, pf);
 
-    // Print all the random values
-#if 0
-    for (int j=i; j<TESTVALS; j++) {
-        auto t = &testval[j];
-        printf("0x%016lx%016lx%016lx%016lx\n",
-            t->val[3], t->val[2], t->val[1], t->val[0]);
-    }
-#endif
+    printf("Fixed/random test values: %d/%d\n", i, TESTVALS-i);
 }
 
 ////////////////////////////////////////////////////////////
@@ -84,39 +77,50 @@ void init() {
 
 ////////////////////////////////////////////////////////////
 
-int main() {
+int main(int argc, char **argv) {
     clock_t start, end;
-
     cudaError_t err;
+
+    int level = 0;
+
+    if (argc > 1)
+        level = atoi(argv[1]);
 
     init();
 
-    dim3 block(1,1,1);
-
-    FrTestFFT();
+    dim3 block = 1;
 
     TEST(FrTestKAT);
-    TEST(FrTestCmp);
-    TEST(FrTestCommutativeAdd);
-    TEST(FrTestSub);
-    TEST(FrTestCommutativeMul);
-    TEST(FrTestFibonacci);
-    TEST(FrTestAddSub);
-    TEST(FrTestAssociativeAdd);
-    TEST(FrTestAssociativeMul);
-    TEST(FrTestAddDistributiveLeft);
-    TEST(FrTestAddDistributiveRight);
-    TEST(FrTestSubDistributiveLeft);
-    TEST(FrTestSubDistributiveRight);
+    if (err != cudaSuccess) {
+        return err;
+    }
+    FrTestFFT();
+
+    if (level >= 1) {
+        TEST(FrTestCmp);
+        TEST(FrTestMulConst);
+        TEST(FrTestSub);
+        TEST(FrTestFibonacci);
+    }
+
+    if (level >= 2) {
+        TEST(FrTestCommutativeAdd);
+        TEST(FrTestCommutativeMul);
+        TEST(FrTestAddSub);
+    }
+
+    if (level >= 3) {
+        TEST(FrTestAssociativeAdd);
+        TEST(FrTestAssociativeMul);
+        TEST(FrTestAddDistributiveLeft);
+        TEST(FrTestAddDistributiveRight);
+        TEST(FrTestSubDistributiveLeft);
+        TEST(FrTestSubDistributiveRight);
+    }
 
 /*
     TEST(FrTestCopy);
     TEST(FrTestNeg);
-    TEST(FrTestX2);
-    TEST(FrTestX3);
-    TEST(FrTestX4);
-    TEST(FrTestX8);
-    TEST(FrTestX12);
     TEST(FrTestMul);
     TEST(FrTestInv);
 

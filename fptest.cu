@@ -23,42 +23,50 @@ void init() {
     int i = 0;
 
     for (int j=0; j<TESTVALS; j++) {
-        testval[j].val[0] = 0;
-        testval[j].val[1] = 0;
-        testval[j].val[2] = 0;
-        testval[j].val[3] = 0;
-        testval[j].val[4] = 0;
-        testval[j].val[5] = 0;
+        testval[j][0] = 0;
+        testval[j][1] = 0;
+        testval[j][2] = 0;
+        testval[j][3] = 0;
+        testval[j][4] = 0;
+        testval[j][5] = 0;
     }
 
     {
-        testval_t t = { p0, p1, p2, p3, p4, p5 };
-        testval[i] = t;
+        testval[i][0] = p0;
+        testval[i][1] = p1;
+        testval[i][2] = p2;
+        testval[i][3] = p3;
+        testval[i][4] = p4;
+        testval[i][5] = p5;
     }
     i++;
 
     {
-        testval_t t = { ~p0, ~p1, ~p2, ~p3, ~p4, ~p5 };
-        testval[i] = t;
+        testval[i][0] = ~p0;
+        testval[i][1] = ~p1;
+        testval[i][2] = ~p2;
+        testval[i][3] = ~p3;
+        testval[i][4] = ~p4;
+        testval[i][5] = ~p5;
     }
     i++;
 
     i++;    // The third value is 0
 
-    for (int j=0; j<64; i++,j++) { testval[i].val[0] = 1ULL << j; }
-    for (int j=0; j<64; i++,j++) { testval[i].val[1] = 1ULL << j; }
-    for (int j=0; j<64; i++,j++) { testval[i].val[2] = 1ULL << j; }
-    for (int j=0; j<64; i++,j++) { testval[i].val[3] = 1ULL << j; }
-    for (int j=0; j<64; i++,j++) { testval[i].val[4] = 1ULL << j; }
-    for (int j=0; j<64; i++,j++) { testval[i].val[5] = 1ULL << j; }
+    for (int j=0; j<64; i++,j++) { testval[i][0] = 1ULL << j; }
+    for (int j=0; j<64; i++,j++) { testval[i][1] = 1ULL << j; }
+    for (int j=0; j<64; i++,j++) { testval[i][2] = 1ULL << j; }
+    for (int j=0; j<64; i++,j++) { testval[i][3] = 1ULL << j; }
+    for (int j=0; j<64; i++,j++) { testval[i][4] = 1ULL << j; }
+    for (int j=0; j<64; i++,j++) { testval[i][5] = 1ULL << j; }
 
     for (int j=2; j<386; i++,j++) {
-        testval[i].val[0] = ~testval[j].val[0];
-        testval[i].val[1] = ~testval[j].val[1];
-        testval[i].val[2] = ~testval[j].val[2];
-        testval[i].val[3] = ~testval[j].val[3];
-        testval[i].val[4] = ~testval[j].val[4];
-        testval[i].val[5] = ~testval[j].val[5];
+        testval[i][0] = ~testval[j][0];
+        testval[i][1] = ~testval[j][1];
+        testval[i][2] = ~testval[j][2];
+        testval[i][3] = ~testval[j][3];
+        testval[i][4] = ~testval[j][4];
+        testval[i][5] = ~testval[j][5];
     }
 
     FILE *pf = fopen("/dev/urandom", "r");
@@ -67,15 +75,8 @@ void init() {
         return;
 
     size_t result = fread(&testval[i], sizeof(testval_t), TESTVALS-i, pf);
-#if 0
-    // Print all the random values
 
-    for (int j=i; j<TESTVALS; j++) {
-        auto t = &testval[j];
-        printf("0x%016lx%016lx%016lx%016lx%016lx%016lx\n",
-            t->val[5], t->val[4], t->val[3], t->val[2], t->val[1], t->val[0]);
-    }
-#endif
+    printf("Fixed/random test values: %d/%d\n", i, TESTVALS-i);
 }
 
 ////////////////////////////////////////////////////////////
@@ -90,30 +91,48 @@ void init() {
 
 ////////////////////////////////////////////////////////////
 
-int main() {
+int main(int argc, char **argv) {
     clock_t start, end;
     cudaError_t err;
+
+    int level = 0;
+
+    if (argc > 1)
+        level = atoi(argv[1]);
 
     init();
 
     dim3 block = 1;
 
     TEST(FpTestKAT);
-
-    err = cudaDeviceSynchronize();
-
     if (err != cudaSuccess) {
-        fprintf(stderr, "Error %d\n", err);
         return err;
     }
 
-    TEST(FpTestCmp);
-    TEST(FpTestMMA);
+    if (level >= 1) {
+        TEST(FpTestCmp);
+        TEST(FpTestMulConst);
+        TEST(FpTestAdd);
+        TEST(FpTestSub);
+        TEST(FpTestSqr);
+        TEST(FpTestMul);
+        TEST(FpTestInv);
+    }
 
-    TEST(FpTestInv);
-    TEST(FpTestAdd);
-    TEST(FpTestSub);
-    TEST(FpTestMul);
+    if (level >= 2) {
+        TEST(FpTestSqr2);
+        TEST(FpTestCommutativeAdd);
+//      TEST(FpTestCommutativeMul);
+    }
+
+    if (level >= 3) {
+        TEST(FpTestAssociativeAdd);
+//      TEST(FpTestAssociativeMul);
+//      TEST(FpTestDistributiveLeft);
+//      TEST(FpTestDistributiveRight);
+        TEST(FpTestMMA);
+    }
+
     /*
     TEST(FpTestCopy);
     TEST(FpTestNeg);
@@ -130,13 +149,8 @@ int main() {
     TEST(FpTestMultiplicativeIdentity);
     TEST(FpTestAdditiveInverse);
     TEST(FpTestMultiplicativeInverse);
-    TEST(FpTestCommutativeAdd);
-    TEST(FpTestCommutativeMul);
-    TEST(FpTestAssociativeAdd);
-    TEST(FpTestAssociativeMul);
-    TEST(FpTestDistributiveLeft);
-    TEST(FpTestDistributiveRight);
-*/
+    */
+
     err = cudaDeviceSynchronize();
 
     if (err != cudaSuccess)

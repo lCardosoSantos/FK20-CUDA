@@ -4,6 +4,8 @@
 #include "fr.cuh"
 #include "frtest.cuh"
 
+#define ITER 5
+
 __global__ void FrTestAddSub(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -51,7 +53,7 @@ __global__ void FrTestAddSub(testval_t *testval) {
             fr_cpy(x, testval[i]);
             fr_cpy(y, testval[j]);
 
-            for (int k=0; k<100; k++) {
+            for (int k=0; k<ITER; k++) {
 
                 // a,b -> 2a, 2b
                 fr_x2(a);

@@ -14,7 +14,7 @@ __device__ void fr_x12(fr_t &z) {
     "\n\t{"
     "\n\t.reg .u64 t<4>;"
     "\n\t.reg .u32 t4;"
-    "\n\t.reg .pred cp;"
+    "\n\t.reg .pred gt;"
 
     // t = z + z
 
@@ -24,15 +24,6 @@ __device__ void fr_x12(fr_t &z) {
     "\n\taddc.u64.cc t3, %3, %3;"
     "\n\taddc.u32    t4,  0,  0;"
 
-    // if z >= 2^256 then z -= mmu0
-
-    "\n\tsetp.ge.u32 cp, t4, 1;"
-    "\n@cp\tsub.u64.cc  %0, %0, 0xFFFFFFFE00000002U;"
-    "\n@cp\tsubc.u64.cc %1, %1, 0xA77B4805FFFCB7FDU;"
-    "\n@cp\tsubc.u64.cc %2, %2, 0x6673B0101343B00AU;"
-    "\n@cp\tsubc.u64.cc %3, %3, 0xE7DB4EA6533AFA90U;"
-    "\n@cp\tsubc.u32    t4, t4, 0;"
-
     // z = z + t
 
     "\n\tadd.u64.cc  %0, %0, t0;"
@@ -41,14 +32,13 @@ __device__ void fr_x12(fr_t &z) {
     "\n\taddc.u64.cc %3, %3, t3;"
     "\n\taddc.u32    t4,  0, t4;"
 
-    // if z >= 2^256 then z -= mmu0
+    // z = z + z
 
-    "\n\tsetp.ge.u32 cp, t4, 1;"
-    "\n@cp\tsub.u64.cc  %0, %0, 0xFFFFFFFE00000002U;"
-    "\n@cp\tsubc.u64.cc %1, %1, 0xA77B4805FFFCB7FDU;"
-    "\n@cp\tsubc.u64.cc %2, %2, 0x6673B0101343B00AU;"
-    "\n@cp\tsubc.u64.cc %3, %3, 0xE7DB4EA6533AFA90U;"
-    "\n@cp\tsubc.u32    t4, t4, 0;"
+    "\n\tadd.u64.cc  %0, %0, %0;"
+    "\n\taddc.u64.cc %1, %1, %1;"
+    "\n\taddc.u64.cc %2, %2, %2;"
+    "\n\taddc.u64.cc %3, %3, %3;"
+    "\n\taddc.u32    t4, t4, t4;"
 
     // z = z + z
 
@@ -58,39 +48,49 @@ __device__ void fr_x12(fr_t &z) {
     "\n\taddc.u64.cc %3, %3, %3;"
     "\n\taddc.u32    t4, t4, t4;"
 
-    // if z >= 2^256 then z -= mmu0
+    // if z >= 2^259 then z -= 17m
 
-    "\n\tsetp.ge.u32 cp, t4, 1;"
-    "\n@cp\tsub.u64.cc  %0, %0, 0xFFFFFFFE00000002U;"
-    "\n@cp\tsubc.u64.cc %1, %1, 0xA77B4805FFFCB7FDU;"
-    "\n@cp\tsubc.u64.cc %2, %2, 0x6673B0101343B00AU;"
-    "\n@cp\tsubc.u64.cc %3, %3, 0xE7DB4EA6533AFA90U;"
-    "\n@cp\tsubc.u32    t4, t4, 0;"
+    "\n\tsetp.gt.u32 gt, t4, 7;"
+    "\n@gt\tsub.u64.cc  %0, %0, 0xFFFFFFEF00000011U;"
+    "\n@gt\tsubc.u64.cc %1, %1, 0x8F97E432FFE41BEEU;"
+    "\n@gt\tsubc.u64.cc %2, %2, 0x66D75888A3BF585AU;"
+    "\n@gt\tsubc.u64.cc %3, %3, 0xB2C81C85C37551CBU;"
+    "\n@gt\tsubc.u32    t4, t4, 7;"
 
-    // z = z + z
+    // if z >= 2^258 then z -= 8m
 
-    "\n\tadd.u64.cc  %0, %0, %0;"
-    "\n\taddc.u64.cc %1, %1, %1;"
-    "\n\taddc.u64.cc %2, %2, %2;"
-    "\n\taddc.u64.cc %3, %3, %3;"
-    "\n\taddc.u32    t4, t4, t4;"
+    "\n\tsetp.gt.u32 gt, t4, 3;"
+    "\n@gt\tsub.u64.cc  %0, %0, 0xFFFFFFF800000008U;"
+    "\n@gt\tsubc.u64.cc %1, %1, 0x9DED2017FFF2DFF7U;"
+    "\n@gt\tsubc.u64.cc %2, %2, 0x99CEC0404D0EC02AU;"
+    "\n@gt\tsubc.u64.cc %3, %3, 0x9F6D3A994CEBEA41U;"
+    "\n@gt\tsubc.u32    t4, t4, 3;"
 
-    // if z >= 2^256 then z -= mmu0
+    // if z >= 2^257 then z -= 4m
 
-    "\n\tsetp.ge.u32 cp, t4, 1;"
-    "\n@cp\tsub.u64.cc  %0, %0, 0xFFFFFFFE00000002U;"
-    "\n@cp\tsubc.u64.cc %1, %1, 0xA77B4805FFFCB7FDU;"
-    "\n@cp\tsubc.u64.cc %2, %2, 0x6673B0101343B00AU;"
-    "\n@cp\tsubc.u64.cc %3, %3, 0xE7DB4EA6533AFA90U;"
-    "\n@cp\tsubc.u32    t4, t4, 0;"
+    "\n\tsetp.gt.u32 gt, t4, 1;"
+    "\n@gt\tsub.u64.cc  %0, %0, 0xFFFFFFFC00000004U;"
+    "\n@gt\tsubc.u64.cc %1, %1, 0x4EF6900BFFF96FFBU;"
+    "\n@gt\tsubc.u64.cc %2, %2, 0xCCE7602026876015U;"
+    "\n@gt\tsubc.u64.cc %3, %3, 0xCFB69D4CA675F520U;"
+    "\n@gt\tsubc.u32    t4, t4, 1;"
 
-    // if z >= 2^256 then z -= mmu0
+    // if z >= 2^256 then z -= 2m
 
-    "\n\tsetp.ge.u32 cp, t4, 1;"
-    "\n@cp\tsub.u64.cc  %0, %0, 0xFFFFFFFE00000002U;"
-    "\n@cp\tsubc.u64.cc %1, %1, 0xA77B4805FFFCB7FDU;"
-    "\n@cp\tsubc.u64.cc %2, %2, 0x6673B0101343B00AU;"
-    "\n@cp\tsubc.u64    %3, %3, 0xE7DB4EA6533AFA90U;"
+    "\n\tsetp.gt.u32 gt, t4, 0;"
+    "\n@gt\tsub.u64.cc  %0, %0, 0xFFFFFFFE00000002U;"
+    "\n@gt\tsubc.u64.cc %1, %1, 0xA77B4805FFFCB7FDU;"
+    "\n@gt\tsubc.u64.cc %2, %2, 0x6673B0101343B00AU;"
+    "\n@gt\tsubc.u64.cc %3, %3, 0xE7DB4EA6533AFA90U;"
+    "\n@gt\tsubc.u32    t4, t4, 0;"
+
+    // if z >= 2^256 then z -= 2m
+
+    "\n\tsetp.gt.u32 gt, t4, 0;"
+    "\n@gt\tsub.u64.cc  %0, %0, 0xFFFFFFFE00000002U;"
+    "\n@gt\tsubc.u64.cc %1, %1, 0xA77B4805FFFCB7FDU;"
+    "\n@gt\tsubc.u64.cc %2, %2, 0x6673B0101343B00AU;"
+    "\n@gt\tsubc.u64    %3, %3, 0xE7DB4EA6533AFA90U;"
 
     "\n\t}"
     :
