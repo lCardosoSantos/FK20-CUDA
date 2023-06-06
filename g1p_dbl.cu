@@ -14,7 +14,7 @@
 #include "fp_reduce12.cuh"
 
 __device__ void g1p_dbl(g1p_t &p) {
-
+#if 0
     uint64_t
         x0 = p.x[0], x1 = p.x[1], x2 = p.x[2], x3 = p.x[3], x4 = p.x[4], x5 = p.x[5],
         y0 = p.y[0], y1 = p.y[1], y2 = p.y[2], y3 = p.y[3], y4 = p.y[4], y5 = p.y[5],
@@ -178,6 +178,34 @@ __device__ void g1p_dbl(g1p_t &p) {
     p.x[0] = x0; p.x[1] = x1; p.x[2] = x2; p.x[3] = x3; p.x[4] = x4; p.x[5] = x5;
     p.y[0] = y0; p.y[1] = y1; p.y[2] = y2; p.y[3] = y3; p.y[4] = y4; p.y[5] = y5;
     p.z[0] = z0; p.z[1] = z1; p.z[2] = z2; p.z[3] = z3; p.z[4] = z4; p.z[5] = z5;
+#else
+    fp_t x, y, z, v, w;
+
+    fp_cpy(x, p.x);
+    fp_cpy(y, p.y);
+    fp_cpy(z, p.z);
+
+    fp_mul(x, x, y);
+    fp_sqr(v, z);
+    fp_x12(v, v);
+    fp_mul(z, z, y);
+    fp_sqr(y, y);
+    fp_x3(w, v);
+    fp_sub(w, y, w);
+    fp_mul(x, x, w);
+    fp_add(y, y, v);
+    fp_mul(w, w, y);
+    fp_sub(y, y, v);
+    fp_x8(y, y);
+    fp_x2(x, x);
+    fp_mul(z, z, y);
+    fp_mul(y, y, v);
+    fp_add(y, y, w);
+
+    fp_cpy(p.x, x);
+    fp_cpy(p.y, y);
+    fp_cpy(p.z, z);
+#endif
 }
 
 // vim: ts=4 et sw=4 si
