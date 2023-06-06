@@ -40,7 +40,7 @@ __global__ void G1TestKAT(testval_t *) {
     bool    pass    = true;
     size_t  count   = 0;
 
-    g1p_t p, q, r;
+    g1p_t p, q, r, t, u, v;
 
     // 0=0
 
@@ -229,7 +229,11 @@ __global__ void G1TestKAT(testval_t *) {
         g1p_gen(q); // 1G
         g1p_gen(r); // 1G
 
-        for (int i=0; i<20000; i++) {
+        for (int i=0; pass && i<20000; i++) {
+            g1p_cpy(t, p);
+            g1p_cpy(u, q);
+            g1p_cpy(v, r);
+
             g1p_addsub(p, q);
             g1p_addsub(p, q);
             g1p_dbl(r);
@@ -238,6 +242,9 @@ __global__ void G1TestKAT(testval_t *) {
                 pass = false;
 
                 printf("FAIL after %d ok:\n", i);
+                g1p_print("t = ", t);
+                g1p_print("u = ", u);
+                g1p_print("v = ", v);
                 g1p_print("p = ", p);
                 g1p_print("q = ", q);
                 g1p_print("r = ", r);

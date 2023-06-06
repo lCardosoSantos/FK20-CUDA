@@ -4,6 +4,85 @@
 #include "fp.cuh"
 #include "fptest.cuh"
 
+// x*y == y*x
+
+__global__ void FpTestCommutativeMul(testval_t *testval) {
+
+    printf("=== RUN   %s\n", __func__);
+
+    bool    pass    = true;
+    size_t  count   = 0;
+
+    for (int i=0; i<TESTVALS; i++) {
+        for (int j=0; j<TESTVALS; j++) {
+            fp_t x, y;
+
+            fp_cpy(x, testval[i]);
+            fp_cpy(y, testval[j]);
+
+            fp_mul(x, x, testval[j]);  // x * y
+            fp_mul(y, y, testval[i]);  // y * x
+
+            if (fp_neq(x, y)) {
+                pass = false;
+
+                printf("%d,%d: FAILED: inconsistent result\n", i, j);
+                printf("x = "); fp_print(testval[i]);
+                printf("y = "); fp_print(testval[j]);
+                printf("x*y = "); fp_print(x);
+                printf("y*x = "); fp_print(y);
+            }
+            ++count;
+        }
+    }
+    printf("%ld tests\n", count);
+
+    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+}
+
+// (x*y)*z == x*(y*z)
+
+__global__ void FpTestAssociativeMul(testval_t *testval) {
+
+    printf("=== RUN   %s\n", __func__);
+
+    bool    pass    = true;
+    size_t  count   = 0;
+
+    for (int i=0; i<TESTVALS; i++) {
+        for (int j=0; j<TESTVALS; j++) {
+            for (int k=0; k<TESTVALS; k++) {
+                fp_t a, b, c;
+
+                fp_cpy(a, testval[i]);  // x
+                fp_cpy(b, testval[j]);  // y
+                fp_cpy(c, testval[i]);  // x
+
+                fp_mul(a, a, testval[j]);  // x * y
+                fp_mul(a, a, testval[k]);  // (x * y) * z
+
+                fp_mul(b, b, testval[k]);  // y * z
+                fp_mul(c, c, b);           // x * (y * z)
+
+                if (fp_neq(a, c)) {
+                    pass = false;
+
+                    printf("%d,%d,%d: FAILED: inconsistent result\n", i, j, k);
+                    printf("x = "); fp_print(testval[i]);
+                    printf("y = "); fp_print(testval[j]);
+                    printf("z = "); fp_print(testval[k]);
+                    printf("(x*y)*z = "); fp_print(a);
+                    printf("x*(y*z) = "); fp_print(c);
+                }
+                ++count;
+            }
+        }
+    }
+    printf("%ld tests\n", count);
+
+    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+}
+
 __global__ void FpTestMul(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

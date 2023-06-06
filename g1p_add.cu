@@ -104,7 +104,7 @@ __device__ void g1p_add(g1p_t &p, const g1p_t &q) {
     "\n\t.reg .u64 t0<6>, t1<6>, t2<6>, t3<6>;"
 
     "\n\t.reg .u64 t<6>;"
-    "\n\t.reg .u32 t6;"
+    "\n\t.reg .u32 z6;"
     "\n\t.reg .pred ne, gt;"
 
     "\n\tmov.u64 X10,  %0;"

@@ -109,6 +109,8 @@ int main(int argc, char **argv) {
         return err;
     }
 
+    TEST(FpTestFibonacci);
+
     if (level >= 1) {
         TEST(FpTestCmp);
         TEST(FpTestMulConst);
@@ -122,15 +124,17 @@ int main(int argc, char **argv) {
     if (level >= 2) {
         TEST(FpTestSqr2);
         TEST(FpTestCommutativeAdd);
-//      TEST(FpTestCommutativeMul);
+        TEST(FpTestCommutativeMul);
     }
 
     if (level >= 3) {
-        TEST(FpTestAssociativeAdd);
-//      TEST(FpTestAssociativeMul);
-//      TEST(FpTestDistributiveLeft);
-//      TEST(FpTestDistributiveRight);
+        TEST(FpTestAssociativeMul);
         TEST(FpTestMMA);
+        TEST(FpTestAssociativeAdd);
+        TEST(FpTestAddDistributiveLeft);
+        TEST(FpTestAddDistributiveRight);
+        TEST(FpTestSubDistributiveLeft);
+        TEST(FpTestSubDistributiveRight);
     }
 
     /*

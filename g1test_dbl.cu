@@ -7,7 +7,7 @@
 #include "fr.cuh"
 #include "g1test.cuh"
 
-__global__ void G1TestFibonacci(testval_t *) {
+__global__ void G1TestDbl(testval_t *) {
 
     if ((blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) == 0)
         printf("=== RUN   %s\n", __func__);
@@ -15,39 +15,27 @@ __global__ void G1TestFibonacci(testval_t *) {
     bool    pass    = true;
     size_t  count   = 0;
 
-    g1p_t p, q, t;
-    fr_t k, l;
+    g1p_t p, q, u, v;
 
-    g1p_inf(p); // p  = 0
+    g1p_gen(p); // p  = G
     g1p_gen(q); // q  = G
 
-    fr_zero(k);
-    fr_one(l);
+    for (int i=0; pass && i<20000; i++) {
 
-    for (int i=0; pass && i<100; i++) {
+        g1p_cpy(u, p);
+        g1p_cpy(v, q);
 
-        fr_add(k, l);
-        g1p_add(p, q);  // p += q
+        g1p_add(p, p);  // p += p
+        g1p_dbl(q);     // q *= 2
 
-        g1p_gen(t);
-        g1p_mul(t, k);  // kG
-
-        if (g1p_neq(p, t)) {
+        if (g1p_neq(p, q)) {
             pass = false;
-        }
-        ++count;
 
-        if (!pass)
-            break;
-
-        fr_add(l, k);
-        g1p_add(q, p);  // q += p
-
-        g1p_gen(t);
-        g1p_mul(t, l);  // lG
-
-        if (g1p_neq(q, t)) {
-            pass = false;
+            printf("%d: FAILED\n", i);
+            g1p_print("u   =", u);
+            g1p_print("v   =", v);
+            g1p_print("u+u =", p);
+            g1p_print("2v  =", q);
         }
         ++count;
     }

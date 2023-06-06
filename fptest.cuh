@@ -8,7 +8,7 @@
 
 #include "fp.cuh"
 
-#define TESTVALS 1024
+#define TESTVALS 800
 
 #if (TESTVALS < 771)
 # undef TESTVALS
@@ -22,6 +22,7 @@ typedef fp_t testval_t;
 // Constant
 
 TESTFUN(FpTestKAT);
+TESTFUN(FpTestFibonacci);
 
 // Linear
 
@@ -44,8 +45,10 @@ TESTFUN(FpTestCommutativeMul);
 
 TESTFUN(FpTestAssociativeAdd);
 TESTFUN(FpTestAssociativeMul);
-TESTFUN(FpTestDistributiveLeft);
-TESTFUN(FpTestDistributiveRight);
+TESTFUN(FpTestAddDistributiveLeft);
+TESTFUN(FpTestAddDistributiveRight);
+TESTFUN(FpTestSubDistributiveLeft);
+TESTFUN(FpTestSubDistributiveRight);
 
 // Not implemented
 

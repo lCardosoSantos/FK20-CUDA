@@ -4,7 +4,7 @@
 #include "fp.cuh"
 #include "fptest.cuh"
 
-#define ITER 80
+#define ITER 100
 
 __global__ void FpTestMulConst(testval_t *testval) {
 

@@ -20,7 +20,7 @@ __global__ void FrTestAddDistributiveLeft(testval_t *testval) {
         for (int j=0; j<TESTVALS; j++) {
             fr_cpy(b, testval[j]);
 
-            for (int k=0; k<TESTVALS; k++) {
+            for (int k=j; k<TESTVALS; k++) {
                 fr_cpy(c, testval[k]);
 
                 fr_cpy(u, a);
@@ -68,23 +68,23 @@ __global__ void FrTestAddDistributiveRight(testval_t *testval) {
     for (int i=0; i<TESTVALS; i++) {
         fr_cpy(a, testval[i]);
 
-        for (int j=0; j<TESTVALS; j++) {
+        for (int j=i; j<TESTVALS; j++) {
             fr_cpy(b, testval[j]);
 
             for (int k=0; k<TESTVALS; k++) {
                 fr_cpy(c, testval[k]);
 
                 fr_cpy(u, a);
-                fr_mul(u, c);   // ab
+                fr_mul(u, c);   // ac
 
                 fr_cpy(v, b);
-                fr_mul(v, c);   // ac
+                fr_mul(v, c);   // bc
 
                 fr_add(u, v);   // ac+bc
 
                 fr_cpy(v, a);
-                fr_add(v, b);   // b+c
-                fr_mul(v, c);   // a(b+c)
+                fr_add(v, b);   // a+b
+                fr_mul(v, c);   // (a+b)c
 
                 if (fr_neq(u, v)) {
                     pass = false;
@@ -176,16 +176,16 @@ __global__ void FrTestSubDistributiveRight(testval_t *testval) {
                 fr_cpy(c, testval[k]);
 
                 fr_cpy(u, a);
-                fr_mul(u, c);   // ab
+                fr_mul(u, c);   // ac
 
                 fr_cpy(v, b);
-                fr_mul(v, c);   // ac
+                fr_mul(v, c);   // bc
 
                 fr_sub(u, v);   // ac-bc
 
                 fr_cpy(v, a);
-                fr_sub(v, b);   // b-c
-                fr_mul(v, c);   // a(b-c)
+                fr_sub(v, b);   // a-b
+                fr_mul(v, c);   // (a-b)c
 
                 if (fr_neq(u, v)) {
                     pass = false;

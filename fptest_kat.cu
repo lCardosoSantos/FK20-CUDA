@@ -647,6 +647,53 @@ __global__ void FpTestKAT(testval_t *) {
         }
     }
 
+    // Mandelbrot iteration
+
+    if (pass) {
+        fp_t
+            q[] = {
+                { 0x0000000000000001, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
+                { 0x0000000000000002, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
+                { 0x0000000000000003, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 },
+                { 0x7bf6baf3e15212b9, 0x33b894f547f36037, 0xf63c05923a4ece1a, 0x743a6fad39e26e69, 0xbd01dd2df2801c98, 0x13cb2cac4de43f03 },
+            },
+            a[] = {
+                { 0x7bf6baf3e15212b9, 0x33b894f547f36037, 0xf63c05923a4ece1a, 0x743a6fad39e26e69, 0xbd01dd2df2801c98, 0x13cb2cac4de43f03 },
+                { 0x229f7dbddec29029, 0xc967d5d7e7a566d9, 0x8035156b65fc81ae, 0xc7589446725c23c8, 0x9ff2cc573669de3d, 0x12c0ec4bf3d41dd5 },
+                { 0x9a0d2e51810d7c67, 0x9cdffe69a269185b, 0x979132a177105382, 0x10f78c01a49355d5, 0x41982e9bbf0f18e6, 0x160db6f5b80d799f },
+                { 0xb0a6fa474fcd5ddd, 0x133bedb13c02a6bd, 0xf95a8cc2cc516a9d, 0xc81d7d618c6f179c, 0x2b965f0a7f364f32, 0x17f75e634dc09ff8 },
+            };
+
+        fp_t z, x;
+
+        for (int i=0; pass && (i<4); i++) {
+            fp_zero(z);
+            fp_cpy(x, q[i]);
+
+            for (int j=0; j<10000; j++) {
+                fp_sqr(z, z);
+                fp_add(z, z, x);
+            }
+
+            if (fp_neq(z, a[i])) {
+                pass = false;
+
+                printf("fp mandelbrot: FAIL %d\n", i);
+
+                printf("0x%016lx%016lx%016lx%016lx%016lx%016lx\n",
+                q[i][5], q[i][4], q[i][3], q[i][2], q[i][1], q[i][0]);
+
+                printf("Expected 0x%016lx%016lx%016lx%016lx%016lx%016lx\n",
+                a[i][5], a[i][4], a[i][3], a[i][2], a[i][1], a[i][0]);
+
+                printf("Received 0x%016lx%016lx%016lx%016lx%016lx%016lx\n",
+                z[5], z[4], z[3], z[2], z[1], z[0]);
+            }
+
+            ++count;
+        }
+    }
+
     printf("%ld tests\n", count);
 
     printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);

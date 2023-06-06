@@ -16,6 +16,7 @@ typedef struct {
 
 TESTFUN(G1TestKAT);
 TESTFUN(G1TestFibonacci);
+TESTFUN(G1TestDbl);
 TESTFUN(G1TestCmp);
 TESTFUN(G1TestCopy);
 TESTFUN(G1TestEqNeq);
