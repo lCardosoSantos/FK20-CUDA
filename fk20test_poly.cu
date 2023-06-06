@@ -16,6 +16,7 @@ void FK20TestPoly() {
 
     cudaError_t err;
     bool pass = true;
+    clock_t start, end;
 
     //////////////////////////////////////////////////
 
@@ -88,11 +89,18 @@ void FK20TestPoly() {
 
     pass = true;
 
-    printf("=== RUN   %s\n", "fk20_poly2h_fft: polynomial -> h_fft");
-    fk20_poly2h_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
 
+    printf("=== RUN   %s\n", "fk20_poly2h_fft: polynomial -> h_fft");
+
+    start = clock();
+    fk20_poly2h_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
     err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error fk20_poly2h_fft: %d (%s)\n", err, cudaGetErrorName(err));
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error fk20_poly2h_fft: %d (%s)\n", err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
 
     // Clear comparison results
 
