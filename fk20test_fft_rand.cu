@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
 #include <stdio.h>
+#include <unistd.h>
 
 #include "g1.cuh"
 #include "fk20test.cuh"
@@ -37,6 +38,9 @@ void FK20TestFFTRand(FILE *inputStream) {
     if (inputStream == NULL){
         inputStream = stdin;
     }
+
+    if (isatty(fileno(inputStream)))
+        return;
 
     const size_t g1p_sharedmem = 96*1024; //512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
     const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes/word = 16 KiB
