@@ -31,10 +31,16 @@ void FK20TestPoly() {
     //////////////////////////////////////////////////
 
     printf("=== RUN   %s\n", "fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients");
-    fk20_poly2toeplitz_coefficients<<<1, 256>>>(fr_tmp, polynomial);
 
+    start = clock();
+    fk20_poly2toeplitz_coefficients<<<1, 256>>>(fr_tmp, polynomial);
     err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error fk20_poly2toeplitz_coefficients: %d (%s)\n", err, cudaGetErrorName(err));
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error fk20_poly2toeplitz_coefficients: %d (%s)\n", err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
 
     // Clear comparison results
 
@@ -61,10 +67,16 @@ void FK20TestPoly() {
     pass = true;
 
     printf("=== RUN   %s\n", "fk20_poly2hext_fft: polynomial -> hext_fft");
-    fk20_poly2hext_fft<<<1, 256, fr_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
 
+    start = clock();
+    fk20_poly2hext_fft<<<1, 256, fr_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
     err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error fk20_poly2hext_fft: %d (%s)\n", err, cudaGetErrorName(err));
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error fk20_poly2hext_fft: %d (%s)\n", err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
 
     // Clear comparison results
 

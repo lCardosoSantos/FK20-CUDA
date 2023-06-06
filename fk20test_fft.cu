@@ -17,6 +17,7 @@ void FK20TestFFT() {
     const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes/word = 16 KiB
     cudaError_t err;
     bool pass = true;
+    clock_t start, end;
 
     err = cudaFuncSetAttribute(g1p_fft_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
     cudaDeviceSynchronize();
@@ -29,10 +30,15 @@ void FK20TestFFT() {
     //////////////////////////////////////////////////
 
     printf("=== RUN   %s\n", "fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft");
+    start = clock();
     fr_fft_wrapper<<<16, 256, fr_sharedmem>>>(fr_tmp, (fr_t *)toeplitz_coefficients);
-
     err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error fr_fft_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error fr_fft_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
 
     // Clear comparison results
 
@@ -59,9 +65,12 @@ void FK20TestFFT() {
     //////////////////////////////////////////////////
 
     printf("=== RUN   %s\n", "g1p_fft: h -> h_fft");
-    g1p_fft_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, h);
 
+    start = clock();
+    g1p_fft_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, h);
     err = cudaDeviceSynchronize();
+    end = clock();
+
     if (err != cudaSuccess) printf("Error g1p_fft_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     // Clear comparison results
@@ -74,7 +83,10 @@ void FK20TestFFT() {
     g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, h_fft);
 
     err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+    if (err != cudaSuccess)
+        printf("Error g1p_eq_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
 
     // Check FFT result
 
@@ -91,10 +103,16 @@ void FK20TestFFT() {
     pass = true;
 
     printf("=== RUN   %s\n", "g1p_ift: h_fft -> h");
-    g1p_ift_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, h_fft);
 
+    start = clock();
+    g1p_ift_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, h_fft);
     err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_ift_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error g1p_ift_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
 
     // Clear comparison results
 
@@ -123,10 +141,16 @@ void FK20TestFFT() {
     pass = true;
 
     printf("=== RUN   %s\n", "g1p_ift: hext_fft -> h");
-    g1p_ift_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, hext_fft);
 
+    start = clock();
+    g1p_ift_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, hext_fft);
     err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_ift_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error g1p_ift_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
 
     // Clear comparison results
 
