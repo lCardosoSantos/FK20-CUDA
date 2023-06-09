@@ -14,10 +14,12 @@ FRTEST=frtest frtest_kat frtest_cmp frtest_add frtest_mul frtest_sub frtest_adds
 G1TEST=g1test g1test_kat g1test_fibonacci g1test_dbl
 FK20TEST=fk20test fk20test_poly fk20_testvector fk20test_fft fk20test_fft_rand
 FFTTEST=fftTest parseFFTTest
+FK20_512TEST=fk20_512test xext_fft polynomial toeplitz_coefficients toeplitz_coefficients_fft hext_fft h h_fft
 
 FP_OBJS=$(FP:%=%.o)
 FR_OBJS=$(FR:%=%.o)
 G1_OBJS=$(G1:%=%.o)
+FK20_OBJS=$(FK20:%=%.o)
 FK20_OBJS=$(FK20:%=%.o)
 
 FP_CUBIN=$(FP:%=%.cubin)
@@ -30,12 +32,13 @@ FRTEST_OBJS=$(FRTEST:%=%.o)
 G1TEST_OBJS=$(G1TEST:%=%.o)
 FK20TEST_OBJS=$(FK20TEST:%=%.o)
 FFTTEST_OBJS=$(FFTTEST:%=%.o)
+FK20_512TEST_OBJS=$(FK20_512TEST:%=%.o)
 
 OBJS=$(FP_OBJS) $(FR_OBJS) $(G1_OBJS) $(FK20_OBJS)
 CUBIN=$(FP_CUBIN) $(FR_CUBIN) $(G1_CUBIN) $(FK20_CUBIN)
-TEST_OBJS=$(FPTEST_OBJS) $(FRTEST_OBJS) $(G1TEST_OBJS) $(FK20TEST_OBJS)
+TEST_OBJS=$(FPTEST_OBJS) $(FRTEST_OBJS) $(G1TEST_OBJS) $(FK20TEST_OBJS) $(FK20_512TEST_OBJS)
 
-all: fptest frtest g1test fk20test ffttest# $(OBJS) $(TEST_OBJS)
+all: fptest frtest g1test fk20test ffttest fk20_512test # $(OBJS) $(TEST_OBJS)
 
 run: fp-run fr-run g1-run fk20-run
 
@@ -123,6 +126,9 @@ fk20test: $(FK20TEST_OBJS) $(OBJS)
 ffttest: $(FFTTEST_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
+fk20_512test: $(FK20_512TEST_OBJS) $(OBJS)
+	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
+
 fp%.cubin: fp%.cu fp.cuh
 	$(NVCC) $(NVOPTS) --gpu-architecture=sm_86 -o $@ -c $< -cubin
 
@@ -131,3 +137,44 @@ fr%.cubin: fr%.cu fr.cuh
 
 g1%.cubin: g1%.cu g1.cuh fp.cuh fr.cuh
 	$(NVCC) $(NVOPTS) --gpu-architecture=sm_86 -o $@ -c $< -cubin
+
+##############################
+#
+# Test vector generation
+#
+##############################
+
+512:=$(shell ./512.sh)
+
+define ROW_template =
+ test/fk20test-fib-1-$(1).cu: FK20Py/fk20_multi_cuda.py FK20Py/fk20_single_cuda.py
+	-mkdir -p test
+	$$< 1 $(1) > $$@
+ ALL_ROWS += test/fk20test-fib-1-$(1).cu
+endef
+
+$(foreach i,$512,$(eval $(call ROW_template,$i)))
+
+testvector: $(ALL_ROWS)
+
+xext_fft.cu: test/fk20test-fib-1-0.cu
+	(echo \#include \"g1.cuh\"; echo; grep -A 40993 -B1 xext_fft $< ) > $@
+
+polynomial.cu: $(ALL_ROWS)
+	./polynomial.sh > $@
+
+toeplitz_coefficients.cu: $(ALL_ROWS)
+	./toeplitz_coefficients.sh > $@
+
+toeplitz_coefficients_fft.cu: $(ALL_ROWS)
+	./toeplitz_coefficients_fft.sh > $@
+
+hext_fft.cu: $(ALL_ROWS)
+	./hext_fft.sh > $@
+
+h.cu: $(ALL_ROWS)
+	./h.sh > $@
+
+h_fft.cu: $(ALL_ROWS)
+	./h_fft.sh > $@
+
