@@ -58,9 +58,10 @@ cubin: $(CUBIN)
 
 clean:
 	-rm -f $(OBJS) $(TEST_OBJS) $(CUBIN)
+	-rm -f xext_fft.cu polynomial.cu toeplitz_coefficients.cu toeplitz_coefficients_fft.cu hext_fft.cu h.cu h_fft.cu
 
 clobber: clean
-	-rm -f fptest frtest g1test fk20test
+	-rm -f fptest frtest g1test fk20test fk20_512test
 
 %.o: %.cu
 	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $<

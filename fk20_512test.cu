@@ -31,7 +31,7 @@ static __managed__ g1p_t g1p_tmp[512*512];
 
 int main() {
 
-    const size_t g1p_sharedmem = 96*1024; //512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
+    const size_t g1p_sharedmem = 512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
     const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes/word = 16 KiB
     cudaError_t err;
     bool pass = true;
