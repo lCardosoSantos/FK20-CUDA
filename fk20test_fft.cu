@@ -28,7 +28,7 @@ void FK20TestFFT() {
     if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     //////////////////////////////////////////////////
-
+#if 0
     printf("=== RUN   %s\n", "fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft");
     start = clock();
     fr_fft_wrapper<<<16, 256, fr_sharedmem>>>(fr_tmp, (fr_t *)toeplitz_coefficients);
@@ -60,10 +60,9 @@ void FK20TestFFT() {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
-
+    PRINTPASS(pass);
     //////////////////////////////////////////////////
-
+#endif 
     printf("=== RUN   %s\n", "g1p_fft: h -> h_fft");
 
     start = clock();
@@ -96,8 +95,9 @@ void FK20TestFFT() {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
+    #if 0
     //////////////////////////////////////////////////
 
     pass = true;
@@ -134,7 +134,7 @@ void FK20TestFFT() {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
     //////////////////////////////////////////////////
 
@@ -172,8 +172,8 @@ void FK20TestFFT() {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
-
+    PRINTPASS(pass);
+#endif
     //////////////////////////////////////////////////
 }
 

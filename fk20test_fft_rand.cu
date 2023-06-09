@@ -4,6 +4,8 @@
 
 #include "g1.cuh"
 #include "fk20test.cuh"
+#include "fk20.cuh"
+
 
 static __managed__ uint8_t cmp[16*512];
 static __managed__ fr_t fr_tmp[16*512];
@@ -46,6 +48,8 @@ void FK20TestFFTRand(FILE *inputStream) {
     const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes/word = 16 KiB
     cudaError_t err;
     bool pass = true;
+    clock_t start, end;
+
 
     err = cudaFuncSetAttribute(g1p_fft_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
     cudaDeviceSynchronize();
@@ -55,9 +59,16 @@ void FK20TestFFTRand(FILE *inputStream) {
     cudaDeviceSynchronize();
     if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
+    err = cudaFuncSetAttribute(fk20_poly2hext_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, fr_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+
+    err = cudaFuncSetAttribute(fk20_poly2h_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+
     //////////////////////////////////////////////////
     //Load data
-    printf("=== RUN   fft Tests read from filestream\n");
 
     readAndCheck(polynomial);
     readAndCheck(setup);
@@ -68,9 +79,117 @@ void FK20TestFFTRand(FILE *inputStream) {
     readAndCheck(h);
     readAndCheck(h_fft);
 
+    printf("==== RUN Poly tests from filestream\n");
     //////////////////////////////////////////////////
 
+    printf("=== RUN   %s\n", "fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients");
 
+    start = clock();
+    fk20_poly2toeplitz_coefficients<<<1, 256>>>(fr_tmp, polynomial);
+    err = cudaDeviceSynchronize();
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error fk20_poly2toeplitz_coefficients: %d (%s)\n", err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
+
+    // Clear comparison results
+
+    for (int i=0; i<16*512; i++)
+        cmp[i] = 0;
+
+    fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients);
+
+    err = cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error fr_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
+
+    // Check result
+
+    for (int i=0; i<16*512; i++)
+        if (cmp[i] != 1) {
+            printf("poly2tc error %04x\n", i);
+            pass = false;
+        }
+
+    PRINTPASS(pass);
+
+    //////////////////////////////////////////////////
+
+    pass = true;
+
+    printf("=== RUN   %s\n", "fk20_poly2hext_fft: polynomial -> hext_fft");
+
+    start = clock();
+    fk20_poly2hext_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
+    err = cudaDeviceSynchronize();
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error fk20_poly2hext_fft: %d (%s)\n", err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
+
+    // Clear comparison results
+
+    for (int i=0; i<512; i++)
+        cmp[i] = 0;
+
+    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft);
+
+    err = cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
+
+    // Check result
+
+    for (int i=0; i<512; i++)
+        if (cmp[i] != 1) {
+            pass = false;
+            printf("!%d ", i);
+        }
+
+    PRINTPASS(pass);
+
+    //////////////////////////////////////////////////
+
+    pass = true;
+    printf("=== RUN   %s\n", "fk20_poly2h_fft: polynomial -> h_fft");
+
+    start = clock();
+    fk20_poly2h_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
+    err = cudaDeviceSynchronize();
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error fk20_poly2h_fft: %d (%s)\n", err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
+
+    // Clear comparison results
+
+    for (int i=0; i<512; i++)
+        cmp[i] = 0;
+
+    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)h_fft);
+
+    err = cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
+
+    // Check result
+
+    for (int i=0; i<512; i++)
+        if (cmp[i] != 1) {
+            pass = false;
+        }
+
+    PRINTPASS(pass);
+
+    //////////////////////////////////////////////////
+
+    printf("=== RUN   fft Tests read from filestream\n");
+    //////////////////////////////////////////////////
+
+    pass = true;
     printf("=== RUN   %s\n", "fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft");
     fr_fft_wrapper<<<16, 256, fr_sharedmem>>>(fr_tmp, (fr_t *)toeplitz_coefficients);
 
@@ -97,10 +216,11 @@ void FK20TestFFTRand(FILE *inputStream) {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
     //////////////////////////////////////////////////
 
+    pass = true;
     printf("=== RUN   %s\n", "g1p_fft: h -> h_fft");
     g1p_fft_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, h);
 
@@ -127,7 +247,7 @@ void FK20TestFFTRand(FILE *inputStream) {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
     //////////////////////////////////////////////////
 
@@ -159,7 +279,7 @@ void FK20TestFFTRand(FILE *inputStream) {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
     //////////////////////////////////////////////////
 
@@ -191,7 +311,7 @@ void FK20TestFFTRand(FILE *inputStream) {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
     //////////////////////////////////////////////////
     

@@ -60,7 +60,7 @@ void FK20TestPoly() {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
     //////////////////////////////////////////////////
 
@@ -69,7 +69,7 @@ void FK20TestPoly() {
     printf("=== RUN   %s\n", "fk20_poly2hext_fft: polynomial -> hext_fft");
 
     start = clock();
-    fk20_poly2hext_fft<<<1, 256, fr_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
+    fk20_poly2hext_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
     err = cudaDeviceSynchronize();
     end = clock();
 
@@ -95,7 +95,7 @@ void FK20TestPoly() {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
     //////////////////////////////////////////////////
 
@@ -131,7 +131,7 @@ void FK20TestPoly() {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
     //////////////////////////////////////////////////
 }

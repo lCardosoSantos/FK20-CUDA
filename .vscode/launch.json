@@ -24,10 +24,10 @@
             ]
         },
         {
-            "name": "CUDA C++: Launch",
+            "name": "CUDA C++: Launch FK20Test",
             "type": "cuda-gdb",
             "request": "launch",
-            "program": "${workspaceFolder}/ffttest"
+            "program": "${workspaceFolder}/fk20test"
         }
     ]
 }
