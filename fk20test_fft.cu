@@ -13,7 +13,7 @@ static __managed__ g1p_t g1p_tmp[512];
 
 void FK20TestFFT() {
 
-    const size_t g1p_sharedmem = 96*1024; //512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
+    const size_t g1p_sharedmem = 512*3*6*8;//96*1024; //512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
     const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes/word = 16 KiB
     cudaError_t err;
     bool pass = true;
@@ -28,7 +28,7 @@ void FK20TestFFT() {
     if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     //////////////////////////////////////////////////
-#if 0
+
     printf("=== RUN   %s\n", "fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft");
     start = clock();
     fr_fft_wrapper<<<16, 256, fr_sharedmem>>>(fr_tmp, (fr_t *)toeplitz_coefficients);
@@ -62,7 +62,7 @@ void FK20TestFFT() {
 
     PRINTPASS(pass);
     //////////////////////////////////////////////////
-#endif 
+
     printf("=== RUN   %s\n", "g1p_fft: h -> h_fft");
 
     start = clock();
@@ -97,7 +97,6 @@ void FK20TestFFT() {
 
     PRINTPASS(pass);
 
-    #if 0
     //////////////////////////////////////////////////
 
     pass = true;
@@ -173,7 +172,6 @@ void FK20TestFFT() {
         }
 
     PRINTPASS(pass);
-#endif
     //////////////////////////////////////////////////
 }
 
