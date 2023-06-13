@@ -20,6 +20,7 @@ void FK20TestPoly() {
     fk20_poly2h_fft_test();
 }
 
+
 void fk20_poly2toeplitz_coefficients_test(){
     clock_t start, end;
     cudaError_t err;
@@ -100,6 +101,11 @@ void fk20_poly2hext_fft_test(){
 }
 
 void fk20_poly2h_fft_test(){
+    char g1p_tmp_filename    [60];
+    char h_fft_filename      [60];
+    char xext_fft_filename   [60];
+    char polynomial_filename [60];
+
     clock_t start, end;
     cudaError_t err;
     bool pass = true;
@@ -110,10 +116,33 @@ void fk20_poly2h_fft_test(){
 
     printf("=== RUN   %s\n", "fk20_poly2h_fft: polynomial -> h_fft");
 
+    //for(int i=0; i<512; i++) 
+    //    g1p_tmp[i] = {{0,0,0,0,0,0},{0,0,0,0,0,0},{0,0,0,0,0,0}};
+
+    //sprintf(g1p_tmp_filename   ,   "g1p_tmp.a%d.out", i);
+    //sprintf(h_fft_filename     ,     "h_fft.a%d.out", i);
+    //sprintf(xext_fft_filename  ,  "xext_fft.a%d.out", i);
+    //sprintf(polynomial_filename,"polynomial.a%d.out", i);
+    //
+    //WRITEU64TOFILE(g1p_tmp_filename   , &g1p_tmp, 512*sizeof(g1p_t)/8);
+    //WRITEU64TOFILE(h_fft_filename     , &h_fft, 512*sizeof(g1p_t)/8);
+    //WRITEU64TOFILE(xext_fft_filename  , xext_fft, 16*512*sizeof(g1p_t)/8);
+    //WRITEU64TOFILE(polynomial_filename, polynomial, 4096*sizeof(fr_t)/8);
+
     start = clock();
     fk20_poly2h_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft); //this causes memory issues
     err = cudaDeviceSynchronize();
     end = clock();
+
+    //sprintf(g1p_tmp_filename   ,   "g1p_tmp.d%d.out", i);
+    //sprintf(h_fft_filename     ,     "h_fft.d%d.out", i);
+    //sprintf(xext_fft_filename  ,  "xext_fft.d%d.out", i);
+    //sprintf(polynomial_filename,"polynomial.d%d.out", i);
+    //
+    //WRITEU64TOFILE(g1p_tmp_filename   , &g1p_tmp, 512*sizeof(g1p_t)/8);
+    //WRITEU64TOFILE(h_fft_filename     , &h_fft, 512*sizeof(g1p_t)/8);
+    //WRITEU64TOFILE(xext_fft_filename  , xext_fft, 16*512*sizeof(g1p_t)/8);
+    //WRITEU64TOFILE(polynomial_filename, polynomial, 4096*sizeof(fr_t)/8);
 
     if (err != cudaSuccess)
         printf("Error fk20_poly2h_fft: %d (%s)\n", err, cudaGetErrorName(err));

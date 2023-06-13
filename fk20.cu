@@ -215,12 +215,14 @@ __global__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_
     // Accumulators and temporaries in registers or local
     // (thread-interleaved global) memory
 
-    g1p_t a0, a1, t;
+    g1p_t a0={0}; 
+    g1p_t a1={0}; 
+    g1p_t t={0};
 
     polynomial += 4096 * bid;
     h_fft += 512 * bid;
 
-    // MSM Loop
+     // MSM Loop
 
     for (int i=0; i<16; i++) {
 
@@ -267,16 +269,20 @@ __global__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_
     /// Part 3
 
     // Inverse G1 FFT
-
     g1p_ift(g1p_tmp, g1p_tmp);
 
+    
     // Zero upper half of intermediate result
-
     g1p_inf(g1p_tmp[256+tid]);
 
     // G1 FFT
-
     g1p_fft(h_fft, g1p_tmp);
+
 }
 
 // vim: ts=4 et sw=4 si
+
+
+    //debug, copy g1p_tmp to output
+//    g1p_cpy(h_fft[tid+  0], g1p_tmp[tid+  0]);
+//    g1p_cpy(h_fft[tid+256], g1p_tmp[tid+256]);
