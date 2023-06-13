@@ -134,3 +134,15 @@ dmypy.json
 
 # Object files
 *.o
+
+# Test executables and directory
+*test
+
+# Generated test vectors
+xext_fft.cu
+polynomial.cu
+toeplitz_coefficients.cu
+toeplitz_coefficients_fft.cu
+hext_fft.cu
+h.cu
+h_fft.cu
