@@ -9,11 +9,21 @@
 const size_t g1p_sharedmem = 512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
 const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes/word = 16 KiB
 
-// Tests
+// Complete tests
 
 void FK20TestFFT();
 void FK20TestPoly();
 void FK20TestFFTRand(FILE *inputStream);
+
+//Single tests
+void fk20_poly2toeplitz_coefficients_test();
+void fk20_poly2hext_fft_test();
+void fk20_poly2h_fft_test();
+
+void toeplitz_coefficients2toeplitz_coefficients_fft();
+void h2h_fft();
+void h_fft2h();
+void hext_fft2h();
 
 //pretty print
 #define COLOR_RED     "\x1b[31m"

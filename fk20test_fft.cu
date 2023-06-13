@@ -12,22 +12,19 @@ static __managed__ fr_t fr_tmp[16*512];
 static __managed__ g1p_t g1p_tmp[512];
 
 void FK20TestFFT() {
+    printf(">>>>");
 
-    const size_t g1p_sharedmem = 512*3*6*8;//96*1024; //512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
-    const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes/word = 16 KiB
+    toeplitz_coefficients2toeplitz_coefficients_fft();
+    h2h_fft();
+    h_fft2h();
+    hext_fft2h();
+
+}
+
+void toeplitz_coefficients2toeplitz_coefficients_fft(){
     cudaError_t err;
     bool pass = true;
     clock_t start, end;
-
-    err = cudaFuncSetAttribute(g1p_fft_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    err = cudaFuncSetAttribute(g1p_ift_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    //////////////////////////////////////////////////
 
     printf("=== RUN   %s\n", "fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft");
     start = clock();
@@ -62,6 +59,16 @@ void FK20TestFFT() {
 
     PRINTPASS(pass);
     //////////////////////////////////////////////////
+}
+
+void h2h_fft(){
+    cudaError_t err;
+    bool pass = true;
+    clock_t start, end;
+
+    err = cudaFuncSetAttribute(g1p_fft_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "g1p_fft: h -> h_fft");
 
@@ -96,10 +103,16 @@ void FK20TestFFT() {
         }
 
     PRINTPASS(pass);
+}
 
-    //////////////////////////////////////////////////
+void h_fft2h(){
+    cudaError_t err;
+    bool pass = true;
+    clock_t start, end;
 
-    pass = true;
+    err = cudaFuncSetAttribute(g1p_ift_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "g1p_ift: h_fft -> h");
 
@@ -134,10 +147,16 @@ void FK20TestFFT() {
         }
 
     PRINTPASS(pass);
+}
 
-    //////////////////////////////////////////////////
+void hext_fft2h(){
+    cudaError_t err;
+    bool pass = true;
+    clock_t start, end;
 
-    pass = true;
+    err = cudaFuncSetAttribute(g1p_ift_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "g1p_ift: hext_fft -> h");
 
@@ -172,7 +191,7 @@ void FK20TestFFT() {
         }
 
     PRINTPASS(pass);
-    //////////////////////////////////////////////////
 }
+
 
 // vim: ts=4 et sw=4 si

@@ -13,22 +13,17 @@ static __managed__ fr_t fr_tmp[16*512];
 static __managed__ g1p_t g1p_tmp[512];
 
 void FK20TestPoly() {
+    printf(">>>>");
+    
+    fk20_poly2toeplitz_coefficients_test();
+    fk20_poly2hext_fft_test();
+    fk20_poly2h_fft_test();
+}
 
+void fk20_poly2toeplitz_coefficients_test(){
+    clock_t start, end;
     cudaError_t err;
     bool pass = true;
-    clock_t start, end;
-
-    //////////////////////////////////////////////////
-
-    err = cudaFuncSetAttribute(fk20_poly2hext_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, fr_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    err = cudaFuncSetAttribute(fk20_poly2h_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    //////////////////////////////////////////////////
 
     printf("=== RUN   %s\n", "fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients");
 
@@ -61,10 +56,16 @@ void FK20TestPoly() {
         }
 
     PRINTPASS(pass);
+}
 
-    //////////////////////////////////////////////////
+void fk20_poly2hext_fft_test(){
+    clock_t start, end;
+    cudaError_t err;
+    bool pass = true;
 
-    pass = true;
+    err = cudaFuncSetAttribute(fk20_poly2hext_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, fr_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "fk20_poly2hext_fft: polynomial -> hext_fft");
 
@@ -96,16 +97,21 @@ void FK20TestPoly() {
         }
 
     PRINTPASS(pass);
+}
 
-    //////////////////////////////////////////////////
+void fk20_poly2h_fft_test(){
+    clock_t start, end;
+    cudaError_t err;
+    bool pass = true;
 
-    pass = true;
-
+    err = cudaFuncSetAttribute(fk20_poly2h_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "fk20_poly2h_fft: polynomial -> h_fft");
 
     start = clock();
-    fk20_poly2h_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
+    fk20_poly2h_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft); //this causes memory issues
     err = cudaDeviceSynchronize();
     end = clock();
 
@@ -132,8 +138,7 @@ void FK20TestPoly() {
         }
 
     PRINTPASS(pass);
-
-    //////////////////////////////////////////////////
 }
+
 
 // vim: ts=4 et sw=4 si
