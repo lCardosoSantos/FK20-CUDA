@@ -7,9 +7,9 @@
 #include "fk20.cuh"
 
 
-static __managed__ uint8_t cmp[16*512];
-static __managed__ fr_t fr_tmp[16*512];
-static __managed__ g1p_t g1p_tmp[512];
+//static __managed__ uint8_t cmp[16*512];
+//static __managed__ fr_t fr_tmp[16*512];
+//static __managed__ g1p_t g1p_tmp[512];
 
 static  __managed__ size_t elementsRead;
 static  __managed__ fr_t  polynomial[4096];
@@ -44,32 +44,6 @@ void FK20TestFFTRand(FILE *inputStream) {
     if (isatty(fileno(inputStream)))
         return;
 
-    const size_t g1p_sharedmem = 96*1024; //512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
-    const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes/word = 16 KiB
-    cudaError_t err;
-    bool pass = true;
-    clock_t start, end;
-
-
-    err = cudaFuncSetAttribute(g1p_fft_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    err = cudaFuncSetAttribute(g1p_ift_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    err = cudaFuncSetAttribute(fk20_poly2hext_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, fr_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    err = cudaFuncSetAttribute(fk20_poly2h_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    //////////////////////////////////////////////////
-    //Load data
-
     readAndCheck(polynomial);
     readAndCheck(setup);
     readAndCheck(xext_fft);
@@ -79,241 +53,14 @@ void FK20TestFFTRand(FILE *inputStream) {
     readAndCheck(h);
     readAndCheck(h_fft);
 
-    printf("==== RUN Poly tests from filestream\n");
-    //////////////////////////////////////////////////
-
-    printf("=== RUN   %s\n", "fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients");
-
-    start = clock();
-    fk20_poly2toeplitz_coefficients<<<1, 256>>>(fr_tmp, polynomial);
-    err = cudaDeviceSynchronize();
-    end = clock();
-
-    if (err != cudaSuccess)
-        printf("Error fk20_poly2toeplitz_coefficients: %d (%s)\n", err, cudaGetErrorName(err));
-    else
-        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
-
-    // Clear comparison results
-
-    for (int i=0; i<16*512; i++)
-        cmp[i] = 0;
-
-    fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients);
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error fr_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
-
-    // Check result
-
-    for (int i=0; i<16*512; i++)
-        if (cmp[i] != 1) {
-            printf("poly2tc error %04x\n", i);
-            pass = false;
-        }
-
-    PRINTPASS(pass);
-
-    //////////////////////////////////////////////////
-
-    pass = true;
-
-    printf("=== RUN   %s\n", "fk20_poly2hext_fft: polynomial -> hext_fft");
-
-    start = clock();
-    fk20_poly2hext_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
-    err = cudaDeviceSynchronize();
-    end = clock();
-
-    if (err != cudaSuccess)
-        printf("Error fk20_poly2hext_fft: %d (%s)\n", err, cudaGetErrorName(err));
-    else
-        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
-
-    // Clear comparison results
-
-    for (int i=0; i<512; i++)
-        cmp[i] = 0;
-
-    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft);
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
-
-    // Check result
-
-    for (int i=0; i<512; i++)
-        if (cmp[i] != 1) {
-            pass = false;
-            printf("!%d ", i);
-        }
-
-    PRINTPASS(pass);
-
-    //////////////////////////////////////////////////
-
-    pass = true;
-    printf("=== RUN   %s\n", "fk20_poly2h_fft: polynomial -> h_fft");
-
-    start = clock();
-    fk20_poly2h_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial, (const g1p_t *)xext_fft);
-    err = cudaDeviceSynchronize();
-    end = clock();
-
-    if (err != cudaSuccess)
-        printf("Error fk20_poly2h_fft: %d (%s)\n", err, cudaGetErrorName(err));
-    else
-        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
-
-    // Clear comparison results
-
-    for (int i=0; i<512; i++)
-        cmp[i] = 0;
-
-    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)h_fft);
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
-
-    // Check result
-
-    for (int i=0; i<512; i++)
-        if (cmp[i] != 1) {
-            pass = false;
-        }
-
-    PRINTPASS(pass);
-
-    //////////////////////////////////////////////////
-
-    printf("=== RUN   fft Tests read from filestream\n");
-    //////////////////////////////////////////////////
-
-    pass = true;
-    printf("=== RUN   %s\n", "fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft");
-    fr_fft_wrapper<<<16, 256, fr_sharedmem>>>(fr_tmp, (fr_t *)toeplitz_coefficients);
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error fr_fft_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    // Clear comparison results
-
-    for (int i=0; i<16*512; i++)
-        cmp[i] = 0;
-
-    // printf("  %s(%p, %d, %p, %p)\n", "fr_eq_wrapper", cmp, 512, fr_tmp, h_fft); fflush(stdout);
-
-    fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients_fft);
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error fr_eq_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    // Check FFT result
-
-    for (int i=0; pass && i<16*512; i++)
-        if (cmp[i] != 1) {
-            printf("FFT error %d\n", i);
-            pass = false;
-        }
-
-    PRINTPASS(pass);
-
-    //////////////////////////////////////////////////
-
-    pass = true;
-    printf("=== RUN   %s\n", "g1p_fft: h -> h_fft");
-    g1p_fft_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, h);
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_fft_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    // Clear comparison results
-
-    for (int i=0; i<512; i++)
-        cmp[i] = 0;
-
-    // printf("  %s(%p, %d, %p, %p)\n", "g1p_eq_wrapper", cmp, 512, g1p_tmp, h_fft); fflush(stdout);
-
-    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, h_fft);
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    // Check FFT result
-
-    for (int i=0; pass && i<512; i++)
-        if (cmp[i] != 1) {
-            printf("FFT error %d\n", i);
-            pass = false;
-        }
-
-    PRINTPASS(pass);
-
-    //////////////////////////////////////////////////
-
-    pass = true;
-
-    printf("=== RUN   %s\n", "g1p_ift: h_fft -> h");
-    g1p_ift_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, h_fft);
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_ift_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    // Clear comparison results
-
-    for (int i=0; i<512; i++)
-        cmp[i] = 0;
-
-    // printf("  %s(%p, %d, %p, %p)\n", "g1p_eq_wrapper", cmp, 512, g1p_tmp, h); fflush(stdout);
-
-    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, h);
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    // Check IFT result
-
-    for (int i=0; pass && i<512; i++)
-        if (cmp[i] != 1) {
-            printf("IFT error %d\n", i);
-            pass = false;
-        }
-
-    PRINTPASS(pass);
-
-    //////////////////////////////////////////////////
-
-    pass = true;
-
-    printf("=== RUN   %s\n", "g1p_ift: hext_fft -> h");
-    g1p_ift_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, hext_fft);
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_ift_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    // Clear comparison results
-
-    for (int i=0; i<512; i++)
-        cmp[i] = 0;
-
-    // printf("  %s(%p, %d, %p, %p)\n", "g1p_eq_wrapper", cmp, 512, g1p_tmp, h); fflush(stdout);
-
-    g1p_eq_wrapper<<<8, 32>>>(cmp, 256, g1p_tmp, h);    // Note: h, not hext, hence 256, not 512
-
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    // Check IFT result
-
-    for (int i=0; pass && i<256; i++)
-        if (cmp[i] != 1) {
-            printf("IFT error %d\n", i);
-            pass = false;
-        }
-
-    PRINTPASS(pass);
-
-    //////////////////////////////////////////////////
+    fk20_poly2toeplitz_coefficients_test(polynomial, toeplitz_coefficients);
+    fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
+    fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
+
+    toeplitz_coefficients2toeplitz_coefficients_fft(toeplitz_coefficients, toeplitz_coefficients_fft);
+    h2h_fft(h, h_fft);
+    h_fft2h(h_fft, h);
+    hext_fft2h(hext_fft, h);
     
     //Null the pointer if we used STDIN
     if (inputStream == stdin){
