@@ -33,6 +33,29 @@ void hext_fft2h(g1p_t hext_fft_l[512], g1p_t h_l[512]);
 
 #define PRINTPASS(pass) printf("--- %s\n", pass ? COLOR_GREEN "PASS" COLOR_RESET: COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET);
 
+//debug macros for dumping elements to file
+#define WRITEU64(writing_stream, var, nu64Elem) do{ \
+    uint64_t *pointer = (uint64_t *)(*var); \
+    for (int count=0; count<(nu64Elem); count++){ \
+        fprintf(writing_stream,"%016lx\n",pointer[count]); \
+    } \
+}while(0)
+
+#define WRITEU64TOFILE(fileName, var, nu64Elem) do{ \
+    FILE * filepointer = fopen(fileName, "w");     \
+    WRITEU64(filepointer, var, (nu64Elem));           \
+    fclose(filepointer);                           \
+}while(0) 
+
+//sadly cuda doesn't allow fprintf inside a kernel, so printfItis.
+#define WRITEU64STDOUT(var, nu64Elem) do{ \
+    uint64_t *pointer = (uint64_t *)(*var); \
+    for (int count=0; count<(nu64Elem); count++){ \
+        printf("%016lx\n",pointer[count]); \
+    } \
+}while(0)
+
+
 #endif // FK20_TEST_CUH
 
 // vim: ts=4 et sw=4 si

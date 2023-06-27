@@ -14,10 +14,24 @@ static __managed__ g1p_t g1p_tmp[512];
 
 void FK20TestPoly() {
     printf(">>>>\n");
-    
-    fk20_poly2toeplitz_coefficients_test(polynomial, toeplitz_coefficients);
-    fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
+    //fk20_poly2toeplitz_coefficients_test(polynomial, toeplitz_coefficients);
+    //fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
+        printf(">>>>\n");
+            for(int i=0; i<(512*16); i++){
+                fr_tmp[i][0]=1;
+                fr_tmp[i][1]=1;
+                fr_tmp[i][2]=1;
+                fr_tmp[i][3]=1;
+            } 
     fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
+        //for(int i=0; i<16; i++){
+        //    printf("\n%d = \n", i);
+        //    for(int j=0; j<512; j++){
+        //        printf("%lu\t", fr_tmp[(i*512)+j][0]);
+        //        if(j%16==15) printf("\n");
+        //    }
+        //}
+    exit(9);
 }
 
 

@@ -7,6 +7,28 @@
 #include "fk20.cuh"
 #include "fk20test.cuh"
 
+//debug macros for dumping elements to file
+
+#define WRITEU64(writing_stream, var, nu64Elem) do{ \
+    uint64_t *pointer = (uint64_t *)(*var); \
+    for (int count=0; count<(nu64Elem); count++){ \
+        fprintf(writing_stream,"%016lx\n",pointer[count]); \
+    } \
+}while(0)
+
+#define WRITEU64TOFILE(fileName, var, nu64Elem) do{ \
+    FILE * filepointer = fopen(fileName, "w");     \
+    WRITEU64(filepointer, var, (nu64Elem));           \
+    fclose(filepointer);                           \
+}while(0) 
+
+#define WRITEU64STDOUT(var, nu64Elem) do{ \
+    uint64_t *pointer = (uint64_t *)(*var); \
+    for (int count=0; count<(nu64Elem); count++){ \
+        printf("%016lx\n",pointer[count]); \
+    } \
+}while(0)
+
 // Testvector inputs
 
 extern __managed__ g1p_t xext_fft[16][512];
@@ -26,40 +48,77 @@ extern __managed__ g1p_t h_fft[512*512];
 // Workspace
 
 static __managed__ uint8_t cmp[512*16*512];
-static __managed__ fr_t fr_tmp[512*16*512];
+static __managed__ fr_t fr_tmp_[512*16*512];
 static __managed__ g1p_t g1p_tmp[512*512];
 
-int main() {
+//512 tests
+void toeplitz_coefficients2toeplitz_coefficients_fft_512();
+void h2h_fft_512();
+void h_fft2h_512();
+void hext_fft2h_512();
 
-    const size_t g1p_sharedmem = 512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
-    const size_t fr_sharedmem = 512*4*8; // 512 residues * 4 words/residue * 8 bytes/word = 16 KiB
+void fk20_poly2toeplitz_coefficients_512(int execN);
+void fk20_poly2hext_fft_512();
+void fk20_poly2h_fft_512();
+
+int main() {
+    /*
+    //all tests
+    toeplitz_coefficients2toeplitz_coefficients_fft_512();
+    h2h_fft_512();
+    h_fft2h_512();
+    hext_fft2h_512();
+    fk20_poly2toeplitz_coefficients_512(); //problematic one
+    fk20_poly2hext_fft_512();
+    fk20_poly2h_fft_512();
+    */
+
+    //remove uncertainty
+    for(int i=0; i<(512*16*512); i++){
+        fr_tmp_[i][0]=1;
+        fr_tmp_[i][1]=1;
+        fr_tmp_[i][2]=1;
+        fr_tmp_[i][3]=1;
+    } 
+    
+    fk20_poly2toeplitz_coefficients_512(0); //problematic one
+    toeplitz_coefficients2toeplitz_coefficients_fft_512();
+    fk20_poly2toeplitz_coefficients_512(1); //problematic one
+
+    return 0;
+}
+
+/*
+Luan's notes
+causes fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients to fail idx0201:
+    toeplitz_coefficients -> toeplitz_coefficients_fft 
+
+causes fk20_poly2h_fft: polynomial -> h_fft to fail (cudaErrorIllegalAddress)
+    fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft
+
+    g1p_fft: h -> h_fft
+
+    g1p_ift: h_fft -> h
+
+    g1p_ift: hext_fft -> h
+
+    fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients
+
+    fk20_poly2hext_fft: polynomial -> hext_fft
+
+
+Some awk magix
+awk 'getline p<f && p!=$0 {print "Line " NR ":" RS $0 RS p; exit}' f=file2 file1
+*/
+
+void toeplitz_coefficients2toeplitz_coefficients_fft_512(){
     cudaError_t err;
     bool pass = true;
     clock_t start, end;
 
-    //////////////////////////////////////////////////
-
-    err = cudaFuncSetAttribute(g1p_fft_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    err = cudaFuncSetAttribute(g1p_ift_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    err = cudaFuncSetAttribute(fk20_poly2hext_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, fr_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    err = cudaFuncSetAttribute(fk20_poly2h_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
-    //////////////////////////////////////////////////
-
     printf("=== RUN   %s\n", "fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft");
     start = clock();
-    fr_fft_wrapper<<<512*16, 256, fr_sharedmem>>>(fr_tmp, (fr_t *)toeplitz_coefficients);
+    fr_fft_wrapper<<<512*16, 256, fr_sharedmem>>>(fr_tmp_, (fr_t *)toeplitz_coefficients);
     err = cudaDeviceSynchronize();
     end = clock();
 
@@ -73,9 +132,9 @@ int main() {
     for (int i=0; i<512*16*512; i++)
         cmp[i] = 0;
 
-    // printf("  %s(%p, %d, %p, %p)\n", "fr_eq_wrapper", cmp, 512, fr_tmp, h_fft); fflush(stdout);
+    // printf("  %s(%p, %d, %p, %p)\n", "fr_eq_wrapper", cmp, 512, fr_tmp_, h_fft); fflush(stdout);
 
-    fr_eq_wrapper<<<256, 32>>>(cmp, 512*16*512, fr_tmp, (fr_t *)toeplitz_coefficients_fft);
+    fr_eq_wrapper<<<256, 32>>>(cmp, 512*16*512, fr_tmp_, (fr_t *)toeplitz_coefficients_fft);
 
     err = cudaDeviceSynchronize();
     if (err != cudaSuccess) printf("Error fr_eq_wrapper: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
@@ -89,11 +148,19 @@ int main() {
         }
 
     PRINTPASS(pass);
+}
 
-    //////////////////////////////////////////////////
+void h2h_fft_512(){
+    cudaError_t err;
+    bool pass = true;
+    clock_t start, end;
+
+    err = cudaFuncSetAttribute(g1p_fft_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+
 
     printf("=== RUN   %s\n", "g1p_fft: h -> h_fft");
-
     start = clock();
     g1p_fft_wrapper<<<512, 256, g1p_sharedmem>>>(g1p_tmp, h);
     err = cudaDeviceSynchronize();
@@ -126,9 +193,17 @@ int main() {
 
     PRINTPASS(pass);
 
-    //////////////////////////////////////////////////
+}
 
-    pass = true;
+void h_fft2h_512(){
+    cudaError_t err;
+    bool pass = true;
+    clock_t start, end;
+
+    err = cudaFuncSetAttribute(g1p_ift_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+
 
     printf("=== RUN   %s\n", "g1p_ift: h_fft -> h");
 
@@ -164,9 +239,16 @@ int main() {
 
     PRINTPASS(pass);
 
-    //////////////////////////////////////////////////
-#if 0
-    pass = true;
+}
+
+void hext_fft2h_512(){
+    cudaError_t err;
+    bool pass = true;
+    clock_t start, end;
+
+    err = cudaFuncSetAttribute(g1p_ift_wrapper, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "g1p_ift: hext_fft -> h");
 
@@ -201,16 +283,44 @@ int main() {
         }
 
     PRINTPASS(pass);
-#endif
-    //////////////////////////////////////////////////
 
-    pass = true;
+}
+
+void fk20_poly2toeplitz_coefficients_512(int execN){ //TODO: Luan main work focus
+        char polyFilename [64];
+        char fr_tmpFilename [64];
+        char toeplitzFilename [64];
+        //remove some uncertainty
+        //memset(fr_tmp_, 1, 512*16*512*sizeof(fr_t)); //fr_tmp_[512*16*512];
+        //for(int i=0; i<(512*16*512); i++){
+        //    fr_tmp_[i][0]=0;//1;
+        //    fr_tmp_[i][1]=0;//1;
+        //    fr_tmp_[i][2]=0;//1;
+        //    fr_tmp_[i][3]=0;//1;
+        //} 
+
+
+    cudaError_t err;
+    bool pass = true;
+    clock_t start, end;
 
     printf("=== RUN   %s\n", "fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients");
-
     start = clock();
-    fk20_poly2toeplitz_coefficients<<<512, 256>>>(fr_tmp, polynomial);
+        //sprintf(polyFilename,     "pol%d-%d.out", execN, 0  );
+        //sprintf(fr_tmpFilename,   "tmp%d-%d.out", execN, 0  );
+        //sprintf(toeplitzFilename, "toe%d-%d.out", execN, 0  );
+        //WRITEU64TOFILE(polyFilename,     polynomial,            512*4096*4);
+        //WRITEU64TOFILE(fr_tmpFilename,   fr_tmp_,                512*16*512*4);
+        //WRITEU64TOFILE(toeplitzFilename, toeplitz_coefficients, 512*16*512*4);
+    fk20_poly2toeplitz_coefficients<<<512, 256>>>(fr_tmp_, polynomial);
     err = cudaDeviceSynchronize();
+        //sprintf(polyFilename,     "pol%d-%d.out", execN, 1  );
+        //sprintf(fr_tmpFilename,   "tmp%d-%d.out", execN, 1  );
+        //sprintf(toeplitzFilename, "toe%d-%d.out", execN, 1  );
+        //WRITEU64TOFILE(polyFilename,     polynomial,            512*4096*4);
+        //WRITEU64TOFILE(fr_tmpFilename,   fr_tmp_,                512*16*512*4);
+        //WRITEU64TOFILE(toeplitzFilename, toeplitz_coefficients, 512*16*512*4);
+
     end = clock();
 
     if (err != cudaSuccess)
@@ -223,24 +333,32 @@ int main() {
     for (int i=0; i<512*16*512; i++)
         cmp[i] = 0;
 
-    fr_eq_wrapper<<<1, 32>>>(cmp, 512*16*512, fr_tmp, (fr_t *)toeplitz_coefficients);
+    fr_eq_wrapper<<<1, 32>>>(cmp, 512*16*512, fr_tmp_, (fr_t *)toeplitz_coefficients);
 
     err = cudaDeviceSynchronize();
     if (err != cudaSuccess) printf("Error fr_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
 
     // Check result
-
+    
     for (int i=0; pass && i<512*16*512; i++)
         if (cmp[i] != 1) {
-            printf("poly2tc error %04x\n", i);
+            printf("poly2toeplitz_coefficients error at idx 0x%04x\n", i);
             pass = false;
         }
 
     PRINTPASS(pass);
+}
 
-    //////////////////////////////////////////////////
+void fk20_poly2hext_fft_512(){
+    cudaError_t err;
+    bool pass = true;
+    clock_t start, end;
 
     pass = true;
+
+    err = cudaFuncSetAttribute(fk20_poly2hext_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, fr_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "fk20_poly2hext_fft: polynomial -> hext_fft");
 
@@ -273,10 +391,16 @@ int main() {
 
     PRINTPASS(pass);
 
-    //////////////////////////////////////////////////
+}
 
-    pass = true;
+void fk20_poly2h_fft_512(){
+    cudaError_t err;
+    bool pass = true;
+    clock_t start, end;
 
+    err = cudaFuncSetAttribute(fk20_poly2h_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "fk20_poly2h_fft: polynomial -> h_fft");
 
@@ -308,10 +432,8 @@ int main() {
         }
 
     PRINTPASS(pass);
-
-    //////////////////////////////////////////////////
-
-    return 0;
 }
+
+
 
 // vim: ts=4 et sw=4 si

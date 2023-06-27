@@ -124,7 +124,3 @@ int main(){
 
     return 0;
 }
-/*
-TODO:
-    [ ] Make it so the parser returns stuff in the formats defined in g1.cuh
-*/

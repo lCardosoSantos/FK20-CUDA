@@ -109,8 +109,9 @@ __global__ void fk20_poly2toeplitz_coefficients(fr_t *toeplitz_coefficients, con
 
         // Zero the other half of coefficients before FFT
 
-        fr_zero(toeplitz_coefficients[tid+1]);
+        fr_zero(toeplitz_coefficients[512*i+tid+1]);
     }
+    
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -215,9 +216,15 @@ __global__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_
     // Accumulators and temporaries in registers or local
     // (thread-interleaved global) memory
 
-    g1p_t a0={0}; 
-    g1p_t a1={0}; 
-    g1p_t t={0};
+    //g1p_t a0={0}; 
+    //g1p_t a1={0}; 
+    //g1p_t t={0};
+    
+    //TODO: this is the correct way but breaks
+    g1p_t a0, a1, t; 
+    g1p_inf(a0);
+    g1p_inf(a1);
+
 
     polynomial += 4096 * bid;
     h_fft += 512 * bid;

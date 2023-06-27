@@ -5,12 +5,18 @@
 #include "fk20.cuh"
 #include "fk20test.cuh"
 #include "fk20_testvector.cuh"
+//int main() {
+//    FK20TestPoly();
+//    FK20TestFFT();
+//    FK20TestFFTRand(NULL);
+//
+//    return 0;
+//}
+
 int main() {
     FK20TestPoly();
-    FK20TestFFT();
-    FK20TestFFTRand(NULL);
+
 
     return 0;
 }
-
 // vim: ts=4 et sw=4 si
