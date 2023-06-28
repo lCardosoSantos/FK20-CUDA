@@ -56,7 +56,7 @@ __global__ void G1TestFibonacci(testval_t *) {
     {
         printf("%ld tests\n", count);
 
-        printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+        PRINTPASS(pass);
     }
 }
 

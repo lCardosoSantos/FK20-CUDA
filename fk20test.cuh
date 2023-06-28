@@ -3,7 +3,11 @@
 
 #ifndef FK20_TEST_CUH
 #define FK20_TEST_CUH
+
 #include <stdio.h>
+
+#include "test.h"
+
 // Shared memory sizes
 
 const size_t g1p_sharedmem = 512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
@@ -24,14 +28,6 @@ void toeplitz_coefficients2toeplitz_coefficients_fft(fr_t toeplitz_coefficients_
 void h2h_fft(g1p_t h_l[512], g1p_t h_fft_l[512]);
 void h_fft2h(g1p_t h_fft_l[512], g1p_t h_l[512]);
 void hext_fft2h(g1p_t hext_fft_l[512], g1p_t h_l[512]);
-
-//pretty print
-#define COLOR_RED     "\x1b[31m"
-#define COLOR_GREEN   "\x1b[32m"
-#define COLOR_RESET   "\x1b[0m"
-#define COLOR_BOLD    "\x1b[1m"
-
-#define PRINTPASS(pass) printf("--- %s\n", pass ? COLOR_GREEN "PASS" COLOR_RESET: COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET);
 
 //debug macros for dumping elements to file
 #define WRITEU64(writing_stream, var, nu64Elem) do{ \

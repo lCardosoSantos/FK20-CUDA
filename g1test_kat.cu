@@ -257,7 +257,7 @@ __global__ void G1TestKAT(testval_t *) {
     {
         printf("%ld test%s\n", count, count == 1 ? "" : "s");
 
-        printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+        PRINTPASS(pass);
     }
 }
 
