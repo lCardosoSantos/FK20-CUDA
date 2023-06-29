@@ -71,7 +71,7 @@ __global__ void FrTestFibonacci(testval_t *) {
 
     printf("%ld tests passed\n", count);
 
-    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+    PRINTPASS(pass);
 }
 
 // vim: ts=4 et sw=4 si

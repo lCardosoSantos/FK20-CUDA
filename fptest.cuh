@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+#include "test.h"
 #include "fp.cuh"
 
 #define TESTVALS 800

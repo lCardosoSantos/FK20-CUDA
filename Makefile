@@ -7,12 +7,14 @@ COPTS= -O2
 FP=fp fp_cpy fp_reduce6 fp_eq fp_neq fp_neg fp_x2 fp_x3 fp_x4 fp_x8 fp_x12 fp_add fp_sub fp_sqr fp_mul fp_inv fp_isone fp_iszero fp_nonzero fp_mma
 FR=fr fr_cpy fr_reduce4 fr_eq fr_neq fr_neg fr_x2 fr_x3 fr_x4 fr_x8 fr_x12 fr_add fr_sub fr_sqr fr_mul fr_inv fr_isone fr_iszero fr_nonzero fr_roots fr_fft fr_addsub
 G1=g1a g1p g1p_compare g1p_add g1p_dbl g1p_mul g1p_neg g1p_scale g1p_ispoint g1p_sub g1p_addsub g1p_fft
-FK20=fk20
+FK20=fk20 fk20_poly2h_fft fk20_poly2toeplitz_coefficients fk20_poly2toeplitz_coefficients_fft fk20_poly2hext_fft
 
 FPTEST=fptest fptest_kat fptest_cmp fptest_mma fptest_inv fptest_add fptest_sub fptest_mul fptest_mulconst fptest_sqr fptest_distributive fptest_fibonacci
 FRTEST=frtest frtest_kat frtest_cmp frtest_add frtest_mul frtest_sub frtest_addsub frtest_fibonacci frtest_mulconst frtest_distributive frtest_fft
 G1TEST=g1test g1test_kat g1test_fibonacci g1test_dbl
 FK20TEST=fk20test fk20test_poly fk20_testvector fk20test_fft fk20test_fft_rand
+FK20TEST_TC=fk20test_poly2toeplitz_coefficients polynomial toeplitz_coefficients
+FK20TEST_TCFFT=fk20test_poly2toeplitz_coefficients_fft polynomial toeplitz_coefficients_fft
 FFTTEST=fftTest parseFFTTest
 FK20_512TEST=fk20_512test xext_fft polynomial toeplitz_coefficients toeplitz_coefficients_fft hext_fft h h_fft
 
@@ -31,6 +33,8 @@ FPTEST_OBJS=$(FPTEST:%=%.o)
 FRTEST_OBJS=$(FRTEST:%=%.o)
 G1TEST_OBJS=$(G1TEST:%=%.o)
 FK20TEST_OBJS=$(FK20TEST:%=%.o)
+FK20TEST_TC_OBJS=$(FK20TEST_TC:%=%.o)
+FK20TEST_TCFFT_OBJS=$(FK20TEST_TCFFT:%=%.o)
 FFTTEST_OBJS=$(FFTTEST:%=%.o)
 FK20_512TEST_OBJS=$(FK20_512TEST:%=%.o)
 
@@ -38,7 +42,7 @@ OBJS=$(FP_OBJS) $(FR_OBJS) $(G1_OBJS) $(FK20_OBJS)
 CUBIN=$(FP_CUBIN) $(FR_CUBIN) $(G1_CUBIN) $(FK20_CUBIN)
 TEST_OBJS=$(FPTEST_OBJS) $(FRTEST_OBJS) $(G1TEST_OBJS) $(FK20TEST_OBJS) $(FK20_512TEST_OBJS)
 
-all: fptest frtest g1test fk20test ffttest fk20_512test # $(OBJS) $(TEST_OBJS)
+all: fptest frtest g1test fk20test ffttest fk20_512test fk20test_poly2toeplitz_coefficients fk20test_poly2toeplitz_coefficients_fft
 
 run: fp-run fr-run g1-run fk20-run
 
@@ -61,7 +65,7 @@ clean:
 	-rm -f xext_fft.cu polynomial.cu toeplitz_coefficients.cu toeplitz_coefficients_fft.cu hext_fft.cu h.cu h_fft.cu
 
 clobber: clean
-	-rm -f fptest frtest g1test fk20test fk20_512test
+	-rm -f fptest frtest g1test fk20test fk20_512test fk20test_poly2toeplitz_coefficients fk20test_poly2toeplitz_coefficients_fft
 
 %.o: %.cu
 	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $<
@@ -123,6 +127,12 @@ g1test: $(G1TEST_OBJS) $(OBJS)
 
 fk20test: $(FK20TEST_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
+
+fk20test_poly2toeplitz_coefficients: $(FK20TEST_TC_OBJS) $(OBJS)
+	$(NVCC) $(NVARCH) -o $@ $^ -G # --resource-usage
+
+fk20test_poly2toeplitz_coefficients_fft: $(FK20TEST_TCFFT_OBJS) $(OBJS)
+	$(NVCC) $(NVARCH) -o $@ $^ -G # --resource-usage
 
 ffttest: $(FFTTEST_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage

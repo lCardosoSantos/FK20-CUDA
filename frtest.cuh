@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+#include "test.h"
 #include "fr.cuh"
 
 #define TESTVALS 768

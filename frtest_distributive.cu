@@ -52,7 +52,7 @@ __global__ void FrTestAddDistributiveLeft(testval_t *testval) {
     }
     printf("%ld tests\n", count);
 
-    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+    PRINTPASS(pass);
 }
 
 // (a+b)c = ac+bc

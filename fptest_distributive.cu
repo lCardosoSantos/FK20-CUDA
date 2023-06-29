@@ -52,7 +52,7 @@ __global__ void FpTestAddDistributiveLeft(testval_t *testval) {
     }
     printf("%ld tests\n", count);
 
-    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+    PRINTPASS(pass);
 }
 
 // (a+b)c = ac+bc
@@ -102,7 +102,7 @@ __global__ void FpTestAddDistributiveRight(testval_t *testval) {
     }
     printf("%ld tests\n", count);
 
-    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+    PRINTPASS(pass);
 }
 
 // a(b-c) = ab-ac
@@ -153,7 +153,7 @@ __global__ void FpTestSubDistributiveLeft(testval_t *testval) {
     }
     printf("%ld tests\n", count);
 
-    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+    PRINTPASS(pass);
 }
 
 // (a-b)c = ac-bc
@@ -203,7 +203,7 @@ __global__ void FpTestSubDistributiveRight(testval_t *testval) {
     }
     printf("%ld tests\n", count);
 
-    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+    PRINTPASS(pass);
 }
 
 // vim: ts=4 et sw=4 si

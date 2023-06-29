@@ -50,7 +50,7 @@ void FrTestFFT() {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
     //////////////////////////////////////////////////
 
@@ -78,7 +78,7 @@ void FrTestFFT() {
             pass = false;
         }
 
-    printf("--- %s\n", pass ? "PASS" : "FAIL");
+    PRINTPASS(pass);
 
     //////////////////////////////////////////////////
 }

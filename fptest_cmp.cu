@@ -115,7 +115,7 @@ __global__ void FpTestCmp(testval_t *testval) {
     }
     printf("%ld tests\n", count);
 
-    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+    PRINTPASS(pass);
 }
 
 // vim: ts=4 et sw=4 si

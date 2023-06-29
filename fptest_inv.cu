@@ -77,7 +77,7 @@ __global__ void FpTestInv(testval_t *testval) {
     }
 
 done:
-    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+    PRINTPASS(pass);
 }
 
 // vim: ts=4 et sw=4 si

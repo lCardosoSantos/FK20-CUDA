@@ -112,7 +112,7 @@ __global__ void FpTestSqr(testval_t *testval) {
 
     printf("%ld tests\n", count);
 
-    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+    PRINTPASS(pass);
 }
 
 __global__ void FpTestSqr2(testval_t *testval) {
@@ -158,7 +158,7 @@ __global__ void FpTestSqr2(testval_t *testval) {
 
     printf("%ld tests\n", count);
 
-    printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
+    PRINTPASS(pass);
 }
 
 // vim: ts=4 et sw=4 si
