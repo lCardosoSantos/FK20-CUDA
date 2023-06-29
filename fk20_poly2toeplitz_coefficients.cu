@@ -44,7 +44,7 @@ __global__ void fk20_poly2toeplitz_coefficients(fr_t *toeplitz_coefficients, con
 
         // Zero the other half of coefficients before FFT
 
-        fr_zero(toeplitz_coefficients[tid+1]);
+        fr_zero(toeplitz_coefficients[512*i+tid+1]);
     }
 }
 

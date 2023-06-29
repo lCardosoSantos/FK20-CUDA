@@ -81,9 +81,7 @@ int main() {
         fr_tmp_[i][3]=1;
     } 
     
-    fk20_poly2toeplitz_coefficients_512(0); //problematic one
-    toeplitz_coefficients2toeplitz_coefficients_fft_512();
-    fk20_poly2toeplitz_coefficients_512(1); //problematic one
+    fk20_poly2h_fft_512();
 
     return 0;
 }

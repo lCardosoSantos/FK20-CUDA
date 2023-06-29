@@ -7,6 +7,8 @@
 #include "fk20_testvector.cuh"
 
 int main() {
+
+    printf("%d %d\n", 512*16*sizeof(fr_t), 512*sizeof(g1p_t));
     FK20TestPoly();
     FK20TestFFT();
     FK20TestFFTRand(NULL);
