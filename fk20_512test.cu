@@ -62,17 +62,17 @@ void fk20_poly2hext_fft_512();
 void fk20_poly2h_fft_512();
 
 int main() {
-    /*
+    
     //all tests
     toeplitz_coefficients2toeplitz_coefficients_fft_512();
     h2h_fft_512();
     h_fft2h_512();
     hext_fft2h_512();
-    fk20_poly2toeplitz_coefficients_512(); //problematic one
+    fk20_poly2toeplitz_coefficients_512(1); //problematic one
     fk20_poly2hext_fft_512();
     fk20_poly2h_fft_512();
-    */
-
+    
+    /*
     //remove uncertainty
     for(int i=0; i<(512*16*512); i++){
         fr_tmp_[i][0]=1;
@@ -82,7 +82,7 @@ int main() {
     } 
     
     fk20_poly2h_fft_512();
-
+    */
     return 0;
 }
 

@@ -46,7 +46,7 @@ __global__ void fk20_poly2hext_fft(g1p_t *hext_fft, const fr_t *polynomial, cons
 
         // Copy from the polynomial into half of the coefficient array
 
-        unsigned src = 512*i + 16*tid + 15 - i;
+        unsigned src = 16*tid + 15 - i;
         unsigned dst = (tid+257) % 512;
 
         if (tid > 0)
