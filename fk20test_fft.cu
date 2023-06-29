@@ -27,6 +27,7 @@ void toeplitz_coefficients2toeplitz_coefficients_fft(fr_t toeplitz_coefficients_
     clock_t start, end;
 
     printf("=== RUN   %s\n", "fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft");
+    memset(fr_tmp, 0xdeadbeef,16*512*sizeof(fr_t)); //pattern on tmp dest.
     start = clock();
     fr_fft_wrapper<<<16, 256, fr_sharedmem>>>(fr_tmp, (fr_t *)toeplitz_coefficients_l);
     err = cudaDeviceSynchronize();
@@ -71,6 +72,7 @@ void h2h_fft(g1p_t h_l[512], g1p_t h_fft_l[512]){
     if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "g1p_fft: h -> h_fft");
+    memset(g1p_tmp,0xdeadbeef,512*sizeof(g1p_t)); //pattern on tmp dest
 
     start = clock();
     g1p_fft_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, h_l);
@@ -115,7 +117,7 @@ void h_fft2h(g1p_t h_fft_l[512], g1p_t h_l[512]){
     if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "g1p_ift: h_fft -> h");
-
+    memset(g1p_tmp,0xdeadbeef,512*sizeof(g1p_t)); //pattern on tmp dest
     start = clock();
     g1p_ift_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, h_fft_l);
     err = cudaDeviceSynchronize();
@@ -159,7 +161,7 @@ void hext_fft2h(g1p_t hext_fft_l[512], g1p_t h_l[512]){
     if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "g1p_ift: hext_fft -> h");
-
+    memset(g1p_tmp,0xdeadbeef,512*sizeof(g1p_t)); //pattern on tmp dest
     start = clock();
     g1p_ift_wrapper<<<1, 256, g1p_sharedmem>>>(g1p_tmp, hext_fft_l);
     err = cudaDeviceSynchronize();
