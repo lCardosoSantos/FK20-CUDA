@@ -46,8 +46,8 @@ __global__ void fk20_poly2hext_fft(g1p_t *hext_fft, const fr_t *polynomial, cons
 
         // Copy from the polynomial into half of the coefficient array
 
-        unsigned src = tid*16+15-i;
-        unsigned dst = (tid+257)%512;
+        unsigned src = 512*i + 16*tid + 15 - i;
+        unsigned dst = (tid+257) % 512;
 
         if (tid > 0)
             fr_cpy(fr[dst], polynomial[src]);
@@ -68,12 +68,12 @@ __global__ void fk20_poly2hext_fft(g1p_t *hext_fft, const fr_t *polynomial, cons
 
         // Multiply and accumulate
 
-        g1p_cpy(t, xext_fft[512*i+tid+0]);
+        g1p_cpy(t, xext_fft[512*i + tid + 0]);
         g1p_mul(t, fr[tid]);
         __syncthreads();
         g1p_add(a0, t);
 
-        g1p_cpy(t, xext_fft[512*i+tid+256]);
+        g1p_cpy(t, xext_fft[512*i + tid + 256]);
         g1p_mul(t, fr[tid+256]);
         __syncthreads();
         g1p_add(a1, t);
