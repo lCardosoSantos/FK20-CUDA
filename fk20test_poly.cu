@@ -17,6 +17,7 @@ void FK20TestPoly() {
     fk20_poly2toeplitz_coefficients_test(polynomial, toeplitz_coefficients);
     fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
     fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
+    fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
 }
 
 
@@ -142,5 +143,44 @@ void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1
     PRINTPASS(pass);
 }
 
+void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][512], 
+                  g1p_t xext_fft_l[16][512]){
+    clock_t start, end;
+    cudaError_t err;
+    bool pass = true;
+
+    printf("=== RUN   %s\n", "fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft");
+    memset(g1p_tmp,0xdeadbeef,512*sizeof(g1p_t)); //pattern on tmp dest
+    start = clock();
+
+    fk20_msm_xext_fftANDtoepliz_fft2hext_fft<<<1, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft_l, (const g1p_t*)xext_fft_l);
+    
+    err = cudaDeviceSynchronize();
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error fk20_poly2h_fft: %d (%s)\n", err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
+
+    // Clear comparison results
+
+    for (int i=0; i<512; i++)
+        cmp[i] = 0;
+
+    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft_l);
+
+    err = cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
+
+    // Check result
+
+    for (int i=0; i<512; i++)
+        if (cmp[i] != 1) {
+            pass = false;
+        }
+
+    PRINTPASS(pass);
+}
 
 // vim: ts=4 et sw=4 si
