@@ -1,5 +1,8 @@
 .doc/
 test/
+*.out
+*.7z
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

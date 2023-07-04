@@ -13,8 +13,9 @@ static __managed__ fr_t fr_tmp[16*512];
 static __managed__ g1p_t g1p_tmp[512];
 
 void FK20TestPoly() {
-    printf(">>>>\n");
+    printf(">>>> Poly Tests\n");
     fk20_poly2toeplitz_coefficients_test(polynomial, toeplitz_coefficients);
+    fk20_poly2toeplitz_coefficients_fft_test(polynomial, toeplitz_coefficients_fft);
     fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
     fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
     fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
@@ -159,7 +160,7 @@ void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][51
     end = clock();
 
     if (err != cudaSuccess)
-        printf("Error fk20_poly2h_fft: %d (%s)\n", err, cudaGetErrorName(err));
+        printf("Error fk20_msm: %d (%s)\n", err, cudaGetErrorName(err));
     else
         printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
 
@@ -178,6 +179,45 @@ void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][51
     for (int i=0; i<512; i++)
         if (cmp[i] != 1) {
             pass = false;
+        }
+
+    PRINTPASS(pass);
+}
+
+void fk20_poly2toeplitz_coefficients_fft_test(fr_t polynomial_l[4096], fr_t toeplitz_coefficients_fft_l[16][512]){
+    clock_t start, end;
+    cudaError_t err;
+    bool pass = true;
+
+    printf("=== RUN   %s\n", "fk20_poly2toeplitz_coefficients_fft: polynomial -> toeplitz_coefficients_fft");
+    memset(fr_tmp, 0xdeadbeef,16*512*sizeof(fr_t)); //pattern on tmp dest.
+    start = clock();
+    fk20_poly2toeplitz_coefficients_fft<<<1, 256>>>(fr_tmp, polynomial_l);
+    err = cudaDeviceSynchronize();
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error fk20_poly2toeplitz_coefficients_fft: %d (%s)\n", err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
+
+    // Clear comparison results
+
+    for (int i=0; i<16*512; i++)
+        cmp[i] = 0;
+
+    fr_eq_wrapper<<<16, 256>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients_fft_l);
+
+    err = cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error fr_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
+
+    // Check result
+
+    for (int i=0; i<16*512; i++)
+        if (cmp[i] != 1) {
+            printf("poly2tc error %04x\n", i);
+            pass = false;
+            break;
         }
 
     PRINTPASS(pass);

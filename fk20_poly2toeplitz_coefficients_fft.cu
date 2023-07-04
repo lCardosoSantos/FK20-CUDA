@@ -12,6 +12,7 @@ static __device__ fr_t fr_tmp[512*16*512];     // 256 KiB memory per threadblock
 // parameters:
 // - in  polynomial                 array with 16*512*gridDim.x elements
 // - out toeplitz_coefficients_fft  array with 16*512*gridDim.x elements
+// TODO: Fail tests and overwrites memory.
 
 __global__ void fk20_poly2toeplitz_coefficients_fft(fr_t *toeplitz_coefficients_fft, const fr_t *polynomial) {
 

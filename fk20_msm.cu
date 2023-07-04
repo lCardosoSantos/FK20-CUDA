@@ -10,6 +10,7 @@
 // - in  xext_fft                       array with dimensions [16][512]
 // - out hext_fft_l                     array with dimensions [16][512]
 // Note: shared memory is used both in MSM loop and FFTs, without conflict
+////TODO: add to 512 tests
 
 __global__ void fk20_msm_xext_fftANDtoepliz_fft2hext_fft(g1p_t *hext_fft_l, const fr_t *toeplitz_coefficients_fft_l, const g1p_t *xext_fft) {
     if (gridDim.y  !=   1) return;
