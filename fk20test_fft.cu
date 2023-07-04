@@ -15,7 +15,7 @@ static __managed__ g1p_t g1p_tmp[512];
 void FK20TestFFT() {
     printf(">>>> FFT tests\n");
 
-    toeplitz_coefficients2toeplitz_coefficients_fft(toeplitz_coefficients, toeplitz_coefficients_fft);
+    toeplitz_coefficients2toeplitz_coefficients_fft(toeplitz_coefficients, toeplitz_coefficients_fft); 
     h2h_fft(h, h_fft);
     h_fft2h(h_fft, h);
     hext_fft2h(hext_fft, h);
