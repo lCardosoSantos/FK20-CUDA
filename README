@@ -1,0 +1,19 @@
+# FK20 project
+
+
+## Luan's todolist
+Here in this section I keep track of the activities I am working on. Meaningful indentation
+Last update: 20230706
+
+- Improvements in the code base:
+  - [ ]  Implement a CRC check on the KAT data before and after every test.
+  - [ ]  Benchmark: Implement a separate benchmark with GPU spool-up.
+  - [ ]  512row: Move KATs to a dinamic lib
+- Debug:
+  - [ ] fk20_poly2toeplitz_coefficients_512: Fails test **in progress**
+  - [ ] fk20_poly2hext_fft_512: cuda error 700
+  - [ ] k20_poly2h_fft_512: cuda error 700
+  - [ ] hext_fft2h_fft_512: cuda error 700
+  - [ ] fk20_msmloop_512: cuda error 700
+  - [ ] fk20_poly2toeplitz_coefficients_fft_512: cuda error 700
+  - [ ] fk20_poly2toeplitz_coefficients_fft: unknown cuda error 700
