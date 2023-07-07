@@ -13,6 +13,9 @@
     cudaDeviceSynchronize(); \
     if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
+#define CUDASYNC     err = cudaDeviceSynchronize(); \
+                     if (err != cudaSuccess) printf("Error: %d (%s)\n", err, cudaGetErrorName(err))
+
 static __managed__ fr_t fr[ROWS*16*512]; // 256 KiB per threadblock
 static __managed__ g1p_t g1p[ROWS*512];  // 72 KiB per threadblock
 
@@ -27,9 +30,8 @@ __global__ void fk20_hext2h(g1p_t *h) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
 // fk20_poly2h_fft(): polynomial + xext_fft -> h_fft
-
+// This is the full execution of FK20. 
 // parameters:
 // - in  xext_fft   array with 16*512 elements, computed using fk20_setup2xext_fft()
 // - in  polynomial array with 16*512*rows elements
@@ -43,7 +45,7 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
 
     SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
     SET_SHAREDMEM(fr_sharedmem,  fk20_msm_xext_fftANDtoepliz_fft2hext_fft);
-    SET_SHAREDMEM(g1p_sharedmem, fk20_hext_fft2h_fft);
+    SET_SHAREDMEM(g1p_sharedmem, fk20_hext_fft2h_fft);  // function not being used?
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
@@ -51,43 +53,37 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
     printf("polynomial -> tc\n"); fflush(stdout);
     fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr, polynomial);
 
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error: %d (%s)\n", err, cudaGetErrorName(err));
+    CUDASYNC;
 
     // tc -> tc_fft
     printf("tc -> tc_fft\n"); fflush(stdout);
     fr_fft_wrapper<<<rows, 256, fr_sharedmem>>>(fr, fr);
 
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error: %d (%s)\n", err, cudaGetErrorName(err));
+    CUDASYNC;
 
     // tc_fft -> hext_fft
     printf("tc_fft -> hext_fft\n"); fflush(stdout);
     fk20_msm_xext_fftANDtoepliz_fft2hext_fft<<<rows, 256, g1p_sharedmem>>>(g1p, fr, xext_fft);
 
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error: %d (%s)\n", err, cudaGetErrorName(err));
+    CUDASYNC;
 
     // hext_fft -> hext
     printf("hext_fft -> hext\n"); fflush(stdout);
     g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p, g1p);
 
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error: %d (%s)\n", err, cudaGetErrorName(err));
+    CUDASYNC;
 
     // hext -> h
     printf("hext -> h\n"); fflush(stdout);
     fk20_hext2h<<<rows, 256>>>(g1p);
 
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error: %d (%s)\n", err, cudaGetErrorName(err));
+    CUDASYNC;
 
     // h -> h_fft
     printf("h -> h_fft\n"); fflush(stdout);
     g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p, g1p);
 
-    err = cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error: %d (%s)\n", err, cudaGetErrorName(err));
+    CUDASYNC;
 }
 
 // vim: ts=4 et sw=4 si

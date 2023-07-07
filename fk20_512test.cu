@@ -50,7 +50,8 @@ extern __managed__ g1p_t h_fft[512*512];
 static __managed__ uint8_t cmp[512*16*512];
 static __managed__ fr_t fr_tmp_[512*16*512];
 static __managed__ g1p_t g1p_tmp[512*512];
-#define PatternOnWorkspaceMemory
+
+//#define PatternOnWorkspaceMemory
 #ifdef PatternOnWorkspaceMemory
     #define PTRN_G1PTMP memset(g1p_tmp, 0x88, 512*512*sizeof(g1p_t));
     #define PTRN_FRTMP  memset(fr_tmp_, 0x88, 512*16*512*sizeof(fr_t));
@@ -381,7 +382,7 @@ void fk20_poly2hext_fft_512(){
 }
 
 void fk20_poly2h_fft_512(){
-    PTRN_G1PTMP;
+    PTRN_G1PTMP; PTRN_FRTMP;
     cudaError_t err;
     bool pass = true;
     clock_t start, end;
