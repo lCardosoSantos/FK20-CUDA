@@ -471,7 +471,7 @@ void fk20_msmloop_512(){
     memset(g1p_tmp,0xdeadbeef,512*512*sizeof(g1p_t)); //pattern on tmp dest
     start = clock();
 
-    fk20_msm_xext_fftANDtoepliz_fft2hext_fft<<<512, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
+    fk20_msm<<<512, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
     
     err = cudaDeviceSynchronize();
     end = clock();

@@ -6,12 +6,8 @@
 #include "g1.cuh"
 
 // p ← k·p
-__device__ void g1p_mul(g1p_t &p, fr_t &k) { 
+__device__ void g1p_mul(g1p_t &p, const fr_t &k) {
     // TODO: Use 4-bit lookup table to reduce additions by a factor 4.
-    // TODO: K is passed as a ref, and the reduce function can change the value
-    //       of k. We should avoid his side-effect of writing on input, and let
-    //       k be a const. This needs major refactoring of the codebase.
-    fr_reduce4(k);  // Ensure k<r, hence only 255 bits long
 
     g1p_t q;
 
@@ -20,7 +16,7 @@ __device__ void g1p_mul(g1p_t &p, fr_t &k) {
     for (int i=3; i>=0; i--) {
         uint64_t
             t = k[i],
-            j = i==3 ? 1ULL<<62 : 1ULL<<63;
+            j = 1ULL<<63;
 
         for (; j!=0; j>>=1) {
             g1p_dbl(q);
