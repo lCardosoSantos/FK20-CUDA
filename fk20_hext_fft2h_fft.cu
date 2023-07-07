@@ -20,19 +20,22 @@ __global__ void fk20_hext_fft2h_fft(g1p_t *h_fft, const g1p_t *hext_fft){
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
-    g1p_t * hextfft = (g1p_t *)hext_fft+512*bid;
-    h_fft += 512*bid;
 
+    hext_fft += 512*bid;
+    h_fft    += 512*bid;
 
     // hext_fft -> h -> h_fft
+
     // h = ift hext_fft
-    __syncthreads();
     g1p_ift(h_fft, hext_fft);
     __syncthreads();
+
     // zero second half of h
     g1p_inf(h_fft[256+tid]);
-    // h_fft = fft h
     __syncthreads();
-    g1p_fft(h_fft, h_fft);
 
+    // h_fft = fft h
+    g1p_fft(h_fft, h_fft);
 }
+
+// vim: ts=4 et sw=4 si

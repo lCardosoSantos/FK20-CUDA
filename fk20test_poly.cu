@@ -108,14 +108,10 @@ void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1
     cudaError_t err;
     bool pass = true;
 
-    err = cudaFuncSetAttribute(fk20_poly2h_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
-    cudaDeviceSynchronize();
-    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
-
     printf("=== RUN   %s\n", "fk20_poly2h_fft: polynomial -> h_fft");
     memset(g1p_tmp,0xdeadbeef,512*sizeof(g1p_t)); //pattern on tmp dest
     start = clock();
-    fk20_poly2h_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial_l, (const g1p_t *)xext_fft_l); //this causes memory issues
+    fk20_poly2h_fft(g1p_tmp, polynomial_l, (const g1p_t *)xext_fft_l, 1); //this causes memory issues
     err = cudaDeviceSynchronize();
     end = clock();
 
