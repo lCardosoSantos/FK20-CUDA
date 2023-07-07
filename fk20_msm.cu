@@ -30,8 +30,6 @@ __global__ void fk20_msm_xext_fftANDtoepliz_fft2hext_fft(g1p_t *hext_fft_l, cons
     //move pointer for blocks
     hext_fft_l += 512*bid;
     fr_t *frToep_fft = (fr_t *)(toeplitz_coefficients_fft_l+16*512*bid); //g1p_mul does not allow for const input.
-    xext_fft += 16*512*bid;
-
 
     // MSM Loop
     for (int i=0; i<16; i++) {
