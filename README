@@ -9,10 +9,15 @@ Last update: 20230706
   - [ ]  Implement a CRC check on the KAT data before and after every test.
   - [ ]  Benchmark: Implement a separate benchmark with GPU spool-up.
   - [ ]  512row: Move KATs to a dinamic lib
+  - [x]  ~~Test 512row with prefiled memory patterns~~ 20230706: no new test failures.
 - Debug:
-  - [ ] fk20_poly2toeplitz_coefficients_512: Fails test **in progress**
-  - [ ] fk20_poly2hext_fft_512: cuda error 700
-  - [ ] k20_poly2h_fft_512: cuda error 700
+  - [x] ~~fk20_poly2toeplitz_coefficients_512: not passing test~~ 20230706
+  - [ ] fk20_poly2hext_fft_512: 
+    - [x] ~~cuda error 700~~  on second
+    - [ ] Fails KAT
+      - [ ] Compare memory dumps of two blocks with same KAT.
+    - note: Check with DA/DF if all the rows being fk20 over the same setup is an actual characteristic of the implementation. Will have impact on memory allocations if different setups.
+  - [ ] fk20_poly2h_fft_512: cuda error 700
   - [ ] hext_fft2h_fft_512: cuda error 700
   - [ ] fk20_msmloop_512: cuda error 700
   - [ ] fk20_poly2toeplitz_coefficients_fft_512: cuda error 700
