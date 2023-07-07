@@ -50,6 +50,8 @@ extern __managed__ g1p_t h_fft[512*512];
 static __managed__ uint8_t cmp[512*16*512];
 static __managed__ fr_t fr_tmp_[512*16*512];
 static __managed__ g1p_t g1p_tmp[512*512];
+#define PTRN_G1PTMP memset(g1p_tmp, 0x88, 512*512*sizeof(g1p_t));
+#define PTRN_FRTMP  memset(fr_tmp_, 0x88, 512*16*512*sizeof(fr_t));
 
 //512 tests
 void toeplitz_coefficients2toeplitz_coefficients_fft_512();
@@ -64,6 +66,71 @@ void fk20_poly2h_fft_512();
 void fk20_msmloop_512();
 void fk20_poly2toeplitz_coefficients_fft_test();
 
+
+void fk20_poly2h_fft_512_(){
+    //memory pattern
+    memset(g1p_tmp, 0x88, 512*512*sizeof(g1p_t));
+    
+    //move pointers one foward
+    fr_t  *p =  polynomial; //+ 4096*2;    
+    g1p_t  *x =  (g1p_t *)xext_fft;   //actually constant for the 512 rows
+    g1p_t  *h =  h_fft; //+ 512*2;//h_fft; //will fail at block zero if you move the pointers to block 1. Suggests KAT is wrong.
+
+    //copy from test0 into test1;
+    memcpy(polynomial+4096, polynomial, 4096*sizeof(fr_t));
+    memcpy(h_fft+512, h_fft, 512*sizeof(g1p_t));
+    
+    cudaError_t err;
+    bool pass = true;
+    clock_t start, end;
+    int nBlocks = 2; 
+
+    err = cudaFuncSetAttribute(fk20_poly2h_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
+    cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+
+    printf("=== RUN [%d]  %s\n", nBlocks, "fk20_poly2h_fft: polynomial -> h_fft");
+
+    start = clock();
+    fk20_poly2h_fft<<<nBlocks, 256, g1p_sharedmem>>>(g1p_tmp, p, (const g1p_t *)x);
+    err = cudaDeviceSynchronize();
+    end = clock();
+
+    if (err != cudaSuccess)
+        printf("Error fk20_poly2h_fft: %d (%s)\n", err, cudaGetErrorName(err));
+    else
+        printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
+
+    // Clear comparison results
+
+    for (int i=0; i<nBlocks*512; i++)
+        cmp[i] = 0;
+
+    g1p_eq_wrapper<<<1, 32>>>(cmp, nBlocks*512, g1p_tmp, (g1p_t *)h);
+
+    err = cudaDeviceSynchronize();
+    if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
+
+    // Check result
+
+    for (int i=0; i<nBlocks*512; i++)
+        if (cmp[i] != 1) {
+            pass = false;
+            printf(">>Breaks at idx %d \n", i); 
+            break;
+            
+        }
+
+    PRINTPASS(pass);
+}
+
+
+int main_(){
+    fk20_poly2h_fft_512_();
+
+    return 0;
+}
+
 int main() {
     
     //all tests
@@ -71,13 +138,12 @@ int main() {
     h2h_fft_512();
     h_fft2h_512();
     hext_fft2h_512();
-    //fk20_poly2toeplitz_coefficients_512(1); //TODO: Test Fails
-    //fk20_poly2hext_fft_512(); //TODO: Test Fails
-    //k20_poly2h_fft_512(); //TODO: Test Fails
-
-    //hext_fft2h_fft_512(); //TODO: Test Fails
-    //fk20_msmloop_512(); //TODO: Test Fails
-    //fk20_poly2toeplitz_coefficients_fft_test(); //TODO: Test Fails
+    fk20_poly2toeplitz_coefficients_512(1);  
+    fk20_poly2hext_fft_512(); //current work
+    hext_fft2h_fft_512(); //TODO: Test Fails
+    fk20_poly2h_fft_512(); //TODO: Test Fails
+    fk20_msmloop_512(); //TODO: Test Fails
+    fk20_poly2toeplitz_coefficients_fft_test(); //TODO: Test Fails
 
     
     
@@ -119,6 +185,7 @@ awk 'getline p<f && p!=$0 {print "Line " NR ":" RS $0 RS p; exit}' f=file2 file1
 */
 
 void toeplitz_coefficients2toeplitz_coefficients_fft_512(){
+    PTRN_FRTMP;
     cudaError_t err;
     bool pass = true;
     clock_t start, end;
@@ -158,6 +225,7 @@ void toeplitz_coefficients2toeplitz_coefficients_fft_512(){
 }
 
 void h2h_fft_512(){
+    PTRN_G1PTMP;
     cudaError_t err;
     bool pass = true;
     clock_t start, end;
@@ -203,6 +271,7 @@ void h2h_fft_512(){
 }
 
 void h_fft2h_512(){
+    PTRN_G1PTMP;
     cudaError_t err;
     bool pass = true;
     clock_t start, end;
@@ -249,6 +318,7 @@ void h_fft2h_512(){
 }
 
 void hext_fft2h_512(){
+    PTRN_G1PTMP;
     //TODO: Why the grid size is one in this function?
     cudaError_t err;
     bool pass = true;
@@ -294,7 +364,8 @@ void hext_fft2h_512(){
 
 }
 
-void fk20_poly2toeplitz_coefficients_512(int execN){ //TODO: Luan main work focus
+void fk20_poly2toeplitz_coefficients_512(int execN){ 
+    PTRN_FRTMP;
         char polyFilename [64];
         char fr_tmpFilename [64];
         char toeplitzFilename [64];
@@ -358,6 +429,7 @@ void fk20_poly2toeplitz_coefficients_512(int execN){ //TODO: Luan main work focu
 }
 
 void fk20_poly2hext_fft_512(){
+    PTRN_G1PTMP;
     cudaError_t err;
     bool pass = true;
     clock_t start, end;
@@ -402,6 +474,7 @@ void fk20_poly2hext_fft_512(){
 }
 
 void fk20_poly2h_fft_512(){
+    PTRN_G1PTMP;
     cudaError_t err;
     bool pass = true;
     clock_t start, end;
@@ -443,6 +516,7 @@ void fk20_poly2h_fft_512(){
 }
 
 void hext_fft2h_fft_512(){
+    PTRN_G1PTMP;
     cudaError_t err;
     bool pass = true;
     clock_t start, end;
@@ -484,6 +558,7 @@ void hext_fft2h_fft_512(){
 }
 
 void fk20_msmloop_512(){
+    PTRN_G1PTMP;
     clock_t start, end;
     cudaError_t err;
     bool pass = true;
@@ -524,6 +599,7 @@ void fk20_msmloop_512(){
 }
 
 void fk20_poly2toeplitz_coefficients_fft_test(){
+    PTRN_FRTMP;
     clock_t start, end;
     cudaError_t err;
     bool pass = true;
