@@ -12,8 +12,9 @@ Last update: 20230710
   - [x]  ~~Test 512row with prefiled memory patterns~~ 20230706: no new test failures.
 - Debug:
   - [ ] fk20_hext_fft2h_fft: False positive? Shouldnt work if g1p_ift doesnt
-  - [ ] g1p inverted fft doesnt work (Dag here)
-    - [ ] Remove shared memory from g
+  - [ ] fk20_hext_fft2h_fft: hext_fft -> h_fft: breaks after the math update
+  - [ ] g1p inverted fft doesnt pass tests (Dag here) (but ift(fft(x))=>x)
+    - [ ] Remove shared memory from fft?
   - [x] ~~Fix of g1pComparen with Null non-point parameter~~ 20230710: Come back here for more robust solution
   - [ ] >>>> fk20_poly2h_fft_515 (full fk20 execution, currently host)
     - [x] ~~cuda error 700~~ 20230707
@@ -27,6 +28,3 @@ Last update: 20230710
   - [ ] fk20_poly2toeplitz_coefficients_fft_512: cuda error 700
   - [ ] fk20_poly2toeplitz_coefficients_fft: unknown cuda error 700
   - [x] ~~fk20_poly2toeplitz_coefficients_512: not passing test~~ 20230706
-
-
-The error is in g1p_eq_wrapper

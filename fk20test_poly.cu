@@ -29,13 +29,13 @@ void fullTest(){
 
     // Setup
     SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
-    SET_SHAREDMEM(fr_sharedmem,  fk20_msm_xext_fftANDtoepliz_fft2hext_fft);
+    SET_SHAREDMEM(fr_sharedmem,  fk20_msm);
     SET_SHAREDMEM(g1p_sharedmem, fk20_hext_fft2h_fft);  // function not being used?
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
     // polynomial -> tc
-    printf("FullTest\n\n"); fflush(stdout);
+    printf("FullTest(under construction)\n\n"); fflush(stdout);
     printf("polynomial -> tc\n"); fflush(stdout);
     fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr_tmp, polynomial);
     CUDASYNC; 
@@ -77,7 +77,7 @@ void FK20TestPoly() {
     fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
     fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
     fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
-    //fullTest();
+    fullTest();
 
 }
 

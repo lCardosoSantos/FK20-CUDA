@@ -80,7 +80,6 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
     end = clock();
     printf(" (%.1f ms)\n", (end - start) * (1000. / CLOCKS_PER_SEC));
 
-#if 1
     // hext_fft -> hext
     printf("hext_fft -> hext\n"); fflush(stdout);
     start = clock();
