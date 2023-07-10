@@ -73,7 +73,7 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
 
     // hext_fft -> hext
     printf("hext_fft -> hext\n"); fflush(stdout);
-    g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p, g1p);
+    g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p, g1p);
 
     CUDASYNC;
         //printf(__FILE__ " 2 g1p \n");
@@ -88,11 +88,11 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
 
     // h -> h_fft
     printf("h -> h_fft\n"); fflush(stdout);
-    g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p, g1p);
+    g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(h_fft, g1p);
 
     CUDASYNC;
-        //printf(__FILE__ " 4 g1p \n");
-        //WRITEU64STDOUT( g1p, 36);
+    //    printf(__FILE__ " 4 h_fft \n");
+    //    WRITEU64STDOUT( h_fft, 36);
 }
 
 // vim: ts=4 et sw=4 si
