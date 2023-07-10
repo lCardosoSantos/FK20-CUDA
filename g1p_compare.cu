@@ -51,7 +51,7 @@ __device__ bool g1p_neq(const g1p_t &p, const g1p_t &q) {
         g1p_print("p:", p);
         g1p_print("q:", q);
 
-        return false;
+        return true;
     }
 #endif
 
