@@ -1,7 +1,7 @@
 CXX=g++
-NVCC=nvcc -rdc=true #-g -G -O0
+NVCC=nvcc -rdc=true #-g -G --maxrregcount=64
 NVOPTS=--compile
-NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86
+NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86 
 COPTS= -O2
 
 FP=fp fp_cpy fp_reduce6 fp_eq fp_neq fp_neg fp_x2 fp_x3 fp_x4 fp_x8 fp_x12 fp_add fp_sub fp_sqr fp_mul fp_inv fp_isone fp_iszero fp_nonzero fp_mma

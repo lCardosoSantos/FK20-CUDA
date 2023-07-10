@@ -11,7 +11,9 @@ Last update: 20230710
   - [ ]  512row: Move KATs to a dinamic lib
   - [x]  ~~Test 512row with prefiled memory patterns~~ 20230706: no new test failures.
 - Debug:
-  - [x] g1p inverted fft doesnt work
+  - [ ] fk20_hext_fft2h_fft: False positive? Shouldnt work if g1p_ift doesnt
+  - [ ] g1p inverted fft doesnt work (Dag here)
+    - [ ] Remove shared memory from g
   - [x] ~~Fix of g1pComparen with Null non-point parameter~~ 20230710: Come back here for more robust solution
   - [ ] >>>> fk20_poly2h_fft_515 (full fk20 execution, currently host)
     - [x] ~~cuda error 700~~ 20230707

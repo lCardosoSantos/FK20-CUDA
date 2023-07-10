@@ -50,9 +50,10 @@ void hext_fft2h_fft(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]);
 
 //sadly cuda doesn't allow fprintf inside a kernel, so printfItis.
 #define WRITEU64STDOUT(var, nu64Elem) do{ \
-    uint64_t *pointer = (uint64_t *)(*var); \
+    uint64_t *pointer = (uint64_t *)(var); \
     for (int count=0; count<(nu64Elem); count++){ \
-        printf("%016lx\n",pointer[count]); \
+        printf("%016lx ",pointer[count]); \
+        if (count%6==5) printf("\n"); \
     } \
 }while(0)
 

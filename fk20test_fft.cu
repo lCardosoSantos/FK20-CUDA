@@ -198,7 +198,6 @@ void hext_fft2h(g1p_t hext_fft_l[512], g1p_t h_l[512]){
 }
 
 
-// vim: ts=4 et sw=4 si
 void hext_fft2h_fft(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]){
     cudaError_t err;
     bool pass = true;
@@ -209,7 +208,7 @@ void hext_fft2h_fft(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]){
     if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     printf("=== RUN   %s\n", "fk20_hext_fft2h_fft: hext_fft -> h_fft");
-    memset(g1p_tmp,0xdeadbeef,512*sizeof(g1p_t)); //pattern on tmp dest
+    memset(g1p_tmp,0x88,512*sizeof(g1p_t)); //pattern on tmp dest
 
     start = clock();
     fk20_hext_fft2h_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, hext_fft_l);
@@ -243,3 +242,4 @@ void hext_fft2h_fft(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]){
 
     PRINTPASS(pass);
 }
+// vim: ts=4 et sw=4 si
