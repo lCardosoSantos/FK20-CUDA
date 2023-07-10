@@ -3,7 +3,7 @@
 
 ## Luan's todolist
 Here in this section I keep track of the activities I am working on. Meaningful indentation
-Last update: 20230707
+Last update: 20230710
 
 - Improvements in the code base:
   - [ ]  Implement a CRC check on the KAT data before and after every test.
@@ -11,9 +11,11 @@ Last update: 20230707
   - [ ]  512row: Move KATs to a dinamic lib
   - [x]  ~~Test 512row with prefiled memory patterns~~ 20230706: no new test failures.
 - Debug:
-  - [ ] fk20_poly2h_fft_512:  <<<<
+  - [x] g1p inverted fft doesnt work
+  - [x] ~~Fix of g1pComparen with Null non-point parameter~~ 20230710: Come back here for more robust solution
+  - [ ] >>>> fk20_poly2h_fft_515 (full fk20 execution, currently host)
     - [x] ~~cuda error 700~~ 20230707
-    - [ ] Error with memory pattern on tmp variables.
+    - [ ] Error with memory pattern on tmp variables. *Only on g1p*
   - [ ] fk20_poly2hext_fft_512: 
     - [x] ~~cuda error 700~~
     - [ ] Fails KAT. Compare memory dumps of two blocks with same KAT?
@@ -23,3 +25,6 @@ Last update: 20230707
   - [ ] fk20_poly2toeplitz_coefficients_fft_512: cuda error 700
   - [ ] fk20_poly2toeplitz_coefficients_fft: unknown cuda error 700
   - [x] ~~fk20_poly2toeplitz_coefficients_512: not passing test~~ 20230706
+
+
+The error is in g1p_eq_wrapper

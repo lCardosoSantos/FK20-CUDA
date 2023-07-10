@@ -5,6 +5,7 @@
 #include "fk20.cuh"
 
 #include "fk20test.cuh"
+#include "fk20_testvector.cuh"
 
 #define ROWS 512
 
@@ -40,7 +41,7 @@ __global__ void fk20_hext2h(g1p_t *h) {
 
 __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t xext_fft[8192], unsigned rows) {
     cudaError_t err;
-
+    
     // Setup
 
     SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
@@ -53,7 +54,7 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
     printf("polynomial -> tc\n"); fflush(stdout);
     fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr, polynomial);
 
-    CUDASYNC;
+    CUDASYNC; 
 
     // tc -> tc_fft
     printf("tc -> tc_fft\n"); fflush(stdout);
@@ -61,29 +62,37 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
 
     CUDASYNC;
 
+
     // tc_fft -> hext_fft
     printf("tc_fft -> hext_fft\n"); fflush(stdout);
-    fk20_msm_xext_fftANDtoepliz_fft2hext_fft<<<rows, 256, g1p_sharedmem>>>(g1p, fr, xext_fft);
+    fk20_msm_xext_fftANDtoepliz_fft2hext_fft<<<rows, 256>>>(g1p, fr, xext_fft);
 
     CUDASYNC;
+        //printf(__FILE__ " 1 g1p \n");
+        //WRITEU64STDOUT( g1p, 36);
 
     // hext_fft -> hext
     printf("hext_fft -> hext\n"); fflush(stdout);
     g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p, g1p);
 
     CUDASYNC;
-
+        //printf(__FILE__ " 2 g1p \n");
+        //WRITEU64STDOUT( g1p, 36);
     // hext -> h
     printf("hext -> h\n"); fflush(stdout);
     fk20_hext2h<<<rows, 256>>>(g1p);
 
     CUDASYNC;
+        //printf(__FILE__ " 3 g1p \n");
+        //WRITEU64STDOUT( g1p, 36);
 
     // h -> h_fft
     printf("h -> h_fft\n"); fflush(stdout);
     g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p, g1p);
 
     CUDASYNC;
+        //printf(__FILE__ " 4 g1p \n");
+        //WRITEU64STDOUT( g1p, 36);
 }
 
 // vim: ts=4 et sw=4 si
