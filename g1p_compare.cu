@@ -1,6 +1,8 @@
 // bls12_381: Arithmetic for BLS12-381
 // Copyright 2022 Dag Arne Osvik
 
+#include <stdio.h>
+
 #include "fp.cuh"
 #include "fr.cuh"
 #include "g1.cuh"
@@ -8,6 +10,14 @@
 // g1p_eq compares one point to another, returns true when equal.
 __device__ bool g1p_eq(const g1p_t &p, const g1p_t &q) {
     fp_t px, py, qx, qy;
+
+#ifndef NDEBUG
+    if (!g1p_isPoint(p) || !(g1p_isPoint(q))) {
+        printf("ERROR: Comparing with invalid point\n");
+        g1p_print("p:", p);
+        g1p_print("q:", q);
+    }
+#endif
 
     // (X1/Z1 == X2/Z2) && (Y1/Z1 == Y2/Z2)
 
@@ -32,6 +42,14 @@ __device__ bool g1p_eq(const g1p_t &p, const g1p_t &q) {
 // g1p_neq compares one point to another, returns true when not equal.
 __device__ bool g1p_neq(const g1p_t &p, const g1p_t &q) {
     fp_t px, py, qx, qy;
+
+#ifndef NDEBUG
+    if (!g1p_isPoint(p) || !(g1p_isPoint(q))) {
+        printf("ERROR: Comparing with invalid point\n");
+        g1p_print("p:", p);
+        g1p_print("q:", q);
+    }
+#endif
 
     // (X1/Z1 == X2/Z2) && (Y1/Z1 == Y2/Z2)
 
