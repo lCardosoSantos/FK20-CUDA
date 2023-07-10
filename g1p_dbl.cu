@@ -14,6 +14,18 @@
 #include "fp_reduce12.cuh"
 
 __device__ void g1p_dbl(g1p_t &p) {
+
+    if (!g1p_isPoint(p)) {
+        g1p_print("ERROR in g1p_dbl(): Invalid point", p);
+
+        // return invalid point as result
+        fp_zero(p.x);
+        fp_zero(p.y);
+        fp_zero(p.z);
+
+        return;
+    }
+
 #if 0
     uint64_t
         x0 = p.x[0], x1 = p.x[1], x2 = p.x[2], x3 = p.x[3], x4 = p.x[4], x5 = p.x[5],

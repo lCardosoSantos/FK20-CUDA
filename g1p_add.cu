@@ -1,6 +1,8 @@
 // bls12_381: Arithmetic for BLS12-381
 // Copyright 2022 Dag Arne Osvik
 
+#include <stdio.h>
+
 #include "fp.cuh"
 #include "g1.cuh"
 
@@ -13,6 +15,22 @@
 // p ← p+q
 // projective p and q
 __device__ void g1p_add(g1p_t &p, const g1p_t &q) {
+
+#ifndef NDEBUG
+    if (!g1p_isPoint(p) || !(g1p_isPoint(q))) {
+        printf("ERROR in g1p_add(): Invalid point(s)\n");
+        g1p_print("p:", p);
+        g1p_print("q:", q);
+
+        // return invalid point as result
+        fp_zero(p.x);
+        fp_zero(p.y);
+        fp_zero(p.z);
+
+        return;
+    }
+#endif
+
 #if 1
     fp_t
         X1, Y1, Z1,
