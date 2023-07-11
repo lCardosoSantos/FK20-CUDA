@@ -3,7 +3,7 @@
 
 ## Luan's todolist
 Here in this section I keep track of the activities I am working on. Meaningful indentation
-Last update: 20230710
+Last update: 20230711
 
 - Improvements in the code base:
   - [ ]  Implement a CRC check on the KAT data before and after every test.
@@ -11,9 +11,9 @@ Last update: 20230710
   - [ ]  512row: Move KATs to a dinamic lib
   - [x]  ~~Test 512row with prefiled memory patterns~~ 20230706: no new test failures.
 - Debug:
-  - [ ] fk20_hext_fft2h_fft: False positive? Shouldnt work if g1p_ift doesnt
-  - [ ] fk20_hext_fft2h_fft: hext_fft -> h_fft: breaks after the math update
-  - [ ] g1p inverted fft doesnt pass tests (Dag here) (but ift(fft(x))=>x)
+  - [ ] g1p_mul ispoint test works as expected?
+  - [ ] fk20_hext_fft2h_fft: hext_fft -> h_fft: breaks after the math update, tmp-reg is zerod (?)
+  - [ ] g1p inverted fft doesnt pass tests (Dag here) ~~(but ift(fft(x))=>x)~~
     - [ ] Remove shared memory from fft?
   - [x] ~~Fix of g1pComparen with Null non-point parameter~~ 20230710: Come back here for more robust solution
   - [ ] >>>> fk20_poly2h_fft_515 (full fk20 execution, currently host)
@@ -26,5 +26,9 @@ Last update: 20230710
   - [ ] hext_fft2h_fft_512: cuda error 700
   - [ ] fk20_msmloop_512: cuda error 700
   - [ ] fk20_poly2toeplitz_coefficients_fft_512: cuda error 700
-  - [ ] fk20_poly2toeplitz_coefficients_fft: unknown cuda error 700
+  - [x] ~~fk20_poly2toeplitz_coefficients_fft: unknown cuda error 700~~ 20230711
   - [x] ~~fk20_poly2toeplitz_coefficients_512: not passing test~~ 20230706
+
+
+
+Return to fk20_hext_fft2h_fft >> one of the fft zeros stuff

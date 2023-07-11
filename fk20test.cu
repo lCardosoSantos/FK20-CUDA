@@ -14,21 +14,4 @@ int main() {
     return 0;
 }
 
-//int main() {
-//    FK20TestPoly();
-//    return 0;
-//}
 // vim: ts=4 et sw=4 si
-
-/*
-
-//zero fr_tmp
-printf(">>>>\n");
-for(int i=0; i<(512*16); i++){
-    fr_tmp[i][0]=0;
-    fr_tmp[i][1]=0;
-    fr_tmp[i][2]=0;
-    fr_tmp[i][3]=0;
-} 
-
-*/
