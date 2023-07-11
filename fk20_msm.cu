@@ -4,7 +4,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // fk20_msm(): toeplitz_coefficients_fft_l + xext_fft -> hext_fft_l
-// TODO: Update
+// WARNING: CALLING KERNEL WITH DYNAMIC SHARED MEMORY BREAKS THIS FUNCTION!
+//          THE CORRECT KERNEL PARAMETER IS fk20_msm<<<nblocks, 256>>>()
 // parameters: 
 // - in  tc_fft    array with dimensions [512]
 // - in  xe_fft    array with dimensions [16][512]
