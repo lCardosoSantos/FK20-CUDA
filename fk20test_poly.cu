@@ -12,6 +12,14 @@ static __managed__ uint8_t cmp[16*512];
 static __managed__ fr_t fr_tmp[16*512];
 static __managed__ g1p_t g1p_tmp[512];
 
+__global__ void fk20_hext2h_(g1p_t *h) {
+    unsigned tid = threadIdx.x; // Thread number
+    unsigned bid = blockIdx.x;  // Block number
+
+    h += 512*bid;
+    g1p_inf(h[256+tid]);
+}
+
 void fullTest(){
     //TODO: Use defines on the other tests for simplification, and finish this one
 #define CUDASYNC     err = cudaDeviceSynchronize(); \
@@ -21,7 +29,8 @@ void fullTest(){
     cudaDeviceSynchronize(); \
     if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
-#define clearRes   for (int i=0; i<16*512; i++) cmp[i] = 0;
+#define clearRes   for (int i=0; i<16*512; i++) cmp[i] = 0; \
+                   pass=true;
 #define rows 1
 
     cudaError_t err;
@@ -35,7 +44,7 @@ void fullTest(){
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
     // polynomial -> tc
-    printf("FullTest(under construction)\n\n"); fflush(stdout);
+    printf("\n>>>>FullTest\n"); fflush(stdout);
     printf("polynomial -> tc\n"); fflush(stdout);
     fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr_tmp, polynomial);
     CUDASYNC; 
@@ -66,18 +75,60 @@ void fullTest(){
         }
     PRINTPASS(pass);
 
-    ////
+    // tc_fft -> hext_fft
+    printf("tc_fft -> hext_fft\n"); fflush(stdout);
+        memset(g1p_tmp,0x88,512*sizeof(g1p_t)); //pattern on tmp dest
+    fk20_msm<<<rows, 256>>>(g1p_tmp, fr_tmp,  (g1p_t *)xext_fft);
+    //fk20_msm<<<rows, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft,  (g1p_t *)xext_fft);
+    CUDASYNC;
+    clearRes;
+    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft);
+    CUDASYNC;
+    for (int i=0; i<512; i++)
+        if (cmp[i] != 1) {
+            pass = false;
+        }
+    PRINTPASS(pass);
+
+    // hext_fft -> hext -> h
+    printf("hext_fft -> hext -> h\n"); fflush(stdout);
+    g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p_tmp, g1p_tmp);
+    CUDASYNC;
+    fk20_hext2h_<<<rows, 256>>>(g1p_tmp);
+    CUDASYNC;
+    clearRes;
+    g1p_eq_wrapper<<<16, 32>>>(cmp, 256, g1p_tmp, (g1p_t *)h);
+    CUDASYNC;
+    for (int i=0; i<256; i++)
+        if (cmp[i] != 1) {
+            pass = false;
+        }
+    PRINTPASS(pass);
+    
+    //h -> h_fft
+    printf("h -> h_fft\n"); fflush(stdout);
+    //g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p_tmp, g1p_tmp);
+    g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p_tmp, h);
+    CUDASYNC;
+    clearRes;
+    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, h_fft);
+    CUDASYNC;
+    for (int i=0; i<512; i++)
+        if (cmp[i] != 1) {
+            pass = false;
+        }
+    PRINTPASS(pass);
 
 }
 
 void FK20TestPoly() {
     printf(">>>> Poly Tests\n");
     fk20_poly2toeplitz_coefficients_test(polynomial, toeplitz_coefficients);
-    ////fk20_poly2toeplitz_coefficients_fft_test(polynomial, toeplitz_coefficients_fft); //TODO: Fails
+    //fk20_poly2toeplitz_coefficients_fft_test(polynomial, toeplitz_coefficients_fft); //TODO: Not necessary, check fk20_poly2h_fft.cu
     fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
     fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
-    fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
-    fullTest();
+    //fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
+    fullTest(); //TODO: Mainly for debugging, similar to fk20_poly2h_fft_test
 
 }
 
