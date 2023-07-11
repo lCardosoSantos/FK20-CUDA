@@ -13,8 +13,6 @@ static __managed__ fr_t fr_tmp[16*512];
 static __managed__ g1p_t g1p_tmp[512];
 
 void FK20TestFFT() {
-    printf(">>>> FFT tests\n");
-
     toeplitz_coefficients2toeplitz_coefficients_fft(toeplitz_coefficients, toeplitz_coefficients_fft); 
     h2h_fft(h, h_fft);
     h_fft2h(h_fft, h);
@@ -31,7 +29,9 @@ void toeplitz_coefficients2toeplitz_coefficients_fft(fr_t toeplitz_coefficients_
     printf("=== RUN   %s\n", "fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft");
     memset(fr_tmp, 0xdeadbeef,16*512*sizeof(fr_t)); //pattern on tmp dest.
     start = clock();
-    fr_fft_wrapper<<<16, 256, fr_sharedmem>>>(fr_tmp, (fr_t *)toeplitz_coefficients_l);
+     for(int i=0; i<16; i++){
+        fr_fft_wrapper<<<16, 256, fr_sharedmem>>>(fr_tmp+512*i, (fr_t *)(toeplitz_coefficients_l+i));
+     }
     err = cudaDeviceSynchronize();
     end = clock();
 
@@ -215,6 +215,12 @@ void hext_fft2h_fft(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]){
     err = cudaDeviceSynchronize();
     end = clock();
 
+    printf("g1p_tmp[0]:");
+    WRITEU64STDOUT(g1p_tmp, 6*3);
+    printf("hext_fft[0]:");
+    WRITEU64STDOUT(hext_fft_l, 6*3);
+
+
     if (err != cudaSuccess) printf("Error fk20_hext_fft2h_fft: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
     // Clear comparison results
@@ -236,7 +242,7 @@ void hext_fft2h_fft(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]){
 
     for (int i=0; pass && i<512; i++)
         if (cmp[i] != 1) {
-            printf("FFT error %d\n", i);
+            printf("fk20_hext_fft2h_fft error at idx %d\n", i);
             pass = false;
         }
 
