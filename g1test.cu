@@ -42,7 +42,7 @@ void init() {
 
 ////////////////////////////////////////////////////////////
 
-int main() {
+int main(int argc, char **argv) {
     clock_t start, end;
     cudaError_t err;
 #if 1
@@ -53,11 +53,24 @@ int main() {
     dim3 grid(82,1,1);
 #endif
 
+    unsigned rows = 2;
+
+    if (argc > 1)
+        rows = atoi(argv[1]);
+
+    if (rows < 1)
+        rows = 1;
+
+    if (rows > 512)
+        rows = 512;
+
     init();
 
     TEST(G1TestKAT);
     TEST(G1TestFibonacci);
     TEST(G1TestDbl);
+
+    G1TestFFT(rows);
 
     return err;
 }

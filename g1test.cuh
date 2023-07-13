@@ -36,6 +36,8 @@ TESTFUN(G1TestDistributiveRight);
 TESTFUN(G1TestDouble);
 TESTFUN(G1TestSquare);
 
+void G1TestFFT(unsigned rows);
+
 #endif // G1_TEST_CUH
 
 // vim: ts=4 et sw=4 si
