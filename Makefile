@@ -1,5 +1,5 @@
 CXX=g++
-NVCC=nvcc -rdc=true #-g -G --maxrregcount=64
+NVCC=nvcc -rdc=true #--maxrregcount=64 #-Xlinker=--no-relax
 NVOPTS=--compile
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86 
 COPTS= -O2
@@ -44,6 +44,10 @@ TEST_OBJS=$(FPTEST_OBJS) $(FRTEST_OBJS) $(G1TEST_OBJS) $(FK20TEST_OBJS) $(FK20_5
 
 all: fptest frtest g1test fk20test ffttest fk20_512test fk20test_poly2toeplitz_coefficients fk20test_poly2toeplitz_coefficients_fft
 
+#add some debug flags. 
+debug: 
+	$(eval NVCC += -g -G --maxrregcount=128 -DDEBUG)
+
 run: fp-run fr-run g1-run fk20-run
 
 fp-run: fptest
@@ -63,6 +67,10 @@ cubin: $(CUBIN)
 clean:
 	-rm -f $(OBJS) $(TEST_OBJS) $(CUBIN)
 	-rm -f xext_fft.cu polynomial.cu toeplitz_coefficients.cu toeplitz_coefficients_fft.cu hext_fft.cu h.cu h_fft.cu
+
+shallowclean:
+	@(echo "Removing only objects that are fast to compile!")
+	-rm -f $(OBJS) $(CUBIN)
 
 clobber: clean
 	-rm -f fptest frtest g1test fk20test fk20_512test fk20test_poly2toeplitz_coefficients fk20test_poly2toeplitz_coefficients_fft
@@ -136,6 +144,12 @@ fk20test_poly2toeplitz_coefficients_fft: $(FK20TEST_TCFFT_OBJS) $(OBJS)
 
 ffttest: $(FFTTEST_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
+
+#use this rule to generate the large objects without debug symbols
+fk20_512test_objs: $(FK20_512TEST_OBJS)
+
+#use this rule to remake objects
+fk20_objs: $(OBJS)
 
 fk20_512test: $(FK20_512TEST_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
