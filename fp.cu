@@ -5,12 +5,12 @@
 
 #include "fp.cuh"
 
-__device__ void fp_zero(fp_t &z) {
+__device__ __host__ void fp_zero(fp_t &z) {
     for (int i=0; i<6; i++)
         z[i] = 0;
 }
 
-__device__ void fp_one(fp_t &z) {
+__device__ __host__ void fp_one(fp_t &z) {
     z[0] = 1;
     for (int i=1; i<6; i++)
         z[i] = 0;
@@ -26,7 +26,7 @@ __device__ void fp_print(const fp_t &x) {
     t[5], t[4], t[3], t[2], t[1], t[0]);
 }
 
-__device__ void fp_fromUint64(fp_t &z, const uint64_t *x) {
+__device__ __host__ void fp_fromUint64(fp_t &z, const uint64_t *x) {
     z[0] = x[0];
     z[1] = x[1];
     z[2] = x[2];
