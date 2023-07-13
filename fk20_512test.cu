@@ -1,6 +1,7 @@
 // bls12_381: Arithmetic for BLS12-381
 // Copyright 2022 Dag Arne Osvik
-
+#include <cstring>
+#include<time.h>
 #include "fr.cuh"
 #include "fp.cuh"
 #include "g1.cuh"
@@ -51,7 +52,7 @@ static __managed__ uint8_t cmp[512*16*512];
 static __managed__ fr_t fr_tmp_[512*16*512];
 static __managed__ g1p_t g1p_tmp[512*512];
 
-//#define PatternOnWorkspaceMemory
+#define PatternOnWorkspaceMemory
 #ifdef PatternOnWorkspaceMemory
     #define PTRN_G1PTMP memset(g1p_tmp, 0x88, 512*512*sizeof(g1p_t));
     #define PTRN_FRTMP  memset(fr_tmp_, 0x88, 512*16*512*sizeof(fr_t));
@@ -78,16 +79,18 @@ int main() {
     //all tests
     //toeplitz_coefficients2toeplitz_coefficients_fft_512();
     //h2h_fft_512();
-    //h_fft2h_512();
-    //hext_fft2h_512();
-    //fk20_poly2toeplitz_coefficients_512(0); //TODO: parameter is debug, remove.
-    //fk20_poly2hext_fft_512(); //TODO: Test Fails
-    fk20_poly2h_fft_512();
-    fk20_poly2h_fft_512();
+    
+        //h_fft2h_512(); wait for ift to work
+        //hext_fft2h_512();
+        //hext_fft2h_fft_512();
 
-    //hext_fft2h_fft_512(); //TODO: Test Fails
-    //fk20_msmloop_512(); //TODO: Test Fails
-    //fk20_poly2toeplitz_coefficients_fft_test(); //TODO: Test Fails
+    //fk20_poly2toeplitz_coefficients_512(0); //TODO: parameter is debug, remove.
+    //fk20_poly2hext_fft_512(); 
+    fk20_msmloop_512(); //TODO: Test Fails
+
+    //fk20_poly2h_fft_512();
+    
+    //fk20_poly2toeplitz_coefficients_fft_test(); //TODO: Test Fails //Superfluos function?
 
     return 0;
 }
@@ -344,7 +347,7 @@ void fk20_poly2hext_fft_512(){
 
     pass = true;
 
-    err = cudaFuncSetAttribute(fk20_poly2hext_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, fr_sharedmem);
+    err = cudaFuncSetAttribute(fk20_poly2hext_fft, cudaFuncAttributeMaxDynamicSharedMemorySize, g1p_sharedmem);
     cudaDeviceSynchronize();
     if (err != cudaSuccess) printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
 
@@ -359,7 +362,6 @@ void fk20_poly2hext_fft_512(){
         printf("Error fk20_poly2hext_fft: %d (%s)\n", err, cudaGetErrorName(err));
     else
         printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
-
     // Clear comparison results
 
     for (int i=0; i<512*512; i++)
@@ -375,10 +377,11 @@ void fk20_poly2hext_fft_512(){
     for (int i=0; i<512*512; i++)
         if (cmp[i] != 1) {
             pass = false;
+            printf("Error at idx %d...\n", i);
+            break;
         }
 
     PRINTPASS(pass);
-
 }
 
 void fk20_poly2h_fft_512(){
@@ -468,10 +471,13 @@ void fk20_msmloop_512(){
     bool pass = true;
 
     printf("=== RUN   %s\n", "fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft");
-    memset(g1p_tmp,0xdeadbeef,512*512*sizeof(g1p_t)); //pattern on tmp dest
     start = clock();
-
-    fk20_msm<<<512, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
+        //copy test 0 to test 1
+        memcpy(toeplitz_coefficients_fft+1*16, toeplitz_coefficients_fft+0*16, 16*512*sizeof(g1p_t));
+        memcpy(hext_fft+512, hext_fft, 512*sizeof(g1p_t));
+    //fk20_msm<<<2, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
+    fk20_msm<<<1, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
+    fk20_msm<<<1, 256>>>(g1p_tmp+512, (const fr_t*)toeplitz_coefficients_fft+16*512, (const g1p_t*)xext_fft);
     
     err = cudaDeviceSynchronize();
     end = clock();
@@ -496,9 +502,16 @@ void fk20_msmloop_512(){
     for (int i=0; i<512*512; i++)
         if (cmp[i] != 1) {
             pass = false;
+            printf("Fails at idx %d", i);
+            break;
         }
 
     PRINTPASS(pass);
+    //g1p_print("0 exp:", g1p_tmp[0]);
+    //g1p_print("0 kat:", hext_fft[0]);
+
+    //g1p_print("512 exp:", g1p_tmp[512]);
+    //g1p_print("512 kat:", hext_fft[512]);
 
 }
 

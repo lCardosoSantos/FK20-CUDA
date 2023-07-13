@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <time.h>
 
 #include "fr.cuh"
@@ -42,70 +41,38 @@ __global__ void fk20_hext2h(g1p_t *h) {
 
 __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t xext_fft[8192], unsigned rows) {
     cudaError_t err;
-    clock_t start, end;
 
     // Setup
 
     SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
-    SET_SHAREDMEM(fr_sharedmem,  fk20_msm);
+    //SET_SHAREDMEM(fr_sharedmem,  fk20_msm);
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
     // polynomial -> tc
-    printf("polynomial -> tc\n"); fflush(stdout);
-
-    start = clock();
     fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr, polynomial);
     CUDASYNC;
-    end = clock();
-    printf(" (%.1f ms)\n", (end - start) * (1000. / CLOCKS_PER_SEC));
 
     // tc -> tc_fft
-    printf("tc -> tc_fft\n"); fflush(stdout);
-    start = clock();
     for(int i=0; i<16; i++){
         fr_fft_wrapper<<<rows, 256, fr_sharedmem>>>(fr+512*i, fr+512*i);
     }
-
     CUDASYNC;
-    end = clock();
-    printf(" (%.1f ms)\n", (end - start) * (1000. / CLOCKS_PER_SEC));
 
     // tc_fft -> hext_fft
-    printf("tc_fft -> hext_fft\n"); fflush(stdout);
-
-    start = clock();
     fk20_msm<<<rows, 256>>>(g1p, fr, xext_fft);
     CUDASYNC;
-    end = clock();
-    printf(" (%.1f ms)\n", (end - start) * (1000. / CLOCKS_PER_SEC));
 
     // hext_fft -> hext
-    printf("hext_fft -> hext\n"); fflush(stdout);
-    start = clock();
     g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p, g1p);
-
     CUDASYNC;
-    end = clock();
-    printf(" (%.1f ms)\n", (end - start) * (1000. / CLOCKS_PER_SEC));
 
     // hext -> h
-    printf("hext -> h\n"); fflush(stdout);
-
-    start = clock();
     fk20_hext2h<<<rows, 256>>>(g1p);
     CUDASYNC;
-    end = clock();
-    printf(" (%.1f ms)\n", (end - start) * (1000. / CLOCKS_PER_SEC));
-
+    
     // h -> h_fft
-    printf("h -> h_fft\n"); fflush(stdout);
-
-    start = clock();
-    g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p, g1p);
+    g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(h_fft, g1p);
     CUDASYNC;
-    end = clock();
-    printf(" (%.1f ms)\n", (end - start) * (1000. / CLOCKS_PER_SEC));
 }
-
 // vim: ts=4 et sw=4 si
