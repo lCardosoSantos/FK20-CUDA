@@ -9,6 +9,9 @@
 #include "fp.cuh"
 #include "fr.cuh"
 
+// Set this nonzero to allow any point at infinity, i.e. of the form (0, !0, 0)
+#define G1P_ANYINF 1
+
 typedef struct {
     fp_t x, y;
 } g1a_t;

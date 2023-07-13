@@ -5,7 +5,11 @@
 #include "g1.cuh"
 
 __device__ bool g1p_isInf(const g1p_t &p) {
+#if G1P_ANYINF
+    return fp_iszero(p.x) && fp_iszero(p.z) && !fp_iszero(p.y);
+#else
     return fp_iszero(p.x) && fp_isone(p.y) && fp_iszero(p.z);
+#endif
 }
 
 __device__ bool g1p_isPoint(const g1p_t &p) {
