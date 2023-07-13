@@ -12,7 +12,7 @@ __device__ void g1p_toUint64(const g1p_t &p, uint64_t *x, uint64_t *y, uint64_t 
     fp_toUint64(p.z, z);
 }
 
-__device__ void g1p_fromUint64(g1p_t &p, uint64_t *x, uint64_t *y, uint64_t *z) {
+__device__ __host__ void g1p_fromUint64(g1p_t &p, uint64_t *x, uint64_t *y, uint64_t *z) {
     fp_fromUint64(p.x, x);
     fp_fromUint64(p.y, y);
     fp_fromUint64(p.z, z);
@@ -27,7 +27,7 @@ __device__ void g1p_fromG1a(g1p_t &p, const g1a_t &a) {
     fp_one(p.z);
 }
 
-__device__ void g1p_cpy(g1p_t &p, const g1p_t &q) {
+__device__ __host__ void g1p_cpy(g1p_t &p, const g1p_t &q) {
     fp_cpy(p.x, q.x);
     fp_cpy(p.y, q.y);
     fp_cpy(p.z, q.z);
@@ -40,14 +40,14 @@ __device__ __host__ void g1p_print(const char *s, const g1p_t &p) {
     printf("#x%016lx%016lx%016lx%016lx%016lx%016lx\n", p.z[5], p.z[4], p.z[3], p.z[2], p.z[1], p.z[0]);
 }
 
-__device__ void g1p_inf(g1p_t &p) {
+__device__ __host__ void g1p_inf(g1p_t &p) {
     for (int i=0; i<6; i++)
         p.x[i] = p.y[i] = p.z[i] = 0;
 
     p.y[0] = 1;
 };
 
-__device__ void g1p_gen(g1p_t &p) {
+__device__ __host__ void g1p_gen(g1p_t &p) {
     p.x[5] = 0x17F1D3A73197D794;
     p.x[4] = 0x2695638C4FA9AC0F;
     p.x[3] = 0xC3688C4F9774B905;

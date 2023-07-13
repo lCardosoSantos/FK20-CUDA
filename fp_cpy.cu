@@ -3,7 +3,7 @@
 
 #include "fp.cuh"
 
-__device__ void fp_cpy(fp_t &z, const fp_t &x) {
+__device__ __host__ void fp_cpy(fp_t &z, const fp_t &x) {
     z[0] = x[0];
     z[1] = x[1];
     z[2] = x[2];

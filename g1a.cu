@@ -7,12 +7,12 @@
 #include "fr.cuh"
 #include "g1.cuh"
 
-__device__ void g1a_fromUint64(g1a_t &a, const uint64_t *x, const uint64_t *y) {
+__device__ __host__ void g1a_fromUint64(g1a_t &a, const uint64_t *x, const uint64_t *y) {
     fp_fromUint64(a.x, x);
     fp_fromUint64(a.y, y);
 }
 
-__device__ void g1a_fromFp(g1a_t &a, const fp_t &x, const fp_t &y) {
+__device__ __host__ void g1a_fromFp(g1a_t &a, const fp_t &x, const fp_t &y) {
     fp_cpy(a.x, x);
     fp_cpy(a.y, y);
 }
@@ -27,7 +27,7 @@ __device__ void g1a_fromG1p(g1a_t &a, const g1p_t &p) {
     fp_mul(a.y, p.y, a.y);
 }
 
-__device__ void g1a_cpy(g1a_t &a, const g1a_t &b) {
+__device__ __host__ void g1a_cpy(g1a_t &a, const g1a_t &b) {
     fp_cpy(a.x, b.x);
     fp_cpy(a.y, b.y);
 }
@@ -41,12 +41,12 @@ __device__ __host__ void g1a_print(const char *s, const g1a_t &a) {
 }
 
 
-__device__ void g1a_inf(g1a_t &a) {
+__device__ __host__ void g1a_inf(g1a_t &a) {
     fp_zero(a.x);
     fp_zero(a.y);
 };
 
-__device__ void g1a_gen(g1a_t &a) {
+__device__ __host__ void g1a_gen(g1a_t &a) {
     a.x[5] = 0x17F1D3A73197D794;
     a.x[4] = 0x2695638C4FA9AC0F;
     a.x[3] = 0xC3688C4F9774B905;

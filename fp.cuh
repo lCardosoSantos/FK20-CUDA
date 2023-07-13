@@ -8,9 +8,9 @@
 
 typedef uint64_t fp_t[6];
 
-extern __device__ void fp_fromUint64(fp_t &z, const uint64_t *x);
+extern __device__ __host__ void fp_fromUint64(fp_t &z, const uint64_t *x);
 extern __device__ void fp_toUint64(const fp_t &x, uint64_t *z);
-extern __device__ void fp_cpy(fp_t &z, const fp_t &x);
+extern __device__ __host__ void fp_cpy(fp_t &z, const fp_t &x);
 extern __device__ void fp_reduce6(fp_t &z);
 extern __device__ void fp_neg(fp_t &z, const fp_t &x);
 extern __device__ void fp_x2(fp_t &z, const fp_t &x);
@@ -24,8 +24,8 @@ extern __device__ void fp_sqr(fp_t &z, const fp_t &x);
 extern __device__ void fp_mul(fp_t &z, const fp_t &x, const fp_t &y);
 extern __device__ void fp_mma(fp_t &z, const fp_t &v, const fp_t &w, const fp_t &x, const fp_t &y);
 extern __device__ void fp_inv(fp_t &z, const fp_t &x);
-extern __device__ void fp_zero(fp_t &z);
-extern __device__ void fp_one(fp_t &z);
+extern __device__ __host__ void fp_zero(fp_t &z);
+extern __device__ __host__ void fp_one(fp_t &z);
 
 extern __device__ bool fp_eq(const fp_t &x, const fp_t &y);
 extern __device__ bool fp_neq(const fp_t &x, const fp_t &y);
