@@ -9,7 +9,11 @@
 __managed__ g1p_t
     g1p_x0 = {
         { 0, 0, 0, 0, 0, 0 },
+#if G1P_ANYINF
+        { 1, 2, 3, 4, 5, 6 },
+#else
         { 1, 0, 0, 0, 0, 0 },
+#endif
         { 0, 0, 0, 0, 0, 0 },
     },
     g1p_x2 = {
@@ -62,7 +66,7 @@ __global__ void G1TestKAT(testval_t *) {
 
         g1p_inf(p);     // p  = 0
         g1p_inf(q);     // q  = 0
-        g1p_add(p, q);  // p += q
+        g1p_add(p, g1p_x0);  // p += 0
 
         if (g1p_neq(p, q)) {
             pass = false;
