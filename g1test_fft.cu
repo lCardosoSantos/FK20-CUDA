@@ -161,7 +161,7 @@ void G1TestFFT(unsigned rows) {
 
         // IFT(FFT(P)) == P
 
-        printf("=== IFT(FFT(P)) == P\n");
+        printf("=== RUN   IFT(FFT(P)) == P\n");
         for (i=0; i<512*512; i++) cmp[i] = 0;
 
         g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(S, P); CUDASYNC;
@@ -178,7 +178,7 @@ void G1TestFFT(unsigned rows) {
 
         // FFT(IFT(P)) == P
 
-        printf("=== FFT(IFT(P)) == P\n");
+        printf("=== RUN   FFT(IFT(P)) == P\n");
         for (i=0; i<512*512; i++) cmp[i] = 0;
 
         g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(T, P); CUDASYNC;
@@ -195,7 +195,7 @@ void G1TestFFT(unsigned rows) {
 
         // FFT(P+Q) == FFT(P) + FFT(Q)
 
-        printf("=== FFT(P+Q) == FFT(P) + FFT(Q)\n");
+        printf("=== RUN   FFT(P+Q) == FFT(P) + FFT(Q)\n");
         for (i=0; i<512*512; i++) cmp[i] = 0;
 
         g1p_add_wrapper<<<rows, 256>>>(R, rows*512, P, Q); CUDASYNC;    // P+Q
@@ -215,7 +215,7 @@ void G1TestFFT(unsigned rows) {
 
         // IFT(P+Q) == IFT(P) + IFT(Q)
 
-        printf("=== IFT(P+Q) == IFT(P) + IFT(Q)\n");
+        printf("=== RUN   IFT(P+Q) == IFT(P) + IFT(Q)\n");
         for (i=0; i<512*512; i++) cmp[i] = 0;
 
         g1p_add_wrapper<<<rows, 256>>>(R, rows*512, P, Q); CUDASYNC;    // P+Q
@@ -235,7 +235,7 @@ void G1TestFFT(unsigned rows) {
 
         // FFT(x*P) == x*FFT(P)
 
-        printf("=== FFT(x*P) == x*FFT(P)\n");
+        printf("=== RUN   FFT(x*P) == x*FFT(P)\n");
         for (i=0; i<512*512; i++) cmp[i] = 0;
         for (i=0; i<512*512; i++) fr_cpy(Z[i], Y[0]);
 
@@ -255,7 +255,7 @@ void G1TestFFT(unsigned rows) {
 
         // IFT(x*P) == x*IFT(P)
 
-        printf("=== IFT(x*P) == x*IFT(P)\n");
+        printf("=== RUN   IFT(x*P) == x*IFT(P)\n");
         for (i=0; i<512*512; i++) cmp[i] = 0;
         for (i=0; i<512*512; i++) fr_cpy(Z[i], Y[0]);
 
@@ -275,7 +275,7 @@ void G1TestFFT(unsigned rows) {
 
         // FFT(G*X) == G*FFT(X) (FFT commutes with mapping from Fr to G1)
 
-        printf("=== FFT(G*X) == G*FFT(X)\n");
+        printf("=== RUN   FFT(G*X) == G*FFT(X)\n");
         for (i=0; i<512*512; i++) cmp[i] = 0;
         for (i=0; i<512*512; i++) g1p_gen(R[i]);
 
@@ -295,7 +295,7 @@ void G1TestFFT(unsigned rows) {
 
         // IFT(G*X) == G*IFT(X) (IFT commutes with mapping from Fr to G1)
 
-        printf("=== IFT(G*X) == G*IFT(X)\n");
+        printf("=== RUN   IFT(G*X) == G*IFT(X)\n");
         for (i=0; i<512*512; i++) cmp[i] = 0;
         for (i=0; i<512*512; i++) g1p_gen(R[i]);
 
