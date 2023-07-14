@@ -47,11 +47,7 @@ void fullTest(){
     clearRes;
     fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients);
     CUDASYNC("fr_eq_wrapper"); 
-    for (int i=0; i<16*512; i++)
-        if (cmp[i] != 1) {
-            printf("poly2tc error %04x\n", i);
-            pass = false;
-        }
+    CMPCHECK(16*512);
     PRINTPASS(pass);
 
     // tc -> tc_fft
@@ -65,12 +61,7 @@ void fullTest(){
     clearRes;
     fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients_fft);
     CUDASYNC("fr_eq_wrapper");
-    for (int i=0; i<16*512; i++)
-        if (cmp[i] != 1) {
-            printf("tc2tcfft %d\n", i);
-            pass = false;
-            break;
-        }
+    CMPCHECK(16*512);
     PRINTPASS(pass);
 
     // tc_fft -> hext_fft
@@ -82,10 +73,7 @@ void fullTest(){
     clearRes;
     g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft);
     CUDASYNC("g1p_eq_wrapper");
-    for (int i=0; i<512; i++)
-        if (cmp[i] != 1) {
-            pass = false;
-        }
+    CMPCHECK(512);
     PRINTPASS(pass);
 
     // hext_fft -> hext -> h
@@ -99,10 +87,7 @@ void fullTest(){
     clearRes;
     g1p_eq_wrapper<<<16, 32>>>(cmp, 256, g1p_tmp, (g1p_t *)h);
     CUDASYNC("g1p_eq_wrapper");
-    for (int i=0; i<256; i++)
-        if (cmp[i] != 1) {
-            pass = false;
-        }
+    CMPCHECK(256);
     PRINTPASS(pass);
     
     //h -> h_fft
@@ -114,10 +99,7 @@ void fullTest(){
     clearRes;
     g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, h_fft);
     CUDASYNC("g1p_eq_wrapper");
-    for (int i=0; i<512; i++)
-        if (cmp[i] != 1) {
-            pass = false;
-        }
+    CMPCHECK(512);
     PRINTPASS(pass);
 #undef rows
 }
@@ -137,13 +119,7 @@ void fk20_poly2toeplitz_coefficients_test(fr_t polynomial_l[4096], fr_t toeplitz
     fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients_l);
     CUDASYNC("fr_eq_wrapper");
     // Check result
-    for (int i=0; i<16*512; i++)
-        if (cmp[i] != 1) {
-            printf("poly2tc error %04x\n...", i);
-            pass = false;
-            break;
-        }
-
+    CMPCHECK(16*512);
     PRINTPASS(pass);
 }
 
@@ -166,11 +142,7 @@ void fk20_poly2hext_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512],
     CUDASYNC("g1p_eq_wrapper");
 
     // Check result
-    for (int i=0; i<512; i++)
-        if (cmp[i] != 1) {
-            pass = false;
-        }
-
+    CMPCHECK(512);
     PRINTPASS(pass);
 }
 
@@ -193,11 +165,7 @@ void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1
     CUDASYNC("g1p_eq_wrapper");
 
     // Check result
-    for (int i=0; i<512; i++)
-        if (cmp[i] != 1) {
-            pass = false;
-        }
-
+    CMPCHECK(512);
     PRINTPASS(pass);
 }
 
@@ -218,11 +186,7 @@ void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][51
     g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft_l);
     CUDASYNC("g1p_eq_wrapper");
     // Check result
-    for (int i=0; i<512; i++)
-        if (cmp[i] != 1) {
-            pass = false;
-        }
-
+    CMPCHECK(512);
     PRINTPASS(pass);
 }
 

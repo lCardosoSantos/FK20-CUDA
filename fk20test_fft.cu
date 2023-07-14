@@ -39,12 +39,7 @@ void toeplitz_coefficients2toeplitz_coefficients_fft(fr_t toeplitz_coefficients_
     clearRes;
     fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients_fft_l);
     CUDASYNC("fr_eq_wrapper");
-    for (int i=0; pass && i<16*512; i++)
-        if (cmp[i] != 1) {
-            printf("FFT error %d\n", i);
-            pass = false;
-        }
-
+    CMPCHECK(16*512)
     PRINTPASS(pass);
     //////////////////////////////////////////////////
 }
@@ -70,12 +65,7 @@ void h2h_fft(g1p_t h_l[512], g1p_t h_fft_l[512]){
     CUDASYNC("g1p_eq_wrapper");
     // Check FFT result
 
-    for (int i=0; pass && i<512; i++)
-        if (cmp[i] != 1) {
-            printf("FFT error %d\n", i);
-            pass = false;
-        }
-
+    CMPCHECK(512)
     PRINTPASS(pass);
 }
 
@@ -98,14 +88,7 @@ void h_fft2h(g1p_t h_fft_l[512], g1p_t h_l[512]){
     g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, h_l);
     CUDASYNC("g1p_eq_wrapper");
     // Check IFT result
-
-    for (int i=0; pass && i<512; i++){
-        if (cmp[i] != 1) {
-            printf("IFT error %d\n", i);
-            pass = false;
-        }
-    }
-
+    CMPCHECK(512)
     PRINTPASS(pass);
 }
 
@@ -129,12 +112,7 @@ void hext_fft2h(g1p_t hext_fft_l[512], g1p_t h_l[512]){
     CUDASYNC("g1p_eq_wrapper");
     // Check IFT result
 
-    for (int i=0; pass && i<256; i++)
-        if (cmp[i] != 1) {
-            printf("IFT error %d\n", i);
-            pass = false;
-        }
-
+    CMPCHECK(256)
     PRINTPASS(pass);
 }
 
@@ -161,12 +139,7 @@ void hext_fft2h_fft(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]){
 
     // Check FFT result
 
-    for (int i=0; pass && i<512; i++)
-        if (cmp[i] != 1) {
-            printf("fk20_hext_fft2h_fft error at idx %d\n", i);
-            pass = false;
-        }
-
+    CMPCHECK(512)
     PRINTPASS(pass);
 }
 // vim: ts=4 et sw=4 si
