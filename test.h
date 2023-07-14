@@ -35,7 +35,7 @@
 
 #define CUDASYNC(fmt, ...) err = cudaDeviceSynchronize(); \
                            if (err != cudaSuccess) \
-                                printf("%s@%d: " fmt " Error: %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err), ##__VA_ARGS__)
+                                printf("%s:%d " fmt " Error: %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err), ##__VA_ARGS__)
 
 #define SET_SHAREDMEM(SZ, FN) \
     err = cudaFuncSetAttribute(FN, cudaFuncAttributeMaxDynamicSharedMemorySize, SZ); \
@@ -44,7 +44,9 @@
 
 #define clearRes   for (int i=0; i<16*512; i++) cmp[i] = 0; \
                    pass=true;
-#define rows 1
+
+#define clearRes512   for (int i=0; i<rows*16*512; i++) cmp[i] = 0; \
+                      pass=true;
 
 #define CLOCKINIT clock_t start, end
 #define CLOCKSTART start=clock()
@@ -53,5 +55,11 @@
 
 
 
-
+#define CMPCHECK(LENGHT)     for (int i=0; pass && i<LENGHT; i++){\
+                                if (cmp[i] != 1) {\
+                                    printf("%s:%d %s() error idx %d...\n", __FILE__, __LINE__, __func__, i);\
+                                    pass = false;\
+                                    break;\
+                                }\
+                            }
 #endif

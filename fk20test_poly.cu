@@ -28,13 +28,12 @@ void FK20TestPoly() {
 }
 
 void fullTest(){
+    #define rows 1
     cudaError_t err;
     bool pass = true;
     CLOCKINIT;
     // Setup
     SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
-    //SET_SHAREDMEM(fr_sharedmem,  fk20_msm);
-    //SET_SHAREDMEM(g1p_sharedmem, fk20_hext_fft2h_fft);  // function not being used?
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
@@ -120,7 +119,7 @@ void fullTest(){
             pass = false;
         }
     PRINTPASS(pass);
-
+#undef rows
 }
 
 void fk20_poly2toeplitz_coefficients_test(fr_t polynomial_l[4096], fr_t toeplitz_coefficients_l[16][512]){
