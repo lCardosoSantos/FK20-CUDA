@@ -31,12 +31,14 @@ __global__ void fk20_hext2h(g1p_t *h) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
 // fk20_poly2h_fft(): polynomial + xext_fft -> h_fft
 // This is the full execution of FK20. 
+
 // parameters:
+// - in  rows       number of rows to process in one kernel launch
 // - in  xext_fft   array with 16*512 elements, computed using fk20_setup2xext_fft()
 // - in  polynomial array with 16*512*rows elements
-// - in  rows       number of rows to process in one kernel launch
 // - out h_fft      array with    512*rows elements
 
 __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t xext_fft[8192], unsigned rows) {
@@ -45,7 +47,6 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
     // Setup
 
     SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
-    //SET_SHAREDMEM(fr_sharedmem,  fk20_msm);
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
@@ -54,9 +55,7 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
     CUDASYNC;
 
     // tc -> tc_fft
-    for(int i=0; i<16; i++){
-        fr_fft_wrapper<<<rows, 256, fr_sharedmem>>>(fr+512*i, fr+512*i);
-    }
+    fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(fr, fr);
     CUDASYNC;
 
     // tc_fft -> hext_fft

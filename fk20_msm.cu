@@ -3,14 +3,13 @@
 #include "fk20.cuh"
 
 ////////////////////////////////////////////////////////////////////////////////
-// fk20_msm(): toeplitz_coefficients_fft_l + xext_fft -> hext_fft_l
-// WARNING: CALLING KERNEL WITH DYNAMIC SHARED MEMORY BREAKS THIS FUNCTION!
-//          THE CORRECT KERNEL PARAMETER IS fk20_msm<<<nblocks, 256>>>()
+
+// fk20_msm(): toeplitz_coefficients_fft + xext_fft -> hext_fft
+
 // parameters: 
-// - in  tc_fft    array with dimensions [512]
 // - in  xe_fft    array with dimensions [16][512]
-// - out he_fft    array with dimensions [16][512]
-////TODO: add to 512 tests
+// - in  tc_fft    array with dimensions [16][512]
+// - out he_fft    array with dimensions [512]
 
 __global__ void fk20_msm(g1p_t *he_fft, const fr_t *tc_fft, const g1p_t *xe_fft) {
     if (gridDim.y  !=   1) return;
@@ -29,7 +28,7 @@ __global__ void fk20_msm(g1p_t *he_fft, const fr_t *tc_fft, const g1p_t *xe_fft)
 
     // move pointer for blocks
     he_fft += 512*bid;
-    tc_fft += 512*bid;
+    tc_fft += 16*512*bid;
 
     // MSM Loop
     for (int i=0; i<16; i++) {

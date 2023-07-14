@@ -70,11 +70,22 @@ void hext_fft2h_fft_512();
 
 void fk20_poly2toeplitz_coefficients_512(int execN);
 void fk20_poly2hext_fft_512();
-void fk20_poly2h_fft_512();
-void fk20_msmloop_512();
+void fk20_poly2h_fft_512(unsigned rows);
+void fk20_msmloop_512(unsigned rows);
 void fk20_poly2toeplitz_coefficients_fft_test();
 
-int main() {
+int main(int argc, char **argv) {
+
+    unsigned rows = 2;
+
+    if (argc > 1)
+        rows = atoi(argv[1]);
+
+        if (rows < 1)
+            rows = 1;
+
+        if (rows > 512)
+            rows = 512;
     
     //all tests
     //toeplitz_coefficients2toeplitz_coefficients_fft_512();
@@ -86,9 +97,9 @@ int main() {
 
     //fk20_poly2toeplitz_coefficients_512(0); //TODO: parameter is debug, remove.
     //fk20_poly2hext_fft_512(); 
-    fk20_msmloop_512(); //TODO: Test Fails
 
-    //fk20_poly2h_fft_512();
+    fk20_msmloop_512(rows);
+    fk20_poly2h_fft_512(rows);
     
     //fk20_poly2toeplitz_coefficients_fft_test(); //TODO: Test Fails //Superfluos function?
 
@@ -384,7 +395,7 @@ void fk20_poly2hext_fft_512(){
     PRINTPASS(pass);
 }
 
-void fk20_poly2h_fft_512(){
+void fk20_poly2h_fft_512(unsigned rows){
     PTRN_G1PTMP; PTRN_FRTMP;
     cudaError_t err;
     bool pass = true;
@@ -393,7 +404,7 @@ void fk20_poly2h_fft_512(){
     printf("=== RUN   %s\n", "fk20_poly2h_fft: polynomial -> h_fft");
 
     start = clock();
-    fk20_poly2h_fft(g1p_tmp, polynomial, (const g1p_t *)xext_fft, 512);
+    fk20_poly2h_fft(g1p_tmp, polynomial, (const g1p_t *)xext_fft, rows);
     err = cudaDeviceSynchronize();
     end = clock();
 
@@ -404,17 +415,17 @@ void fk20_poly2h_fft_512(){
 
     // Clear comparison results
 
-    for (int i=0; i<512*512; i++)
+    for (int i=0; i<rows*512; i++)
         cmp[i] = 0;
 
-    g1p_eq_wrapper<<<1, 32>>>(cmp, 512*512, g1p_tmp, (g1p_t *)h_fft);
+    g1p_eq_wrapper<<<1, 32>>>(cmp, rows*512, g1p_tmp, (g1p_t *)h_fft);
 
     err = cudaDeviceSynchronize();
     if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
 
     // Check result
 
-    for (int i=0; i<512*512; i++)
+    for (int i=0; i<rows*512; i++)
         if (cmp[i] != 1) {
             pass = false;
         }
@@ -464,21 +475,16 @@ void hext_fft2h_fft_512(){
 
 }
 
-void fk20_msmloop_512(){
-    PTRN_G1PTMP;
+void fk20_msmloop_512(unsigned rows){
     clock_t start, end;
     cudaError_t err;
     bool pass = true;
 
     printf("=== RUN   %s\n", "fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft");
     start = clock();
-        //copy test 0 to test 1
-        memcpy(toeplitz_coefficients_fft+1*16, toeplitz_coefficients_fft+0*16, 16*512*sizeof(g1p_t));
-        memcpy(hext_fft+512, hext_fft, 512*sizeof(g1p_t));
-    //fk20_msm<<<2, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
-    fk20_msm<<<1, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
-    fk20_msm<<<1, 256>>>(g1p_tmp+512, (const fr_t*)toeplitz_coefficients_fft+16*512, (const g1p_t*)xext_fft);
     
+    fk20_msm<<<rows, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
+
     err = cudaDeviceSynchronize();
     end = clock();
 
@@ -489,17 +495,17 @@ void fk20_msmloop_512(){
 
     // Clear comparison results
 
-    for (int i=0; i<512*512; i++)
+    for (int i=0; i<rows*512; i++)
         cmp[i] = 0;
 
-    g1p_eq_wrapper<<<16, 32>>>(cmp, 512*512, g1p_tmp, (g1p_t *)hext_fft);
+    g1p_eq_wrapper<<<16, 32>>>(cmp, rows*512, g1p_tmp, (g1p_t *)hext_fft);
 
     err = cudaDeviceSynchronize();
     if (err != cudaSuccess) printf("Error g1p_eq_wrapper: %d (%s)\n", err, cudaGetErrorName(err));
 
     // Check result
 
-    for (int i=0; i<512*512; i++)
+    for (int i=0; i<rows*512; i++)
         if (cmp[i] != 1) {
             pass = false;
             printf("Fails at idx %d", i);
@@ -507,12 +513,6 @@ void fk20_msmloop_512(){
         }
 
     PRINTPASS(pass);
-    //g1p_print("0 exp:", g1p_tmp[0]);
-    //g1p_print("0 kat:", hext_fft[0]);
-
-    //g1p_print("512 exp:", g1p_tmp[512]);
-    //g1p_print("512 kat:", hext_fft[512]);
-
 }
 
 void fk20_poly2toeplitz_coefficients_fft_test(){
