@@ -55,17 +55,17 @@ void FK20TestFFTRand(FILE *inputStream) {
     readAndCheck(h);
     readAndCheck(h_fft);
 
-    fk20_poly2toeplitz_coefficients_test(polynomial, toeplitz_coefficients);
-    fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
-    fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
-    fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
-
-
     toeplitz_coefficients2toeplitz_coefficients_fft(toeplitz_coefficients, toeplitz_coefficients_fft);
     h2h_fft(h, h_fft);
     h_fft2h(h_fft, h);
     hext_fft2h(hext_fft, h);
     hext_fft2h_fft(hext_fft, h_fft);
+
+    fk20_poly2toeplitz_coefficients_test(polynomial, toeplitz_coefficients);
+    fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
+    fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
+    fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
+
 
     //Null the pointer if we used STDIN
     if (inputStream == stdin){

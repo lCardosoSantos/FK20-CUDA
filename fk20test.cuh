@@ -21,7 +21,7 @@ void FK20TestFFTRand(FILE *inputStream);
 
 //Single tests
 void fk20_poly2toeplitz_coefficients_test(fr_t polynomial[4096], fr_t toeplitz_coefficients[16][512]);
-void fk20_poly2toeplitz_coefficients_fft_test(fr_t polynomial_l[4096], fr_t toeplitz_coefficients__fftl[16][512]);
+//void fk20_poly2toeplitz_coefficients_fft_test(fr_t polynomial_l[4096], fr_t toeplitz_coefficients__fftl[16][512]); //deprecated
 void fk20_poly2hext_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1p_t hext_fft_l[512]);
 void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1p_t h_fft_l[512]);
 void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][512], 
@@ -33,29 +33,7 @@ void h_fft2h(g1p_t h_fft_l[512], g1p_t h_l[512]);
 void hext_fft2h(g1p_t hext_fft_l[512], g1p_t h_l[512]);
 void hext_fft2h_fft(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]);
 
-
-//debug macros for dumping elements to file
-#define WRITEU64(writing_stream, var, nu64Elem) do{ \
-    uint64_t *pointer = (uint64_t *)(*var); \
-    for (int count=0; count<(nu64Elem); count++){ \
-        fprintf(writing_stream,"%016lx\n",pointer[count]); \
-    } \
-}while(0)
-
-#define WRITEU64TOFILE(fileName, var, nu64Elem) do{ \
-    FILE * filepointer = fopen(fileName, "w");     \
-    WRITEU64(filepointer, var, (nu64Elem));           \
-    fclose(filepointer);                           \
-}while(0) 
-
-//sadly cuda doesn't allow fprintf inside a kernel, so printfItis.
-#define WRITEU64STDOUT(var, nu64Elem) do{ \
-    uint64_t *pointer = (uint64_t *)(var); \
-    for (int count=0; count<(nu64Elem); count++){ \
-        printf("%016lx ",pointer[count]); \
-        if (count%6==5) printf("\n"); \
-    } \
-}while(0)
+void fullTest();
 
 
 #endif // FK20_TEST_CUH
