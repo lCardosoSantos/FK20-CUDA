@@ -2,8 +2,8 @@
 #include "g1.cuh"
 #include "fk20.cuh"
 
-static __device__ fr_t fr_tmp[512*512];    // 16 KiB memory per threadblock
-static __device__ g1p_t g1p_tmp[512*512];  // 72 KiB memory per threadblock
+//static __device__ fr_t fr_tmp[512*512];    // 16 KiB memory per threadblock
+//static __device__ g1p_t g1p_tmp[512*512];  // 72 KiB memory per threadblock
 
 ////////////////////////////////////////////////////////////////////////////////
 

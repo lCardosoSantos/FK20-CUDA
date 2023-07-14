@@ -7,8 +7,6 @@
 #include "g1.cuh"
 #include "fk20.cuh"
 #include "fk20test.cuh"
-#include "test.h"
-
 
 // Testvector inputs
 
@@ -66,7 +64,7 @@ int main(int argc, char **argv) {
             rows = 1;
 
         if (rows > 512)
-            rows = 512;\
+            rows = 512;
 
     printf("=== RUN test with %d rows\n\n", rows);
     // fft tests
