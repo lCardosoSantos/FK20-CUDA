@@ -1,5 +1,5 @@
-#ifndef TEST_INC
-#define TEST_INC
+#ifndef TEST_H
+#define TEST_H
 // Macros used in the testing functions
 
 // pretty print
