@@ -24,11 +24,11 @@ void FK20TestPoly() {
     fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
     fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
     fullTest(); 
-    fullTestFalsibility();
+    fullTestFalsifiability();
 
 }
 
-void fullTest(){ //TODO: How to do the falsibility here?
+void fullTest(){ //TODO: How to do the Falsifiability here?
     #define rows 1
     cudaError_t err;
     bool pass = true;
@@ -104,7 +104,7 @@ void fullTest(){ //TODO: How to do the falsibility here?
     PRINTPASS(pass);
 #undef rows
 }
-void fullTestFalsibility(){ //TODO: How to do the falsibility here?
+void fullTestFalsifiability(){ //TODO: How to do the Falsifiability here?
     #define rows 1
     cudaError_t err;
     bool pass = true;

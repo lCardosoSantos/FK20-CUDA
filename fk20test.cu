@@ -17,7 +17,7 @@ int main() {
     return 0;
 }
 
-//Usefull for the falsibility tests
+//Usefull for the Falsifiability tests
 void varMangle(fr_t *target, size_t size, unsigned step){
     fr_t tmp;
     if (target == NULL || size <= 0 || step <= 0)

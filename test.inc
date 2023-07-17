@@ -13,7 +13,7 @@
     printf("- %s\n", pass ? COLOR_GREEN "PASS" COLOR_RESET : COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET);
 
 #define NEGPRINTPASS(pass)                                                                                                \
-    printf("- %s\n", pass ? COLOR_RED COLOR_BOLD "FALSIBILITY FAIL" COLOR_RESET : COLOR_GREEN "FALSIBILITY PASS" COLOR_RESET);
+    printf("- %s\n", pass ? COLOR_RED COLOR_BOLD "FALSIFIABILITY FAIL" COLOR_RESET : COLOR_GREEN "FALSIFIABILITY PASS" COLOR_RESET);
 
 
 // debug macros for dumping elements to file
