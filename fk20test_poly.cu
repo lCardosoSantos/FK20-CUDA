@@ -24,10 +24,11 @@ void FK20TestPoly() {
     fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
     fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
     fullTest(); 
+    fullTestFalsibility();
 
 }
 
-void fullTest(){ //TODO: How to do the falseability here?
+void fullTest(){ //TODO: How to do the falsibility here?
     #define rows 1
     cudaError_t err;
     bool pass = true;
@@ -103,7 +104,7 @@ void fullTest(){ //TODO: How to do the falseability here?
     PRINTPASS(pass);
 #undef rows
 }
-void fullTestFalseability(){ //TODO: How to do the falseability here?
+void fullTestFalsibility(){ //TODO: How to do the falsibility here?
     #define rows 1
     cudaError_t err;
     bool pass = true;
@@ -112,6 +113,8 @@ void fullTestFalseability(){ //TODO: How to do the falseability here?
     SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
+
+    varMangle((fr_t*)polynomial, 4096, 512);
 
     // polynomial -> tc
     printf("\n>>>>Full integration test\n"); fflush(stdout);
@@ -177,6 +180,8 @@ void fullTestFalseability(){ //TODO: How to do the falseability here?
     CUDASYNC("g1p_eq_wrapper");
     NEGCMPCHECK(512);
     NEGPRINTPASS(pass);
+
+    varMangle((fr_t*)polynomial, 4096, 512); //unmangle
 #undef rows
 }
 

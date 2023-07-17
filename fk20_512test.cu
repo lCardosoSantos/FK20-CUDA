@@ -54,7 +54,7 @@ void fk20_poly2toeplitz_coefficients_fft_test(unsigned rows);
 void fullTest_512(unsigned rows);
 void fullTestFalseability_512(unsigned rows);
 
-//Usefull for the falseability tests
+//Usefull for the falsibility tests
 void varMangle(fr_t *target, size_t size, unsigned step);
 void varMangle(g1p_t *target, size_t size, unsigned step);
 
@@ -182,7 +182,7 @@ void fullTestFalseability_512(unsigned rows){
     // polynomial -> tc
     varMangle(polynomial, 512*4096, 64);
 
-    printf("\n>>>>Full integration test - Falseability\n"); fflush(stdout);
+    printf("\n>>>>Full integration test - falsibility\n"); fflush(stdout);
     printf("polynomial -> tc\n"); fflush(stdout);
     CLOCKSTART;
     fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr_tmp_, polynomial);
@@ -562,7 +562,7 @@ void fk20_msmloop_512(unsigned rows){
 //     PRINTPASS(pass);
 // }
 
-//Usefull for the falseability tests
+//Usefull for the falsibility tests
 //If you are using a variable where i*step == i*step+1, you can end up with a false(false positive).
 //A staggered start helps to mitigate it, but it can happen with a very small probability.
 #define START_INDEX 3
