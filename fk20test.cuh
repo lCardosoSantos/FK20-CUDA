@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-#include "test.inc"
+#include "test.h"
 
 // Shared memory sizes
 
