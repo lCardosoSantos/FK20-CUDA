@@ -23,11 +23,11 @@ void FK20TestPoly() {
     fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
     fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
     fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
-    fullTest(); //TODO: Mainly for debugging, similar to fk20_poly2h_fft_test
+    fullTest(); 
 
 }
 
-void fullTest(){
+void fullTest(){ //TODO: How to do the falseability here?
     #define rows 1
     cudaError_t err;
     bool pass = true;
@@ -103,6 +103,82 @@ void fullTest(){
     PRINTPASS(pass);
 #undef rows
 }
+void fullTestFalseability(){ //TODO: How to do the falseability here?
+    #define rows 1
+    cudaError_t err;
+    bool pass = true;
+    CLOCKINIT;
+    // Setup
+    SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
+    SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
+    SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
+
+    // polynomial -> tc
+    printf("\n>>>>Full integration test\n"); fflush(stdout);
+    printf("polynomial -> tc\n"); fflush(stdout);
+    CLOCKSTART;
+    fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr_tmp, polynomial);
+    CUDASYNC("fk20_poly2toeplitz_coefficients"); 
+    CLOCKEND;
+    clearRes;
+    fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients);
+    CUDASYNC("fr_eq_wrapper"); 
+    NEGCMPCHECK(16*512);
+    NEGPRINTPASS(pass);
+
+    // tc -> tc_fft
+    printf("tc -> tc_fft\n"); fflush(stdout);
+    CLOCKSTART;
+    for(int i=0; i<16; i++){
+        fr_fft_wrapper<<<rows, 256, fr_sharedmem>>>(fr_tmp+512*i, fr_tmp+512*i);  //needs to do 16 of those
+    }
+    CUDASYNC("fr_fft_wrapper"); 
+    CLOCKEND;
+    clearRes;
+    fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients_fft);
+    CUDASYNC("fr_eq_wrapper");
+    NEGCMPCHECK(16*512);
+    NEGPRINTPASS(pass);
+
+    // tc_fft -> hext_fft
+    printf("tc_fft -> hext_fft\n"); fflush(stdout);
+    CLOCKSTART;
+    fk20_msm<<<rows, 256>>>(g1p_tmp, fr_tmp,  (g1p_t *)xext_fft);
+    CUDASYNC("fk20_msm");
+    CLOCKEND;
+    clearRes;
+    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft);
+    CUDASYNC("g1p_eq_wrapper");
+    NEGCMPCHECK(512);
+    NEGPRINTPASS(pass);
+
+    // hext_fft -> hext -> h
+    printf("hext_fft -> hext -> h\n"); fflush(stdout);
+    CLOCKSTART;
+    g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p_tmp, g1p_tmp);
+    CUDASYNC("g1p_ift_wrapper");
+    fk20_hext2h<<<rows, 256>>>(g1p_tmp);
+    CLOCKEND;
+    CUDASYNC("fk20_hext2h");
+    clearRes;
+    g1p_eq_wrapper<<<16, 32>>>(cmp, 256, g1p_tmp, (g1p_t *)h);
+    CUDASYNC("g1p_eq_wrapper");
+    NEGCMPCHECK(256);
+    NEGPRINTPASS(pass);
+    
+    //h -> h_fft
+    printf("h -> h_fft\n"); fflush(stdout);
+    CLOCKSTART;
+    g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p_tmp, g1p_tmp);
+    CUDASYNC("g1p_fft_wrapper");
+    CLOCKEND;
+    clearRes;
+    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, h_fft);
+    CUDASYNC("g1p_eq_wrapper");
+    NEGCMPCHECK(512);
+    NEGPRINTPASS(pass);
+#undef rows
+}
 
 void fk20_poly2toeplitz_coefficients_test(fr_t polynomial_l[4096], fr_t toeplitz_coefficients_l[16][512]){
     cudaError_t err;
@@ -111,16 +187,26 @@ void fk20_poly2toeplitz_coefficients_test(fr_t polynomial_l[4096], fr_t toeplitz
     
     printf("=== RUN   %s\n", "fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients");
     memset(fr_tmp, 0xAA,16*512*sizeof(fr_t)); //pattern on tmp dest.
-    CLOCKSTART;
-    fk20_poly2toeplitz_coefficients<<<1, 256>>>(fr_tmp, polynomial_l);
-    CUDASYNC("fk20_poly2toeplitz_coefficients");
-    CLOCKEND;
-    clearRes;
-    fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients_l);
-    CUDASYNC("fr_eq_wrapper");
-    // Check result
-    CMPCHECK(16*512);
-    PRINTPASS(pass);
+    for(int testIDX=0; testIDX<=1; testIDX++){
+        CLOCKSTART;
+        fk20_poly2toeplitz_coefficients<<<1, 256>>>(fr_tmp, polynomial_l);
+        CUDASYNC("fk20_poly2toeplitz_coefficients");
+        CLOCKEND;
+        clearRes;
+        fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients_l);
+        CUDASYNC("fr_eq_wrapper");
+        // Check result
+        if (testIDX == 0){
+            CMPCHECK(16 * 512)
+            PRINTPASS(pass);
+            }
+        else{
+            NEGCMPCHECK(16*512);
+            NEGPRINTPASS(pass);
+        }
+        
+        varMangle((fr_t*)polynomial_l, 4096, 512);
+    }
 }
 
 void fk20_poly2hext_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1p_t hext_fft_l[512]){
@@ -132,18 +218,27 @@ void fk20_poly2hext_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512],
 
     printf("=== RUN   %s\n", "fk20_poly2hext_fft: polynomial -> hext_fft");
     memset(g1p_tmp,0xAA,512*sizeof(g1p_t)); //pattern on tmp dest
-    CLOCKSTART;
-    fk20_poly2hext_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial_l, (const g1p_t *)xext_fft_l);
-    //fk20_poly2hext_fft<<<1, 256>>>(g1p_tmp, polynomial_l, (const g1p_t *)xext_fft_l);
-    CUDASYNC("fk20_poly2hext_fft");
-    CLOCKEND;
-    clearRes;
-    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft_l);
-    CUDASYNC("g1p_eq_wrapper");
+    for(int testIDX=0; testIDX<=1; testIDX++){
+        CLOCKSTART;
+        fk20_poly2hext_fft<<<1, 256, g1p_sharedmem>>>(g1p_tmp, polynomial_l, (const g1p_t *)xext_fft_l);
+        //fk20_poly2hext_fft<<<1, 256>>>(g1p_tmp, polynomial_l, (const g1p_t *)xext_fft_l);
+        CUDASYNC("fk20_poly2hext_fft");
+        CLOCKEND;
+        clearRes;
+        g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft_l);
+        CUDASYNC("g1p_eq_wrapper");
 
-    // Check result
-    CMPCHECK(512);
-    PRINTPASS(pass);
+        // Check result
+        if (testIDX == 0){
+            CMPCHECK(512)
+            PRINTPASS(pass);
+            }
+        else{
+            NEGCMPCHECK(512);
+            NEGPRINTPASS(pass);
+        }
+        varMangle(hext_fft_l, 512, 64);
+    }
 }
 
 void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1p_t h_fft_l[512]){
@@ -155,18 +250,27 @@ void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1
     //memset(g1p_tmp,0x88,512*sizeof(g1p_t)); //pattern on tmp dest
     memset(g1p_tmp,0,512*sizeof(g1p_t)); //pattern on tmp dest
     memset(fr_tmp,0xAA,8192*sizeof(fr_t)); //pattern on tmp dest
-    CLOCKSTART;
-    fk20_poly2h_fft(g1p_tmp, polynomial_l, (const g1p_t *)xext_fft_l, 1); //this causes memory issues
-    CUDASYNC("fk20_poly2h_fft");
-    CLOCKEND;
-    clearRes;
+    for(int testIDX=0; testIDX<=1; testIDX++){
+        CLOCKSTART;
+        fk20_poly2h_fft(g1p_tmp, polynomial_l, (const g1p_t *)xext_fft_l, 1); //this causes memory issues
+        CUDASYNC("fk20_poly2h_fft");
+        CLOCKEND;
+        clearRes;
 
-    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)h_fft_l);
-    CUDASYNC("g1p_eq_wrapper");
+        g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)h_fft_l);
+        CUDASYNC("g1p_eq_wrapper");
 
-    // Check result
-    CMPCHECK(512);
-    PRINTPASS(pass);
+        // Check result
+        if (testIDX == 0){
+            CMPCHECK(512)
+            PRINTPASS(pass);
+            }
+        else{
+            NEGCMPCHECK(512);
+            NEGPRINTPASS(pass);
+        }
+        varMangle(h_fft_l, 512, 64);
+    }
 }
 
 void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][512], 
@@ -177,17 +281,26 @@ void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][51
 
     printf("=== RUN   %s\n", "fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft");
     memset(g1p_tmp,0x88,512*sizeof(g1p_t)); //pattern on tmp dest
-    CLOCKSTART;
-    fk20_msm<<<1, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft_l, (const g1p_t*)xext_fft_l);
-    CUDASYNC("fk20_msm");
-    CLOCKEND;
-    clearRes;
+    for(int testIDX=0; testIDX<=1; testIDX++){
+        CLOCKSTART;
+        fk20_msm<<<1, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft_l, (const g1p_t*)xext_fft_l);
+        CUDASYNC("fk20_msm");
+        CLOCKEND;
+        clearRes;
 
-    g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft_l);
-    CUDASYNC("g1p_eq_wrapper");
-    // Check result
-    CMPCHECK(512);
-    PRINTPASS(pass);
+        g1p_eq_wrapper<<<16, 32>>>(cmp, 512, g1p_tmp, (g1p_t *)hext_fft_l);
+        CUDASYNC("g1p_eq_wrapper");
+        // Check result
+                if (testIDX == 0){
+                CMPCHECK(512)
+                PRINTPASS(pass);
+                }
+            else{
+                NEGCMPCHECK(512);
+                NEGPRINTPASS(pass);
+            }
+            varMangle(hext_fft_l, 512, 64);
+        }
 }
 
 //Deprecated function

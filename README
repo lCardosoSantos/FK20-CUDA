@@ -6,14 +6,15 @@ Here in this section I keep track of the activities I am working on. Meaningful 
 Last update: 20230713
 
 - Improvements in the code base:
+  - [x]  Implement false-positive checks <<<<
   - [ ]  Implement a CRC check on the KAT data before and after every test.
   - [ ]  Benchmark: Implement a separate benchmark with GPU spool-up.
   - [ ]  512row: Move KATs to a dinamic lib
   - [x]  ~~Test 512row with prefiled memory patterns~~ 20230706: no new test failures.
 - Debug:
   - [?] Update test_rand. Probably not necessary, since 512 now covers it
-  - [ ] fk20_hext_fft2h_fft: hext_fft -> h_fft: breaks after the math update, tmp-reg is zerod (?)
-  - [ ] Update the 512row tests with modifications from the single row test
+  - [?] fk20_hext_fft2h_fft: hext_fft -> h_fft: breaks after the math update, tmp-reg is zerod (?)
+  - [x] Update the 512row tests with modifications from the single row test
   - [x] >>>> fk20_poly2h_fft_515 (full fk20 execution, currently host)
     - [x] ~~cuda error 700~~ 20230707
     - [ ] Error with memory pattern on tmp variables. *Only on g1p*
