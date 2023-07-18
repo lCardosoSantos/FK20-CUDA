@@ -5,7 +5,7 @@
 #include "fk20.cuh"
 
 ////////////////////////////////////////////////////////////////////////////////
-// fk20_hext_fft2h_fft(): h_fft -> hext_fft
+// fk20_hext_fft2h_fft(): hext_fft -> h_fft
 //
 // parameters:
 // -in hext_fft    g1p_t hext_fft[blockDim.x][512]
