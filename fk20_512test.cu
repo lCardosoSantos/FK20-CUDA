@@ -437,7 +437,9 @@ void fk20_poly2toeplitz_coefficients_512(unsigned rows) {
     for(int testIDX=0; testIDX<=1; testIDX++){
 
         CLOCKSTART;
-        fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr_tmp_, polynomial);
+        fk20_poly2toeplitz_coefficients<<<rows, 256 >>>(fr_tmp_, polynomial);
+        //IMPORTANT: This function does not need shared memory. Making the kernel call with a dynamic shared memory allocation
+        //is known to cause some suble bugs, that not always show during normal execution.
         CUDASYNC("fk20_poly2toeplitz_coefficients");
         CLOCKEND;
 

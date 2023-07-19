@@ -13,6 +13,10 @@
 // - in  polynomial array with 4096*gridDim.x elements
 // - out toeplitz_coefficients array with 8192*gridDim.x elements
 
+// IMPORTANT: This function does not need shared memory. Making the kernel call with a dynamic shared memory allocation
+// is known to cause some suble bugs, that not always show during normal execution. 
+// Similar comment is present in fk20test_poly.cu and fk20_512test_poly.cu. In case this function changes and starts
+// needing shared memory, correct the tests on those two files.
 __global__ void fk20_poly2toeplitz_coefficients(fr_t *toeplitz_coefficients, const fr_t *polynomial) {
 
     // gridDim.x is the number of rows
