@@ -9,11 +9,17 @@
 #define COLOR_RESET "\x1b[0m"
 #define COLOR_BOLD "\x1b[1m"
 
-#define PRINTPASS(pass)                                                                                                \
-    printf("--- %s\n", pass ? COLOR_GREEN "PASS" COLOR_RESET : COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET);
+#define PRINTPASS(pass) if (isatty(fileno(stdout))){                                                    \
+    printf("--- %s\n", pass ? COLOR_GREEN "PASS" COLOR_RESET : COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET);\
+    }else{                                        \
+    printf("--- %s\n", pass ?  "PASS" :  "FAIL" );\
+    }
 
-#define NEGPRINTPASS(pass)                                                                                                \
-    printf("--- %s (intentional error detected)\n", pass ? COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET : COLOR_GREEN "PASS" COLOR_RESET);
+#define NEGPRINTPASS(pass) if (isatty(fileno(stdout))){                                                                                                 \
+    printf("--- %s (intentional error detected)\n", pass ? COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET : COLOR_GREEN "PASS" COLOR_RESET);\
+    }else{\
+        printf("--- %s\n", pass ?  "FAIL" :  "PASS" );\
+    }
 
 
 // debug macros for dumping elements to file
