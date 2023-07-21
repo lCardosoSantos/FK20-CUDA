@@ -32,7 +32,6 @@ __global__ void fk20_hext2h(g1p_t *h) {
 // - in  xext_fft   array with 16*512 elements, computed using fk20_setup2xext_fft()
 // - in  polynomial array with 16*512*rows elements
 // - out h_fft      array with    512*rows elements
-
 __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t xext_fft[8192], unsigned rows) {
     cudaError_t err;
 
@@ -42,6 +41,7 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
+    //TODO: Is the sync after every kernell necessary?
     // polynomial -> tc
     fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr, polynomial);
     CUDASYNC("fk20_poly2toeplitz_coefficients");

@@ -17,6 +17,7 @@ FK20TEST_TC=fk20test_poly2toeplitz_coefficients polynomial toeplitz_coefficients
 FK20TEST_TCFFT=fk20test_poly2toeplitz_coefficients_fft polynomial toeplitz_coefficients_fft
 FFTTEST=fftTest parseFFTTest
 FK20_512TEST=fk20_512test xext_fft polynomial toeplitz_coefficients toeplitz_coefficients_fft hext_fft h h_fft
+FK20BENCHMARK=fk20benchmark fk20_testvector
 
 FP_OBJS=$(FP:%=%.o)
 FR_OBJS=$(FR:%=%.o)
@@ -37,6 +38,7 @@ FK20TEST_TC_OBJS=$(FK20TEST_TC:%=%.o)
 FK20TEST_TCFFT_OBJS=$(FK20TEST_TCFFT:%=%.o)
 FFTTEST_OBJS=$(FFTTEST:%=%.o)
 FK20_512TEST_OBJS=$(FK20_512TEST:%=%.o)
+FK20BENCHMARK_OBJS=$(FK20BENCHMARK:%=%.o)
 
 OBJS=$(FP_OBJS) $(FR_OBJS) $(G1_OBJS) $(FK20_OBJS)
 CUBIN=$(FP_CUBIN) $(FR_CUBIN) $(G1_CUBIN) $(FK20_CUBIN)
@@ -152,6 +154,9 @@ fk20_512test_objs: $(FK20_512TEST_OBJS)
 fk20_objs: $(OBJS)
 
 fk20_512test: $(FK20_512TEST_OBJS) $(OBJS)
+	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
+
+fk20benchmark: $(FK20BENCHMARK_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
 fp%.cubin: fp%.cu fp.cuh

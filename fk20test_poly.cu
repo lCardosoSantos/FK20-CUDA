@@ -46,7 +46,7 @@ void fullTest() { //TODO: How to do the Falsifiability here?
     printf("polynomial -> tc\n"); fflush(stdout);
 
     CLOCKSTART;
-    fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr_tmp, polynomial);
+    fk20_poly2toeplitz_coefficients<<<rows, 256>>>(fr_tmp, polynomial);
     CUDASYNC("fk20_poly2toeplitz_coefficients"); 
     CLOCKEND;
 

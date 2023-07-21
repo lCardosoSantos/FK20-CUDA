@@ -3,30 +3,32 @@
 
 ## Luan's todolist
 Here in this section I keep track of the activities I am working on. Meaningful indentation
-Last update: 20230713
+Last update: 20230721
 
 - Improvements in the code base:
-  - [x]  Implement false-positive checks <<<<
+  - [ ]  Documentation
+    - [ ]  Check with DF if he want us to follow any specific standard from the ETH foundation. Maybe Doxygen?
   - [ ]  Implement a CRC check on the KAT data before and after every test.
-  - [ ]  Benchmark: Implement a separate benchmark with GPU spool-up.
   - [ ]  512row: Move KATs to a dinamic lib
+  - [x]  ~~Benchmark: Implement a separate benchmark with GPU spool-up.~~ 20230721
+  - [x]  ~~Implement false-positive checks~~ 20230718
   - [x]  ~~Test 512row with prefiled memory patterns~~ 20230706: no new test failures.
 - Debug:
   - [?] Update test_rand. Probably not necessary, since 512 now covers it
   - [?] fk20_hext_fft2h_fft: hext_fft -> h_fft: breaks after the math update, tmp-reg is zerod (?)
-  - [x] Update the 512row tests with modifications from the single row test
-  - [x] >>>> fk20_poly2h_fft_515 (full fk20 execution, currently host)
+  - [x] ~~Update the 512row tests with modifications from the single row test~~
+  - [x] ~~>>>> fk20_poly2h_fft_515 (full fk20 execution, currently host)~~
     - [x] ~~cuda error 700~~ 20230707
-    - [ ] Error with memory pattern on tmp variables. *Only on g1p*
+    - [x] Error with memory pattern on tmp variables. *Only on g1p*
   - [x] ~~g1p_ifft:279 thread 255 breaks by zeroing `g1p_tmp[r]``~~ 20230713
   - [x] ~~g1p inverted fft doesnt pass tests (Dag here) ~~(but ift(fft(x))=>x)~~ 20230713
     - [ ] Remove shared memory from fft?
-  - [x] hext_fft2h_fft_512: cuda error 700
-  - [x] fk20_msmloop_512: cuda error 700
+  - [x] ~~hext_fft2h_fft_512: cuda error 700~~
+  - [x] ~~fk20_msmloop_512: cuda error 700~~
   - [x] ~~fk20_poly2toeplitz_coefficients_fft_512: cuda error 700~~ Unecessary function 202307123
   - [x] ~~fk20_poly2hext_fft_512: ~~ 20230712
     - [x] ~~cuda error 700~~
-    - [x] Fails KAT. Compare memory dumps of two blocks with same KAT?
+    - [x] ~~Fails KAT. Compare memory dumps of two blocks with same KAT?~~
     - ~~note: Check with DA/DF if all the rows being fk20 over the same setup is an actual characteristic of the implementation. Will have impact on memory allocations if different setups.~~ By default, same setup across rows.
   - [x] ~~Fix of g1pComparen with Null non-point parameter~~ 20230710: Come back here for more robust solution
   - [x] ~~g1p_mul ispoint test works as expected?~~ 20230711
