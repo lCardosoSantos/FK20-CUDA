@@ -76,7 +76,7 @@ void fullTest() { //TODO: How to do the Falsifiability here?
     // tc_fft -> hext_fft
     printf("tc_fft -> hext_fft\n"); fflush(stdout);
     CLOCKSTART;
-    fk20_msm<<<rows, 256>>>(g1p_tmp, fr_tmp,  (g1p_t *)xext_fft);
+    fk20_msm<<<rows, 512>>>(g1p_tmp, fr_tmp,  (g1p_t *)xext_fft);
     CUDASYNC("fk20_msm");
     CLOCKEND;
     clearRes;
@@ -170,7 +170,7 @@ void fullTestFalsifiability() { //TODO: How to do the Falsifiability here?
     printf("tc_fft -> hext_fft\n"); fflush(stdout);
 
     CLOCKSTART;
-    fk20_msm<<<rows, 256>>>(g1p_tmp, fr_tmp,  (g1p_t *)xext_fft);
+    fk20_msm<<<rows, 512>>>(g1p_tmp, fr_tmp,  (g1p_t *)xext_fft);
     CUDASYNC("fk20_msm");
     CLOCKEND;
 
@@ -326,7 +326,7 @@ void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][51
     for(int testIDX=0; testIDX<=1; testIDX++){
 
         CLOCKSTART;
-        fk20_msm<<<1, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft_l, (const g1p_t*)xext_fft_l);
+        fk20_msm<<<1, 512>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft_l, (const g1p_t*)xext_fft_l);
         CUDASYNC("fk20_msm");
         CLOCKEND;
 

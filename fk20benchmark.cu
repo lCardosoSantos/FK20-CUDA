@@ -155,7 +155,7 @@ bool preBenchTest(int rows){
     
         fk20_poly2toeplitz_coefficients<<<rows, 256>>>(b_fr_tmp, b_polynomial);
         fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);  
-        fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
+        fk20_msm<<<rows, 512>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
         g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
         fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
         g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
@@ -189,7 +189,7 @@ void benchFull(int rows){
     BENCH_BEFORE;
         fk20_poly2toeplitz_coefficients<<<rows, 256>>>(b_fr_tmp, b_polynomial);
         fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);  
-        fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
+        fk20_msm<<<rows, 512>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
         g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
         fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
         g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
@@ -220,7 +220,7 @@ void benchSteps(unsigned rows){
     BENCH_AFTER("tc -> tc_fft");
 
     BENCH_BEFORE;
-        fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
+        fk20_msm<<<rows, 512>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
     BENCH_AFTER("tc_fft -> hext_fft (msm)");
 
     BENCH_BEFORE;

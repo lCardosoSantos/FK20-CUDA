@@ -51,7 +51,7 @@ __host__ void fk20_poly2h_fft(g1p_t *h_fft, const fr_t *polynomial, const g1p_t 
     CUDASYNC("fr_fft_wrapper");
 
     // tc_fft -> hext_fft
-    fk20_msm<<<rows, 256>>>(g1p, fr, xext_fft);
+    fk20_msm<<<rows, 512>>>(g1p, fr, xext_fft);
     CUDASYNC("fk20_msm");
 
     // hext_fft -> hext

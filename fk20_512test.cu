@@ -153,7 +153,7 @@ void fullTest_512(unsigned rows){
     printf("tc_fft -> hext_fft\n"); fflush(stdout);
 
     CLOCKSTART;
-    fk20_msm<<<rows, 256>>>(g1p_tmp, fr_tmp_,  (g1p_t *)xext_fft);
+    fk20_msm<<<rows, 512>>>(g1p_tmp, fr_tmp_,  (g1p_t *)xext_fft);
     CUDASYNC("fk20_msm");
     CLOCKEND;
 
@@ -245,7 +245,7 @@ void fullTestFalseability_512(unsigned rows){
     printf("tc_fft -> hext_fft\n"); fflush(stdout);
 
     CLOCKSTART;
-    fk20_msm<<<rows, 256>>>(g1p_tmp, fr_tmp_,  (g1p_t *)xext_fft);
+    fk20_msm<<<rows, 512>>>(g1p_tmp, fr_tmp_,  (g1p_t *)xext_fft);
     CUDASYNC("fk20_msm");
     CLOCKEND;
 
@@ -569,7 +569,7 @@ void fk20_msmloop_512(unsigned rows){
     for(int testIDX=0; testIDX<=1; testIDX++){
 
         CLOCKSTART;
-        fk20_msm<<<rows, 256>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
+        fk20_msm<<<rows, 512>>>(g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
         CUDASYNC("fk20_msm");
         CLOCKEND;
 
