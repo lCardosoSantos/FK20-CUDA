@@ -1,5 +1,8 @@
 #ifndef TEST_H
 #define TEST_H
+
+#include <unistd.h>	// isatty()
+
 // Macros used in the testing functions
 
 // pretty print
@@ -9,11 +12,16 @@
 #define COLOR_RESET "\x1b[0m"
 #define COLOR_BOLD "\x1b[1m"
 
+#ifndef __CUDA_ARCH__
 #define PRINTPASS(pass) if (isatty(fileno(stdout))){                                                    \
     printf("--- %s\n", pass ? COLOR_GREEN "PASS" COLOR_RESET : COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET);\
     }else{                                        \
     printf("--- %s\n", pass ?  "PASS" :  "FAIL" );\
     }
+#else
+#define PRINTPASS(pass)                           \
+    printf("--- %s\n", pass ?  "PASS" :  "FAIL" );
+#endif
 
 #define NEGPRINTPASS(pass) if (isatty(fileno(stdout))){                                                                                                 \
     printf("--- %s (intentional error detected)\n", pass ? COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET : COLOR_GREEN "PASS" COLOR_RESET);\
