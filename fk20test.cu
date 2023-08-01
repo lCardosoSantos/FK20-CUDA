@@ -7,6 +7,9 @@
 #include "fk20_testvector.cuh"
 
 int main() {
+
+    testinit();
+
     FK20TestFFT();
     FK20TestPoly();
     //FK20TestFFTRand(NULL); 

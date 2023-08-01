@@ -1,7 +1,12 @@
 #ifndef TEST_H
 #define TEST_H
 
-#include <unistd.h>	// isatty()
+#include <stdio.h>  // fileno(), stdout
+#include <unistd.h> // isatty()
+
+extern __managed__ int stdout_isatty;
+
+extern void testinit();
 
 // Macros used in the testing functions
 
@@ -12,16 +17,11 @@
 #define COLOR_RESET "\x1b[0m"
 #define COLOR_BOLD "\x1b[1m"
 
-#ifndef __CUDA_ARCH__
-#define PRINTPASS(pass) if (isatty(fileno(stdout))){                                                    \
+#define PRINTPASS(pass) if (stdout_isatty){                                                             \
     printf("--- %s\n", pass ? COLOR_GREEN "PASS" COLOR_RESET : COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET);\
     }else{                                        \
     printf("--- %s\n", pass ?  "PASS" :  "FAIL" );\
     }
-#else
-#define PRINTPASS(pass)                           \
-    printf("--- %s\n", pass ?  "PASS" :  "FAIL" );
-#endif
 
 #define NEGPRINTPASS(pass) if (isatty(fileno(stdout))){                                                                                                 \
     printf("--- %s (intentional error detected)\n", pass ? COLOR_RED COLOR_BOLD "FAIL" COLOR_RESET : COLOR_GREEN "PASS" COLOR_RESET);\
@@ -109,3 +109,5 @@
     }
 
 #endif
+
+// vim: ts=4 et sw=4 si

@@ -10,6 +10,8 @@ __managed__ testval_t testval[TESTVALS];
 
 void init() {
 
+    testinit();
+
     uint64_t
         p0 = 0xFFFFFFFF00000001U,
         p1 = 0x53BDA402FFFE5BFEU,

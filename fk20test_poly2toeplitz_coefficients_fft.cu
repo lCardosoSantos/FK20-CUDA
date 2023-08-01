@@ -20,6 +20,8 @@ static __managed__ fr_t fr_tmp[512*16*512];
 
 int main(int argc, char **argv) {
 
+    testinit();
+
     int rows = 2;
 
     if (argc > 1)

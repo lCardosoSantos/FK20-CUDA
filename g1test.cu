@@ -18,6 +18,8 @@ void init() {
 
     printf("%s\n", __func__);
 
+    testinit();
+
     /*
     uint64_t t[2*TESTVALS];
 

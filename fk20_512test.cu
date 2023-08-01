@@ -62,6 +62,8 @@ void varMangle(g1p_t *target, size_t size, unsigned step);
 
 int main(int argc, char **argv) {
 
+    testinit();
+
     unsigned rows = 2;
 
     if (argc > 1)

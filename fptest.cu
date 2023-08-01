@@ -10,6 +10,8 @@ __managed__ testval_t testval[TESTVALS];
 
 void init() {
 
+    testinit();
+
     printf("%s\n", __func__);
 
     uint64_t
