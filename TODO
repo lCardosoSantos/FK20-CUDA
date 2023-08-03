@@ -1,0 +1,227 @@
+# FK20 project
+
+## Documentation TODO list
+Todo list (subtasks removed for clarity)
+Last update: 20230803
+
+- [ ] Check if parameter order in the functions is consistent. Intel notation mainly
+- [ ] Make FR functions non destructive (might cause side effects)
+- [ ] Change make to CMAke (would be a big improvement)
+  - [ ] change organization of code (adding cmake style subdirs)
+- [ ] doc for module fp
+  - `fp_add.cu fp_add.cuh fp_cpy.cu fp.cu fp.cuh fp_eq.cu fp_inv.cu fp_isone.cu fp_iszero.cu fp_mma.cu fp_mul.cu fp_mul.cuh fp_neg.cu fp_neq.cu fp_nonzero.cu fp_reduce12.cuh fp_reduce6.cu fp_sqr.cu fp_sqr.cuh fp_sub.cu fp_sub.cuh fp_x12.cu fp_x12.cuh fp_x2.cu fp_x2.cuh fp_x3.cu fp_x3.cuh fp_x4.cu fp_x4.cuh fp_x8.cu fp_x8.cuh`
+- [ ] doc for module tests
+  - `fr_fft_testvector.cu, frtest_add.cu, frtest_addsub.cu, frtest_cmp.cu, frtest.cu, frtest.cuh, frtest_distributive.cu, frtest_fft.cu, frtest_fibonacci.cu, frtest_kat.cu, frtest_mulconst.cu, frtest_mul.cu, frtest_sub.cu, fptest_add.cu, fptest_cmp.cu, fptest.cu, fptest.cuh, fptest_distributive.cu, fptest_fibonacci.cu, fptest_inv.cu, fptest_kat.cu, fptest_mma.cu, fptest_mulconst.cu, fptest_mul.cu, fptest_sqr.cu, fptest_sub.cu, g1test.cu, g1test.cuh, g1test_dbl.cu, g1test_fft.cu, g1test_fibonacci.cu, g1test_kat.cu`
+- [ ] doc for module fk20
+  - `fk20_512test.cu, fk20benchmark.cu, fk20.cu, fk20.cuh, fk20_hext_fft2h_fft.cu, fk20_msm.cu, fk20_poly2hext_fft.cu, fk20_poly2h_fft.cu, fk20_poly2toeplitz_coefficients.cu, fk20_poly2toeplitz_coefficients_fft.cu`
+- [ ] doc for fk20test
+  - `fk20test.cu, fk20test.cuh, fk20test_fft.cu, fk20test_fft_rand.cu, fk20test_kat.cu, fk20test_poly2toeplitz_coefficients.cu, fk20test_poly2toeplitz_coefficients_fft.cu, fk20test_poly.cu, fk20_testvector.cu, fk20_testvector.cuh`
+- [ ] doc for module g1p
+  - `g1p_add.cu, g1p_addsub.cu, g1p_compare.cu, g1p.cu, g1p_dbl.cu, g1p_fft.cu, g1p_ispoint.cu, g1p_mul.cu, g1p_neg.cu, g1p_scale.cu, g1p_sub.cu`
+- [ ] doc for scripts
+  - `512.sh, FFTTest.sh, hext_fft.sh, h_fft.sh, h.sh, polynomial.sh, toeplitz_coefficients_fft.sh, toeplitz_coefficients.sh`
+- [ ] doc for other files
+  - `fftTest.cu, h.cu, hext_fft.cu, h_fft.cu, polynomial.cu, toeplitz_coefficients.cu, toeplitz_coefficients_fft.cu, xext_fft.cu`
+- [ ] README
+---------------------------------------------------------------------------------
+- [x] ~~doc for module fr~~ 20230803
+  - `fr_add.cu, fr_add.cuh, fr_addsub.cu, fr_cpy.cu, fr.cu, fr.cuh, fr_eq.cu, fr_fft.cu, fr_inv.cu, fr_isone.cu, fr_iszero.cu, fr_mul.cu, fr_neg.cu, fr_neq.cu, fr_nonzero.cu, fr_reduce4.cu, fr_roots.cu, fr_sqr.cu, fr_sub.cu, fr_sub.cuh, fr_x12.cu, fr_x2.cu, fr_x3.cu, fr_x4.cu, fr_x8.cu`
+
+### Filelist
+<!--- ls | egrep "g1p.*\.cu*" --->
+
+- [ ] fr
+    - [ ] commit and send to DAO
+    - [x] [fr_add.cu](./fr_add.cu)
+    - [x] [fr_add.cuh](./fr_add.cuh)
+    - [x] [fr_addsub.cu](./fr_addsub.cu)
+    - [x] [fr_cpy.cu](./fr_cpy.cu)
+    - [x] [fr.cu](./fr.cu) Note: Removed unnecessary conditional.
+    - [x] [fr.cuh](./fr.cuh)
+    - [x] [fr_eq.cu](./fr_eq.cu)
+    - [x] [fr_fft.cu](./fr_fft.cu)
+    - [x] [fr_inv.cu](./fr_inv.cu)
+    - [x] [fr_isone.cu](./fr_isone.cu)
+    - [x] [fr_iszero.cu](./fr_iszero.cu)
+    - [x] [fr_mul.cu](./fr_mul.cu)
+    - [?] [fr_neg.cu](./fr_neg.cu)
+      - [ ] ChkDA: what is rmmu0?
+    - [x] [fr_neq.cu](./fr_neq.cu)
+    - [x] [fr_nonzero.cu](./fr_nonzero.cu)
+    - [x] [fr_reduce4.cu](./fr_reduce4.cu)
+      - [ ] ChkDA: what is r?
+    - [x] [fr_roots.cu](./fr_roots.cu)
+    - [x] [fr_sqr.cu](./fr_sqr.cu)
+    - [x] [fr_sub.cu](./fr_sub.cu)
+    - [x] [fr_sub.cuh](./fr_sub.cuh)
+    - [x] [fr_x2.cu](./fr_x2.cu)
+    - [x] [fr_x3.cu](./fr_x3.cu)
+    - [x] [fr_x4.cu](./fr_x4.cu)
+    - [x] [fr_x8.cu](./fr_x8.cu)
+    - [x] [fr_x12.cu](./fr_x12.cu)
+
+- [ ] fp
+    - [ ] [fp_add.cu](./fp_add.cu)
+    - [ ] [fp_add.cuh](./fp_add.cuh)
+    - [ ] [fp_cpy.cu](./fp_cpy.cu)
+    - [ ] [fp.cu](./fp.cu)
+    - [ ] [fp.cuh](./fp.cuh)
+    - [ ] [fp_eq.cu](./fp_eq.cu)
+    - [ ] [fp_inv.cu](./fp_inv.cu)
+    - [ ] [fp_isone.cu](./fp_isone.cu)
+    - [ ] [fp_iszero.cu](./fp_iszero.cu)
+    - [ ] [fp_mma.cu](./fp_mma.cu)
+    - [ ] [fp_mul.cu](./fp_mul.cu)
+    - [ ] [fp_mul.cuh](./fp_mul.cuh)
+    - [ ] [fp_neg.cu](./fp_neg.cu)
+    - [ ] [fp_neq.cu](./fp_neq.cu)
+    - [ ] [fp_nonzero.cu](./fp_nonzero.cu)
+    - [ ] [fp_reduce12.cuh](./fp_reduce12.cuh)
+    - [ ] [fp_reduce6.cu](./fp_reduce6.cu)
+    - [ ] [fp_sqr.cu](./fp_sqr.cu)
+    - [ ] [fp_sqr.cuh](./fp_sqr.cuh)
+    - [ ] [fp_sub.cu](./fp_sub.cu)
+    - [ ] [fp_sub.cuh](./fp_sub.cuh)
+    - [ ] [fp_x12.cu](./fp_x12.cu)
+    - [ ] [fp_x12.cuh](./fp_x12.cuh)
+    - [ ] [fp_x2.cu](./fp_x2.cu)
+    - [ ] [fp_x2.cuh](./fp_x2.cuh)
+    - [ ] [fp_x3.cu](./fp_x3.cu)
+    - [ ] [fp_x3.cuh](./fp_x3.cuh)
+    - [ ] [fp_x4.cu](./fp_x4.cu)
+    - [ ] [fp_x4.cuh](./fp_x4.cuh)
+    - [ ] [fp_x8.cu](./fp_x8.cu)
+    - [ ] [fp_x8.cuh](./fp_x8.cuh)
+
+- [ ] Tests
+    - [ ] [fr_fft_testvector.cu](./fr_fft_testvector.cu)
+    - [ ] [frtest_add.cu](./frtest_add.cu)
+    - [ ] [frtest_addsub.cu](./frtest_addsub.cu)
+    - [ ] [frtest_cmp.cu](./frtest_cmp.cu)
+    - [ ] [frtest.cu](./frtest.cu)
+    - [ ] [frtest.cuh](./frtest.cuh)
+    - [ ] [frtest_distributive.cu](./frtest_distributive.cu)
+    - [ ] [frtest_fft.cu](./frtest_fft.cu)
+    - [ ] [frtest_fibonacci.cu](./frtest_fibonacci.cu)
+    - [ ] [frtest_kat.cu](./frtest_kat.cu)
+    - [ ] [frtest_mulconst.cu](./frtest_mulconst.cu)
+    - [ ] [frtest_mul.cu](./frtest_mul.cu)
+    - [ ] [frtest_sub.cu](./frtest_sub.cu)
+    - [ ] [fptest_add.cu](./fptest_add.cu)
+    - [ ] [fptest_cmp.cu](./fptest_cmp.cu)
+    - [ ] [fptest.cu](./fptest.cu)
+    - [ ] [fptest.cuh](./fptest.cuh)
+    - [ ] [fptest_distributive.cu](./fptest_distributive.cu)
+    - [ ] [fptest_fibonacci.cu](./fptest_fibonacci.cu)
+    - [ ] [fptest_inv.cu](./fptest_inv.cu)
+    - [ ] [fptest_kat.cu](./fptest_kat.cu)
+    - [ ] [fptest_mma.cu](./fptest_mma.cu)
+    - [ ] [fptest_mulconst.cu](./fptest_mulconst.cu)
+    - [ ] [fptest_mul.cu](./fptest_mul.cu)
+    - [ ] [fptest_sqr.cu](./fptest_sqr.cu)
+    - [ ] [fptest_sub.cu](./fptest_sub.cu)
+    - [ ] [g1test.cu](./g1test.cu)
+    - [ ] [g1test.cuh](./g1test.cuh)
+    - [ ] [g1test_dbl.cu](./g1test_dbl.cu)
+    - [ ] [g1test_fft.cu](./g1test_fft.cu)
+    - [ ] [g1test_fibonacci.cu](./g1test_fibonacci.cu)
+    - [ ] [g1test_kat.cu](./g1test_kat.cu)
+
+- [ ] misc
+    - [ ] [fftTest.cu](./fftTest.cu)
+    - [ ] [h.cu](./h.cu)
+    - [ ] [hext_fft.cu](./hext_fft.cu)
+    - [ ] [h_fft.cu](./h_fft.cu)
+    - [ ] [polynomial.cu](./polynomial.cu)
+    - [ ] [toeplitz_coefficients.cu](./toeplitz_coefficients.cu)
+    - [ ] [toeplitz_coefficients_fft.cu](./toeplitz_coefficients_fft.cu)
+    - [ ] [xext_fft.cu](./xext_fft.cu)
+
+- [ ] fk20
+    - [ ] [fk20_512test.cu](./fk20_512test.cu)
+    - [ ] [fk20benchmark.cu](./fk20benchmark.cu)
+    - [ ] [fk20.cu](./fk20.cu)
+    - [ ] [fk20.cuh](./fk20.cuh)
+    - [ ] [fk20_hext_fft2h_fft.cu](./fk20_hext_fft2h_fft.cu)
+    - [ ] [fk20_msm.cu](./fk20_msm.cu)
+    - [ ] [fk20_poly2hext_fft.cu](./fk20_poly2hext_fft.cu)
+    - [ ] [fk20_poly2h_fft.cu](./fk20_poly2h_fft.cu)
+    - [ ] [fk20_poly2toeplitz_coefficients.cu](./fk20_poly2toeplitz_coefficients.cu)
+    - [ ] [fk20_poly2toeplitz_coefficients_fft.cu](./fk20_poly2toeplitz_coefficients_fft.cu)
+    
+- [ ] fk20 test
+    - [ ] [fk20test.cu](./fk20test.cu)
+    - [ ] [fk20test.cuh](./fk20test.cuh)
+    - [ ] [fk20test_fft.cu](./fk20test_fft.cu)
+    - [ ] [fk20test_fft_rand.cu](./fk20test_fft_rand.cu)
+    - [ ] [fk20test_kat.cu](./fk20test_kat.cu)
+    - [ ] [fk20test_poly2toeplitz_coefficients.cu](./fk20test_poly2toeplitz_coefficients.cu)
+    - [ ] [fk20test_poly2toeplitz_coefficients_fft.cu](./fk20test_poly2toeplitz_coefficients_fft.cu)
+    - [ ] [fk20test_poly.cu](./fk20test_poly.cu)
+    - [ ] [fk20_testvector.cu](./fk20_testvector.cu)
+    - [ ] [fk20_testvector.cuh](./fk20_testvector.cuh)
+    
+- [ ] g1p files
+    - [ ] [g1p_add.cu](./g1p_add.cu)
+    - [ ] [g1p_addsub.cu](./g1p_addsub.cu)
+    - [ ] [g1p_compare.cu](./g1p_compare.cu)
+    - [ ] [g1p.cu](./g1p.cu)
+    - [ ] [g1p_dbl.cu](./g1p_dbl.cu)
+    - [ ] [g1p_fft.cu](./g1p_fft.cu)
+    - [ ] [g1p_ispoint.cu](./g1p_ispoint.cu)
+    - [ ] [g1p_mul.cu](./g1p_mul.cu)
+    - [ ] [g1p_neg.cu](./g1p_neg.cu)
+    - [ ] [g1p_scale.cu](./g1p_scale.cu)
+    - [ ] [g1p_sub.cu](./g1p_sub.cu)
+
+- [ ] Bash scripts
+    - [ ] [512.sh](./512.sh)
+    - [ ] [FFTTest.sh](./FFTTest.sh)
+    - [ ] [hext_fft.sh](./hext_fft.sh)
+    - [ ] [h_fft.sh](./h_fft.sh)
+    - [ ] [h.sh](./h.sh)
+    - [ ] [polynomial.sh](./polynomial.sh)
+    - [ ] [toeplitz_coefficients_fft.sh](./toeplitz_coefficients_fft.sh)
+    - [ ] [toeplitz_coefficients.sh](./toeplitz_coefficients.sh)
+  
+
+
+## Luan's todolist
+Here in this section I keep track of the activities I am working on. Meaningful indentation
+Last update: 20230721
+
+- Improvements in the code base:
+  - [ ]  Documentation
+    - [ ]  Check with DF if he want us to follow any specific standard from the ETH foundation. Maybe Doxygen?
+  - [ ]  Implement a CRC check on the KAT data before and after every test.
+  - [ ]  512row: Move KATs to a dinamic lib
+  - [ ]  isatty check on fp, fr, and g1 tests -> Check defines for host/device code.
+  - [x]  ~~Benchmark: Implement a separate benchmark with GPU spool-up.~~ 20230721
+  - [x]  ~~Implement false-positive checks~~ 20230718
+  - [x]  ~~Test 512row with prefiled memory patterns~~ 20230706: no new test failures.
+- Debug:
+  - [?] Update test_rand. Probably not necessary, since 512 now covers it
+  - [?] fk20_hext_fft2h_fft: hext_fft -> h_fft: breaks after the math update, tmp-reg is zerod (?)
+  - [x] ~~Update the 512row tests with modifications from the single row test~~
+  - [x] ~~>>>> fk20_poly2h_fft_515 (full fk20 execution, currently host)~~
+    - [x] ~~cuda error 700~~ 20230707
+    - [x] Error with memory pattern on tmp variables. *Only on g1p*
+  - [x] ~~g1p_ifft:279 thread 255 breaks by zeroing `g1p_tmp[r]``~~ 20230713
+  - [x] ~~g1p inverted fft doesnt pass tests (Dag here) ~~(but ift(fft(x))=>x)~~ 20230713
+    - [ ] Remove shared memory from fft?
+  - [x] ~~hext_fft2h_fft_512: cuda error 700~~
+  - [x] ~~fk20_msmloop_512: cuda error 700~~
+  - [x] ~~fk20_poly2toeplitz_coefficients_fft_512: cuda error 700~~ Unecessary function 202307123
+  - [x] ~~fk20_poly2hext_fft_512: ~~ 20230712
+    - [x] ~~cuda error 700~~
+    - [x] ~~Fails KAT. Compare memory dumps of two blocks with same KAT?~~
+    - ~~note: Check with DA/DF if all the rows being fk20 over the same setup is an actual characteristic of the implementation. Will have impact on memory allocations if different setups.~~ By default, same setup across rows.
+  - [x] ~~Fix of g1pComparen with Null non-point parameter~~ 20230710: Come back here for more robust solution
+  - [x] ~~g1p_mul ispoint test works as expected?~~ 20230711
+  - [x] ~~fk20_poly2toeplitz_coefficients_fft: unknown cuda error 700~~ 20230711
+  - [x] ~~fk20_poly2toeplitz_coefficients_512: not passing test~~ 20230706
+
+
+# Debug notes
+For monday: quick improvement to fk20msm
+then, documentation.
