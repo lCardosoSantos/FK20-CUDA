@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
 // Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "fr_add.cuh"
@@ -7,6 +8,13 @@
 
 // (x,y) := (x+y,x-y)
 
+/**
+ * @brief calculates the sum and the difference if the arguments, storing back into the arguments (x,y) := (x+y,x-y). Device function
+ * 
+ * @param[in,out] x First operand, will store the sum after execution
+ * @param[in,out] y Second operand, will store the difference after execution
+ * @return void 
+ */
 __device__ void fr_addsub(fr_t &x, fr_t &y) {
     unsigned tid = 0;   tid += blockIdx.z;
     tid *= gridDim.y;   tid += blockIdx.y;

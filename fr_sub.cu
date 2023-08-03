@@ -1,9 +1,17 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "fr_sub.cuh"
 
+/**
+ * @brief Calculates z-x, and stores back into z
+ * 
+ * @param[in, out] z  minuend, difference
+ * @param x subtrahend
+ * @return void 
+ */
 __device__ void fr_sub(fr_t &z, const fr_t &x) {
     uint64_t
         z0 = z[0], x0 = x[0],

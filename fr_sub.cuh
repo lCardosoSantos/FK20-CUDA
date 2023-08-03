@@ -1,3 +1,12 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
+/**
+ * @brief Macro for Z=X-Y. Consider that X is in registers X0..X3 and Y in Y0..Y3. 
+ * Z and X can overlap.
+ * 
+ */
 #define FR_SUB(Z, X, Y) \
     /* z = x - y */ \
  \

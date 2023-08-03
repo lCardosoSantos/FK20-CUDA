@@ -1,9 +1,17 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "fr_add.cuh"
 
+/**
+ * @brief Accumulates x in z. Device only function
+ * 
+ * @param[in, out] z 
+ * @param[in ] x 
+ * @return void
+ */
 __device__ void fr_add(fr_t &z, const fr_t &x) {
     uint64_t
         z0 = z[0], x0 = x[0],

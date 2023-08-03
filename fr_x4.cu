@@ -1,8 +1,15 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 
+/**
+ * @brief Multiply the subgroup element z by 4 with weak reduction
+ * 
+ * @param[in,out] z 
+ * @return void 
+ */
 __device__ void fr_x4(fr_t &z) {
     uint64_t
         z0 = z[0],

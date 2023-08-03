@@ -1,8 +1,18 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 
+/**
+ * @brief Reduced the value in fr_t to the field modulus
+ * 
+ * Modulus = 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001 
+ * and is hardcoded in the function.
+ * 
+ * @param z 
+ * @return void 
+ */
 __device__ void fr_reduce4(fr_t &z) {
     uint64_t
         z0 = z[0],

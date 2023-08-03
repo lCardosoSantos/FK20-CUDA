@@ -1,8 +1,16 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 
+/**
+ * @brief Copy into x the value of x.
+ * 
+ * @param[out] z 
+ * @param[in] x 
+ * @return  
+ */
 __device__ __host__ void fr_cpy(fr_t &z, const fr_t &x) {
         z[0] = x[0];
         z[1] = x[1];

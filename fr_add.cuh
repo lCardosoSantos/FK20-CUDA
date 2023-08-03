@@ -1,3 +1,16 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
+/**
+ * @brief Device macro for Z = X+Y with overflow check
+ * 
+ * @param[out] Z destination register
+ * @param[in ] X first operand
+ * @param[in ] Y second operand
+ * @return void
+ * 
+ */
 #define FR_ADD(Z, X, Y) \
     /* z = x + y */ \
  \

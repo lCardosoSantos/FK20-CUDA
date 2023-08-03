@@ -1,8 +1,19 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #include "fr.cuh"
 
-// Powers 0 to 512 of w = 5**((r-1)//512)%r
-// Extended with 2**-9 and 2**-9 / w
-
+/**
+ * @brief Root of unity precomputed table
+ * 
+ * Powers 0 to 512 of w = 5**((r-1)//512)%r
+ * Extended with 2**-9 and 2**-9 / w on idx 513 and 514
+ * 
+ * These values are used to for improving Fourier transforms. Unrelated to that, 
+ * they are also useful for mapping points of the G1 and G2 into Fq12. There, 
+ * the roots of unity form a subgroup of Fq12, called Gt
+ */
 __constant__ fr_t fr_roots[515] = {
     { 0x0000000000000001, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000 }, // w**0
     { 0x33811ea1fe0c65f4, 0x15c1ad4c687f28a2, 0xecfbede342dee7f4, 0x1bb466679a5d88b1 }, // w**1

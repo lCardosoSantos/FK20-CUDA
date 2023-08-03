@@ -1,8 +1,15 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
-
+/**
+ * @brief Multiply z by x, stores back into z
+ * 
+ * @param[in, out] z first multiplicand, stores the product
+ * @param[in] x  second multiplicand
+ * @return void 
+ */
 __device__ void fr_mul(fr_t &z, const fr_t &x) {
     uint64_t
         z0 = z[0], z1 = z[1], z2 = z[2], z3 = z[3],

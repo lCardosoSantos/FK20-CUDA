@@ -1,8 +1,16 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 
 #include "fr.cuh"
 
+/**
+ * @brief Squares the value in z, and stores back into z.
+ * 
+ * @param[in,out] z 
+ * @return void 
+ */
 __device__ void fr_sqr(fr_t &z) {
     uint64_t
         z0 = z[0], z1 = z[1], z2 = z[2], z3 = z[3];

@@ -1,20 +1,28 @@
-#include <stdio.h>
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "fk20.cuh"
 
-// Workspace in shared memory
-
+/**
+ * @brief  Workspace in shared memory. Must be 512*sizeof(fr_t) bytes
+ * 
+ */
 extern __shared__ fr_t fr_smem[];
 
-// FFT over Fr
-// input and output may freely overlap
-
+/**
+ * @brief FFT for fr_t[512]
+ * 
+ * Executes one FFT on an array of fr_t with 512 elements. This function must be
+ * called with 256 threads per block. input and output can overlap without side
+ * effects. There is no interleaving of data for different FFTs.
+ * 
+ * @param[out] output 
+ * @param[in] input 
+ * @return void 
+ */
 __device__ void fr_fft(fr_t *output, const fr_t *input) {
-    // One FFT of size 512 elements per thread block
-    // Must be called with 256threads per block
-    // No interleaving of data for different FFTs
-
     unsigned tid = threadIdx.x; // Thread number
     unsigned l, r, w, src, dst;
 
@@ -145,12 +153,18 @@ __device__ void fr_fft(fr_t *output, const fr_t *input) {
     fr_cpy(output[dst], fr_smem[src]);
 }
 
-// Inverse FFT over Fr
-
+/**
+ * @brief Inverse FFT for fr_t[512]
+ * 
+ * Executes one inverse FFT on an array of fr_t with 512 elements. This function must be
+ * called with 256 threads per block. input and output can overlap without side
+ * effects. There is no interleaving of data for different FFTs.
+ * 
+ * @param[out] output 
+ * @param[in] input 
+ * @return void 
+ */
 __device__ void fr_ift(fr_t *output, const fr_t *input) {
-    // One inverse FFT of size 512 per thread block
-    // No interleaving of data for different FFTs
-
     unsigned tid = threadIdx.x; // Thread number
     unsigned l, r, w, src, dst;
 
@@ -284,6 +298,17 @@ __device__ void fr_ift(fr_t *output, const fr_t *input) {
 
 // Kernel wrappers for device-side FFT functions
 
+/**
+ * @brief wrapper for fr_fft: FFT for fr_t[512]
+ * 
+ * Executes an FFT over many arrays fr_t[512]. One array per block. input and 
+ * output can overlap without side effects. There is no interleaving of data for
+ * different FFTs.
+ * 
+ * @param[out] output 
+ * @param[in] input 
+ * @return void 
+ */
 __global__ void fr_fft_wrapper(fr_t *output, const fr_t *input) {
 
     if (gridDim.y  !=   1) return;
@@ -301,6 +326,18 @@ __global__ void fr_fft_wrapper(fr_t *output, const fr_t *input) {
 
     fr_fft(output, input);
 }
+
+/**
+ * @brief wrapper for fr_ift: inverse FFT for fr_t[512]
+ * 
+ * Executes an inverse FFT over many arrays fr_t[512]. One array per block. input and 
+ * output can overlap without side effects. There is no interleaving of data for
+ * different iFFTs.
+ * 
+ * @param[out] output 
+ * @param[in] input 
+ * @return void 
+ */
 __global__ void fr_ift_wrapper(fr_t *output, const fr_t *input) {
 
     if (gridDim.y  !=   1) return;
