@@ -20,7 +20,7 @@ __device__ void fr_mul(fr_t &z, const fr_t &x) {
     "\n\t.reg .u64 u<8>;"
     "\n\t.reg .u64 q<6>;"
     "\n\t.reg .u64 r<5>;"
-    "\n\t.reg .pred cp;"
+    "\n\t.reg .pred nz;"
 
     // mul
 
@@ -175,14 +175,14 @@ __device__ void fr_mul(fr_t &z, const fr_t &x) {
     "\n\tsubc.u64.cc %2, u2, r2;"
     "\n\tsubc.u64.cc %3, u3, r3;"
     "\n\tsubc.u64.cc u4, u4, r4;"
-    "\n\tsetp.ne.u64 cp, u4, 0;" // set predicate if z >= 2^256
+    "\n\tsetp.ne.u64 nz, u4, 0;" // set predicate if z >= 2^256
 
     // if predicate is set then z = z - m
 
-    "\n @cp\tsub.u64.cc  %0, %0, 0xFFFFFFFF00000001U;"
-    "\n @cp\tsubc.u64.cc %1, %1, 0x53BDA402FFFE5BFEU;"
-    "\n @cp\tsubc.u64.cc %2, %2, 0x3339D80809A1D805U;"
-    "\n @cp\tsubc.u64    %3, %3, 0x73EDA753299D7D48U;"
+    "\n @nz\tsub.u64.cc  %0, %0, 0xFFFFFFFF00000001U;"
+    "\n @nz\tsubc.u64.cc %1, %1, 0x53BDA402FFFE5BFEU;"
+    "\n @nz\tsubc.u64.cc %2, %2, 0x3339D80809A1D805U;"
+    "\n @nz\tsubc.u64    %3, %3, 0x73EDA753299D7D48U;"
 
     "\n\t}"
     : "+l"(z0), "+l"(z1), "+l"(z2), "+l"(z3)

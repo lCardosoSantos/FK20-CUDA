@@ -11,11 +11,13 @@
     "\n\tsubc.u64.cc "#Z"5, "#X"5, "#Y"5;" \
     "\n\tsubc.u32    z6,  0,   0;" \
  \
-    "\n\tsetp.gt.u64 gt, z5, 0x1a0111ea397fe69aU;" \
-    "\n\tsetp.ne.u32 ne, z6, 0;" \
+    /* gt = (z>>320) > (m>>320) */ \
+    /* nz = (z>>384) > 0 */ \
  \
-    /* If digit 5 of x-y <= digit 5 of m then add m, */ \
-    /* AND if x-y < 0 then add mmu0 (= 9m) */ \
+    "\n\tsetp.gt.u64 gt, z5, 0x1a0111ea397fe69aU;" \
+    "\n\tsetp.ne.u32 nz, z6, 0;" \
+ \
+    /* If !gt then add m */ \
  \
     "\n@!gt\tadd.u64.cc  "#Z"0, "#Z"0, 0xb9feffffffffaaabU;" \
     "\n@!gt\taddc.u64.cc "#Z"1, "#Z"1, 0x1eabfffeb153ffffU;" \
@@ -24,11 +26,13 @@
     "\n@!gt\taddc.u64.cc "#Z"4, "#Z"4, 0x4b1ba7b6434bacd7U;" \
     "\n@!gt\taddc.u64.cc "#Z"5, "#Z"5, 0x1a0111ea397fe69aU;" \
  \
-    "\n@ne\tadd.u64.cc  "#Z"0, "#Z"0, 0x89f6fffffffd0003U;" \
-    "\n@ne\taddc.u64.cc "#Z"1, "#Z"1, 0x140bfff43bf3fffdU;" \
-    "\n@ne\taddc.u64.cc "#Z"2, "#Z"2, 0xa0b767a8ac38a745U;" \
-    "\n@ne\taddc.u64.cc "#Z"3, "#Z"3, 0x8831a7ac8fada8baU;" \
-    "\n@ne\taddc.u64.cc "#Z"4, "#Z"4, 0xa3f8e5685da91392U;" \
-    "\n@ne\taddc.u64.cc "#Z"5, "#Z"5, 0xea09a13c057f1b6cU;"
+    /* If nz then add mmu0 (= 9m) */ \
+ \
+    "\n@nz\tadd.u64.cc  "#Z"0, "#Z"0, 0x89f6fffffffd0003U;" \
+    "\n@nz\taddc.u64.cc "#Z"1, "#Z"1, 0x140bfff43bf3fffdU;" \
+    "\n@nz\taddc.u64.cc "#Z"2, "#Z"2, 0xa0b767a8ac38a745U;" \
+    "\n@nz\taddc.u64.cc "#Z"3, "#Z"3, 0x8831a7ac8fada8baU;" \
+    "\n@nz\taddc.u64.cc "#Z"4, "#Z"4, 0xa3f8e5685da91392U;" \
+    "\n@nz\taddc.u64.cc "#Z"5, "#Z"5, 0xea09a13c057f1b6cU;"
 
 #endif

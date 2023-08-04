@@ -40,7 +40,7 @@ __device__ void g1p_dbl(g1p_t &p) {
     "\n\t.reg .u64 q<8>;"
     "\n\t.reg .u64 r<7>;"
     "\n\t.reg .u64 t<6>;"
-    "\n\t.reg .pred ne, gt;"
+    "\n\t.reg .pred nz, gt;"
 
     "\n\tmov.u64 x0,  %0;"
     "\n\tmov.u64 x1,  %1;"

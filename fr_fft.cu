@@ -12,17 +12,19 @@
 extern __shared__ fr_t fr_smem[];
 
 /**
- * @brief FFT for fr_t[512]
+ * @brief FFT over Fr
  * 
- * Executes one FFT on an array of fr_t with 512 elements. This function must be
- * called with 256 threads per block. input and output can overlap without side
- * effects. There is no interleaving of data for different FFTs.
+ * Performs one FFT-512 for each thread block.
+ * This function must be called with 256 threads per block, i.e. dim3(256,1,1).
+ * Input and output arrays can overlap without side effects.
+ * There is no interleaving of data for different FFTs (the stride is 1).
  * 
  * @param[out] output 
  * @param[in] input 
  * @return void 
  */
 __device__ void fr_fft(fr_t *output, const fr_t *input) {
+
     unsigned tid = threadIdx.x; // Thread number
     unsigned l, r, w, src, dst;
 
@@ -156,15 +158,17 @@ __device__ void fr_fft(fr_t *output, const fr_t *input) {
 /**
  * @brief Inverse FFT for fr_t[512]
  * 
- * Executes one inverse FFT on an array of fr_t with 512 elements. This function must be
- * called with 256 threads per block. input and output can overlap without side
- * effects. There is no interleaving of data for different FFTs.
+ * Performs one inverse FFT-512 in each thread block.
+ * This function must be called with 256 threads per block, i.e. dim3(256,1,1).
+ * Input and output arrays can overlap without side effects.
+ * There is no interleaving of data for different FFTs (the stride is 1).
  * 
  * @param[out] output 
  * @param[in] input 
  * @return void 
  */
 __device__ void fr_ift(fr_t *output, const fr_t *input) {
+
     unsigned tid = threadIdx.x; // Thread number
     unsigned l, r, w, src, dst;
 

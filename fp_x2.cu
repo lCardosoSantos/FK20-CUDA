@@ -17,7 +17,7 @@ __device__ void fp_x2(fp_t &z, const fp_t &x) {
     "\n\t{"
     "\n\t.reg .u64 x<6>, z<6>;"
     "\n\t.reg .u32 z6;"
-    "\n\t.reg .pred gt;"
+    "\n\t.reg .pred gt, nz;"
 
     "\n\tmov.u64 x0,  %6;"
     "\n\tmov.u64 x1,  %7;"

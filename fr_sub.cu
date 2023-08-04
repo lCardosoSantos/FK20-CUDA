@@ -23,7 +23,7 @@ __device__ void fr_sub(fr_t &z, const fr_t &x) {
     "\n\t{"
     "\n\t.reg .u64 x<4>, z<4>;"
     "\n\t.reg .u32 t4;"
-    "\n\t.reg .pred cp;"
+    "\n\t.reg .pred nz;"
 
     "\n\tmov.u64 z0, %0;"
     "\n\tmov.u64 z1, %1;"

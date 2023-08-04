@@ -11,6 +11,7 @@
 #include "fp_sub.cuh"
 #include "fp_x3.cuh"
 #include "fp_x12.cuh"
+#include "fp_reduce12.cuh"
 
 // p ← p+q
 // projective p and q
@@ -46,7 +47,7 @@ __device__ void g1p_add(g1p_t &p, const g1p_t &q) {
     fp_cpy(Z2, q.z);
 
     // Adapted from eprint 2015-1060, algorithm 7.
-    // Modified to avoid overwriting inputs and remove one temp value.
+    // Modified to remove one temp value and avoid overwriting inputs.
     // 12 mul, 0 square, 11 add, 5 sub, 2 x12, 1 x3.
 
     fp_add(t0, X1, Y1); // t3
@@ -247,11 +248,11 @@ FP_ADD(Z1, Z1, X2) // Z3
     :
     "+l"(x0), "+l"(x1), "+l"(x2), "+l"(x3), "+l"(x4), "+l"(x5),
     "+l"(y0), "+l"(y1), "+l"(y2), "+l"(y3), "+l"(y4), "+l"(y5),
-    "+l"(z0), "+l"(z1), "+l"(z2), "+l"(z3), "+l"(z4), "+l"(z5),
+    "+l"(z0), "+l"(z1), "+l"(z2), "+l"(z3), "+l"(z4), "+l"(z5)
     :
-    "l"(x0), "l"(x1), "l"(x2), "l"(x3), "l"(x4), "l"(x5),
-    "l"(y0), "l"(y1), "l"(y2), "l"(y3), "l"(y4), "l"(y5),
-    "l"(z0), "l"(z1), "l"(z2), "l"(z3), "l"(z4), "l"(z5),
+    "l"(u0), "l"(u1), "l"(u2), "l"(u3), "l"(u4), "l"(u5),
+    "l"(v0), "l"(v1), "l"(v2), "l"(v3), "l"(v4), "l"(v5),
+    "l"(w0), "l"(w1), "l"(w2), "l"(w3), "l"(w4), "l"(w5)
     );
 
     p.x[0] = x0, p.x[1] = x1, p.x[2] = x2, p.x[3] = x3, p.x[4] = x4, p.x[5] = x5;

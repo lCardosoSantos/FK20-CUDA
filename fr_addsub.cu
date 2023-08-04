@@ -33,7 +33,7 @@ __device__ void fr_addsub(fr_t &x, fr_t &y) {
     "\n\t{"
     "\n\t.reg .u64 t<4>, x<4>, y<4>;"
     "\n\t.reg .u32 t4;"
-    "\n\t.reg .pred cp;"
+    "\n\t.reg .pred nz;"
 
     "\n\tmov.u64 x0, %0;"
     "\n\tmov.u64 x1, %1;"

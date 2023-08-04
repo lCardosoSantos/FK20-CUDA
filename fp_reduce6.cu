@@ -15,7 +15,7 @@ __device__ void fp_reduce6(fp_t &z) {
     asm volatile (
     "\n\t{"
     "\n\t.reg .u64 t<7>, q5;"
-    "\n\t.reg .pred bp;"
+    "\n\t.reg .pred nz;"
 
     // q1 = x/2^320; q2 = q1 * mu; q3 = q2 / 2^448
 
@@ -64,14 +64,14 @@ __device__ void fp_reduce6(fp_t &z) {
     "\n\tsubc.u64.cc    t4, %4, 0x4B1BA7B6434BACD7U;"
     "\n\tsubc.u64.cc    t5, %5, 0x1A0111EA397FE69AU;"
     "\n\tsubc.u64       t6,  0, 0;"
-    "\n\tsetp.ne.u64    bp, t6, 0;"
+    "\n\tsetp.ne.u64    nz, t6, 0;"
 
-    "\n@!bp\tmov.u64    %0, t0;"
-    "\n@!bp\tmov.u64    %1, t1;"
-    "\n@!bp\tmov.u64    %2, t2;"
-    "\n@!bp\tmov.u64    %3, t3;"
-    "\n@!bp\tmov.u64    %4, t4;"
-    "\n@!bp\tmov.u64    %5, t5;"
+    "\n@!nz\tmov.u64    %0, t0;"
+    "\n@!nz\tmov.u64    %1, t1;"
+    "\n@!nz\tmov.u64    %2, t2;"
+    "\n@!nz\tmov.u64    %3, t3;"
+    "\n@!nz\tmov.u64    %4, t4;"
+    "\n@!nz\tmov.u64    %5, t5;"
 
     "\n\tsub.u64.cc     t0, %0, 0xB9FEFFFFFFFFAAABU;"
     "\n\tsubc.u64.cc    t1, %1, 0x1EABFFFEB153FFFFU;"
@@ -80,14 +80,14 @@ __device__ void fp_reduce6(fp_t &z) {
     "\n\tsubc.u64.cc    t4, %4, 0x4B1BA7B6434BACD7U;"
     "\n\tsubc.u64.cc    t5, %5, 0x1A0111EA397FE69AU;"
     "\n\tsubc.u64       t6,  0, 0;"
-    "\n\tsetp.ne.u64    bp, t6, 0;"
+    "\n\tsetp.ne.u64    nz, t6, 0;"
 
-    "\n@!bp\tmov.u64    %0, t0;"
-    "\n@!bp\tmov.u64    %1, t1;"
-    "\n@!bp\tmov.u64    %2, t2;"
-    "\n@!bp\tmov.u64    %3, t3;"
-    "\n@!bp\tmov.u64    %4, t4;"
-    "\n@!bp\tmov.u64    %5, t5;"
+    "\n@!nz\tmov.u64    %0, t0;"
+    "\n@!nz\tmov.u64    %1, t1;"
+    "\n@!nz\tmov.u64    %2, t2;"
+    "\n@!nz\tmov.u64    %3, t3;"
+    "\n@!nz\tmov.u64    %4, t4;"
+    "\n@!nz\tmov.u64    %5, t5;"
 
     "\n\t}"
     :

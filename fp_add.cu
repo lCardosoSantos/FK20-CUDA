@@ -4,6 +4,7 @@
 #include "fp.cuh"
 #include "fp_add.cuh"
 
+// fp_add: Compute the sum of two residues x and y modulo p.
 __device__ void fp_add(fp_t &z, const fp_t &x, const fp_t &y) {
     uint64_t
         x0 = x[0], y0 = y[0], z0,
@@ -17,7 +18,7 @@ __device__ void fp_add(fp_t &z, const fp_t &x, const fp_t &y) {
     "\n\t{"
     "\n\t.reg .u64 z<6>, x<6>, y<6>;"
     "\n\t.reg .u32 z6;"
-    "\n\t.reg .pred gt, ne;"
+    "\n\t.reg .pred gt, nz;"
 
     "\n\tmov.u64 x0,  %6;"
     "\n\tmov.u64 x1,  %7;"

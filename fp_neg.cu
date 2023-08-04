@@ -3,6 +3,9 @@
 
 #include "fp.cuh"
 
+// fp_neg: Compute an additive inverse of a residue x modulo p.
+// Subtracts x from the highest multiple of p less than 2^384,
+// then adds p in case of underflow.
 __device__ void fp_neg(fp_t &z, const fp_t &x) {
     uint64_t
         x0 = x[0], z0,
@@ -14,8 +17,8 @@ __device__ void fp_neg(fp_t &z, const fp_t &x) {
 
     asm volatile (
     "\n\t{"
-    "\n\t.reg .u32 cf;"
-    "\n\t.reg .pred bp;"
+    "\n\t.reg .u32 z6;"
+    "\n\t.reg .pred nz;"
 
     // z = mmu0 - x
 
@@ -25,17 +28,17 @@ __device__ void fp_neg(fp_t &z, const fp_t &x) {
     "\n\tsubc.u64.cc %3, 0x8831A7AC8FADA8BAU,  %9;"
     "\n\tsubc.u64.cc %4, 0xA3F8E5685DA91392U, %10;"
     "\n\tsubc.u64.cc %5, 0xEA09A13C057F1B6CU, %11;"
-    "\n\tsubc.u32    cf,  0, 0;" // store carry flag in u32
-    "\n\tsetp.hi.u32 bp, cf, 0;" // store carry flag in borrow predicate
+    "\n\tsubc.u32    z6,  0, 0;"
+    "\n\tsetp.ne.u32 nz, z6, 0;"
 
-    // if borrow then z += p
+    // if nz (borrow) then z += p
 
-    "\n@bp\tadd.u64.cc  %0, %0, 0xB9FEFFFFFFFFAAABU;"
-    "\n@bp\taddc.u64.cc %1, %1, 0x1EABFFFEB153FFFFU;"
-    "\n@bp\taddc.u64.cc %2, %2, 0x6730D2A0F6B0F624U;"
-    "\n@bp\taddc.u64.cc %3, %3, 0x64774B84F38512BFU;"
-    "\n@bp\taddc.u64.cc %4, %4, 0x4B1BA7B6434BACD7U;"
-    "\n@bp\taddc.u64    %5, %5, 0x1A0111EA397FE69AU;"
+    "\n@nz\tadd.u64.cc  %0, %0, 0xB9FEFFFFFFFFAAABU;"
+    "\n@nz\taddc.u64.cc %1, %1, 0x1EABFFFEB153FFFFU;"
+    "\n@nz\taddc.u64.cc %2, %2, 0x6730D2A0F6B0F624U;"
+    "\n@nz\taddc.u64.cc %3, %3, 0x64774B84F38512BFU;"
+    "\n@nz\taddc.u64.cc %4, %4, 0x4B1BA7B6434BACD7U;"
+    "\n@nz\taddc.u64    %5, %5, 0x1A0111EA397FE69AU;"
 
     "\n\t}"
     :
