@@ -9,7 +9,7 @@
  * 
  * @param[out] z 
  * @param[in] x 
- * @return  
+ * @return  void
  */
 __device__ __host__ void fr_cpy(fr_t &z, const fr_t &x) {
         z[0] = x[0];

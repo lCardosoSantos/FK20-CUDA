@@ -30,9 +30,9 @@ __device__ __host__ void fr_one(fr_t &z) {
 }
 
 /**
- * @brief prints the bigendian representation of x to STDOUT
+ * @brief prints the canonical representation of x to STDOUT
  * 
- * Prints the bigendian hexadecimal representation of x to stdout, followed by linefeed; 
+ * Prints the canonical hexadecimal representation of x to stdout, followed by linefeed; 
  * prints with leading zeros, and without the hex prefix.
  * @param[in] x 
  * @return void 

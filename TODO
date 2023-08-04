@@ -8,6 +8,8 @@ Last update: 20230803
 - [ ] Make FR functions non destructive (might cause side effects)
 - [ ] Change make to CMAke (would be a big improvement)
   - [ ] change organization of code (adding cmake style subdirs)
+- [ ] doc for module g1p
+  - `g1p_add.cu, g1p_addsub.cu, g1p_compare.cu, g1p.cu, g1p_dbl.cu, g1p_fft.cu, g1p_ispoint.cu, g1p_mul.cu, g1p_neg.cu, g1p_scale.cu, g1p_sub.cu`
 - [ ] doc for module fp
   - `fp_add.cu fp_add.cuh fp_cpy.cu fp.cu fp.cuh fp_eq.cu fp_inv.cu fp_isone.cu fp_iszero.cu fp_mma.cu fp_mul.cu fp_mul.cuh fp_neg.cu fp_neq.cu fp_nonzero.cu fp_reduce12.cuh fp_reduce6.cu fp_sqr.cu fp_sqr.cuh fp_sub.cu fp_sub.cuh fp_x12.cu fp_x12.cuh fp_x2.cu fp_x2.cuh fp_x3.cu fp_x3.cuh fp_x4.cu fp_x4.cuh fp_x8.cu fp_x8.cuh`
 - [ ] doc for module tests
@@ -16,8 +18,6 @@ Last update: 20230803
   - `fk20_512test.cu, fk20benchmark.cu, fk20.cu, fk20.cuh, fk20_hext_fft2h_fft.cu, fk20_msm.cu, fk20_poly2hext_fft.cu, fk20_poly2h_fft.cu, fk20_poly2toeplitz_coefficients.cu, fk20_poly2toeplitz_coefficients_fft.cu`
 - [ ] doc for fk20test
   - `fk20test.cu, fk20test.cuh, fk20test_fft.cu, fk20test_fft_rand.cu, fk20test_kat.cu, fk20test_poly2toeplitz_coefficients.cu, fk20test_poly2toeplitz_coefficients_fft.cu, fk20test_poly.cu, fk20_testvector.cu, fk20_testvector.cuh`
-- [ ] doc for module g1p
-  - `g1p_add.cu, g1p_addsub.cu, g1p_compare.cu, g1p.cu, g1p_dbl.cu, g1p_fft.cu, g1p_ispoint.cu, g1p_mul.cu, g1p_neg.cu, g1p_scale.cu, g1p_sub.cu`
 - [ ] doc for scripts
   - `512.sh, FFTTest.sh, hext_fft.sh, h_fft.sh, h.sh, polynomial.sh, toeplitz_coefficients_fft.sh, toeplitz_coefficients.sh`
 - [ ] doc for other files
@@ -30,8 +30,8 @@ Last update: 20230803
 ### Filelist
 <!--- ls | egrep "g1p.*\.cu*" --->
 
-- [ ] fr
-    - [ ] commit and send to DAO
+- [x] fr
+    - [x] commit and send to DAO
     - [x] [fr_add.cu](./fr_add.cu)
     - [x] [fr_add.cuh](./fr_add.cuh)
     - [x] [fr_addsub.cu](./fr_addsub.cu)
@@ -61,6 +61,7 @@ Last update: 20230803
     - [x] [fr_x12.cu](./fr_x12.cu)
 
 - [ ] fp
+    - [ ] Change comments where the modulus values are mu mmu0 and mmu1 to pmu, pmmu0, pmmu1
     - [ ] [fp_add.cu](./fp_add.cu)
     - [ ] [fp_add.cuh](./fp_add.cuh)
     - [ ] [fp_cpy.cu](./fp_cpy.cu)

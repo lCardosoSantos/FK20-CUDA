@@ -16,10 +16,10 @@
  * the equation  \f$ x^4 -x^2 +1 \f$ and is numerically 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001.
  * 
  * Implementation-wise, the following constants are hardcoded and indicated, when used:
- *  r    - Modulus
+ *  r     - Modulus
  *  rmu   - Reciprocal of the modulus
- *  rmmu0 - Maximum multiple of the modulus such that mmu0 <= 2**256
- *  rmmu1 - Minimum multiple of the modulus such that mmu1 > 2**256 
+ *  rmmu0 - Maximum multiple of the modulus such that mmu0 < 2**256
+ *  rmmu1 - Minimum multiple of the modulus such that mmu1 >= 2**256 
  */
 typedef uint64_t fr_t[4];
 
