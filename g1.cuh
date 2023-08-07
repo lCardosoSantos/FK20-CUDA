@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #ifndef G1_CUH
 #define G1_CUH
@@ -12,10 +13,17 @@
 // Set this nonzero to allow any point at infinity, i.e. of the form (0, !0, 0)
 #define G1P_ANYINF 1
 
+/**
+ * @brief G1 point in affine coordinates
+ * 
+ */
 typedef struct {
     fp_t x, y;
 } g1a_t;
-
+/**
+ * @brief G1 point in projective coordinates
+ * 
+ */
 typedef struct {
     fp_t x, y, z;
 } g1p_t;

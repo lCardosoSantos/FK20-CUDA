@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include <stdio.h>
 
@@ -7,7 +8,16 @@
 #include "fr.cuh"
 #include "g1.cuh"
 
-// g1p_eq compares one point to another, returns true when equal.
+/**
+ * @brief Compares two projective points, returns true when equal. This function
+ * compares if the both parameters represent the same point in the curve. The 
+ * equality is given by comparing X and Y coordinates divided by Z coordinates
+ * (p.X/p.Z == q.X/q.Z) && (p.Y/p.Z == q.Y/q.Z)
+ * 
+ * @param[in] p Projective G1 point
+ * @param[in] q Projective G1 point
+ * @return bool 1 if equal, 0 otherwise 
+ */
 __device__ bool g1p_eq(const g1p_t &p, const g1p_t &q) {
     fp_t px, py, qx, qy;
 
@@ -41,7 +51,16 @@ __device__ bool g1p_eq(const g1p_t &p, const g1p_t &q) {
     return fp_eq(py, qy);
 }
 
-// g1p_neq compares one point to another, returns true when not equal.
+/**
+ * @brief Compares two projective points, returns true when not equal. This function
+ * compares if the both parameters represent the distinct points in the curve. The 
+ * equality is given by comparing X and Y coordinates divided by Z coordinates
+ * (p.X/p.Z == q.X/q.Z) && (p.Y/p.Z == q.Y/q.Z)
+ * 
+ * @param[in] p Projective G1 point
+ * @param[in] q Projective G1 point
+ * @return bool 0 if equal, 1 otherwise 
+ */
 __device__ bool g1p_neq(const g1p_t &p, const g1p_t &q) {
     fp_t px, py, qx, qy;
 

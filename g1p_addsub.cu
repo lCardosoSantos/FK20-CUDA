@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include <stdio.h>
 
@@ -8,6 +9,15 @@
 
 // p,q ← p+q,p-q
 // projective p and q
+
+/**
+ * @brief Stores the sum and difference of p and q into p and q.
+ * Projective p and q.
+ * 
+ * @param[in, out] p First parameter, stores p+q
+ * @param[in, out] q Second parameter, stores p-q
+ * @return void 
+ */
 __device__ void g1p_addsub(g1p_t &p, g1p_t &q) {
 
 #ifndef NDEBUG

@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 // #include <stdio.h>
 
@@ -8,6 +9,14 @@
 
 // p ← p-q
 // projective p and q
+
+/**
+ * @brief Point subtraction p ← p-q
+ * 
+ * @param[in,out] p 
+ * @param[in] q 
+ * @return void 
+ */
 __device__ void g1p_sub(g1p_t &p, const g1p_t &q) {
 
     fp_t

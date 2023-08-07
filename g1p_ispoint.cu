@@ -1,17 +1,32 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "g1.cuh"
-
+/**
+ * @brief Check if the value stored in p is the point at infinity.
+ * This implementation uses (0, 1, 0) as the point at infinity.
+ * Alternatively, the macro G1P_ANYINF allows the point at infinity to be 
+ * represented as (0, y, 0) where y!=0 
+ * 
+ * @param[in] p 
+ * @return bool 1 if the p is the point at infinity.
+ */
 __device__ bool g1p_isInf(const g1p_t &p) {
 #if G1P_ANYINF
-    return fp_iszero(p.x) && fp_iszero(p.z) && !fp_iszero(p.y);
+    return fp_iszero(p.x) && !fp_iszero(p.y) && fp_iszero(p.z) ;
 #else
-    return fp_iszero(p.x) && fp_isone(p.y) && fp_iszero(p.z);
+    return fp_iszero(p.x) &&   fp_isone(p.y) && fp_iszero(p.z);
 #endif
 }
 
+/**
+ * @brief Check if the value stored in p is a valid point in the G1 curve.
+ * 
+ * @param[in] p 
+ * @return bool 1 if is in the curve, zero otherwise. 
+ */
 __device__ bool g1p_isPoint(const g1p_t &p) {
     if (g1p_isInf(p))
         return true;

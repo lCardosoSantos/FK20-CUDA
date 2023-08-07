@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include <stdio.h>
 
@@ -13,8 +14,15 @@
 #include "fp_x12.cuh"
 #include "fp_reduce12.cuh"
 
-// p ← p+q
-// projective p and q
+
+/** 
+ * @brief Accumulates q into p, using projective coordinates. p ← p+q
+ * 
+ * @param[in, out] p accumulator
+ * @param[in] q second operand
+ * @return void 
+ * 
+ */
 __device__ void g1p_add(g1p_t &p, const g1p_t &q) {
 
 #ifndef NDEBUG

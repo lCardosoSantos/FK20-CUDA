@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include <stdio.h>
 
@@ -7,7 +8,14 @@
 #include "fr.cuh"
 #include "g1.cuh"
 
-// p ← k·p
+/**
+ * @brief p ← k·p Point multiplication by scalar, in projective coordinates. Result is 
+ * stored back into p.
+ * 
+ * @param[in, out] p Multiplicand (stores result after call)
+ * @param[in] k Fr operand
+ * @return void 
+ */
 __device__ void g1p_mul(g1p_t &p, const fr_t &k) {
     // TODO: Use 4-bit lookup table to reduce additions by a factor 4.
     

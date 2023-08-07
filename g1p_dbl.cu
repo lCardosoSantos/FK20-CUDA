@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "g1.cuh"
 #include "fp.cuh"
@@ -13,6 +14,12 @@
 #include "fp_mul.cuh"
 #include "fp_reduce12.cuh"
 
+/**
+ * @brief G1 point doubling, with write back: p=2*p
+ * 
+ * @param[in, out] p 
+ * @return void 
+ */
 __device__ void g1p_dbl(g1p_t &p) {
 
     if (!g1p_isPoint(p)) {
