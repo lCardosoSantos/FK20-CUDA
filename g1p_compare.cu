@@ -10,7 +10,7 @@
 
 /**
  * @brief Compares two projective points, returns true when equal. This function
- * compares if the both parameters represent the same point in the curve. The 
+ * compares if both parameters represent the same point on the curve. The 
  * equality is given by comparing X and Y coordinates divided by Z coordinates
  * (p.X/p.Z == q.X/q.Z) && (p.Y/p.Z == q.Y/q.Z)
  * 
@@ -53,7 +53,7 @@ __device__ bool g1p_eq(const g1p_t &p, const g1p_t &q) {
 
 /**
  * @brief Compares two projective points, returns true when not equal. This function
- * compares if the both parameters represent the distinct points in the curve. The 
+ * compares if both parameters represent the distinct points on the curve. The 
  * equality is given by comparing X and Y coordinates divided by Z coordinates
  * (p.X/p.Z == q.X/q.Z) && (p.Y/p.Z == q.Y/q.Z)
  * 
