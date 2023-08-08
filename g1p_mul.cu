@@ -9,7 +9,7 @@
 #include "g1.cuh"
 
 /**
- * @brief p ← k·p Point multiplication by scalar, in projective coordinates. Result is 
+ * @brief p ← k·p Point multiplication by scalar, in projective coordinates. That result is 
  * stored back into p.
  * 
  * @param[in, out] p Multiplicand (stores result after call)

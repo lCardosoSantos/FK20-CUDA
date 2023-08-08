@@ -17,8 +17,8 @@ extern __shared__ g1p_t g1p_tmp[];
  * This function must be called with 256 threads per block, i.e. dim3(256,1,1).
  * No interleaving of data for different FFTs
  * 
- * @param[out] output pointer to array g1p[512]
- * @param[in] input pointer to array g1p[512]
+ * @param[out] output pointer to 512 elements array of g1p_t
+ * @param[in] input pointer to 512 elements array of g1p_t
  * @return void
  */
 __device__ void g1p_fft(g1p_t *output, const g1p_t *input) {
@@ -171,8 +171,8 @@ __device__ void g1p_fft(g1p_t *output, const g1p_t *input) {
  * This function must be called with 256 threads per block, i.e. dim3(256,1,1).
  * No interleaving of data for different FFTs
  * 
- * @param[out] output pointer to array g1p[512]
- * @param[in] input pointer to array g1p[512]
+ * @param[out] output pointer to 512 elements array of g1p_t
+ * @param[in] input pointer to 512 elements array of g1p_t
  * @return void
  */
 __device__ void g1p_ift(g1p_t *output, const g1p_t *input) {
@@ -323,27 +323,27 @@ __device__ void g1p_ift(g1p_t *output, const g1p_t *input) {
 // Kernel wrappers for device-side FFT functions
 
 /**
- * @brief wrapper for g1p_fft: FFT for g1p_t[512]
+ * @brief wrapper for g1p_fft: FFT for arrays of g1p_t with length 512
  * 
- * Executes an FFT over many arrays g1p_t[512]. One array per block. input and 
+ * Executes an FFT over many arrays of arrays of g1p_t with length 512. One array per block. input and 
  * output can overlap without side effects. There is no interleaving of data for
  * different FFTs.
  * 
- * @param[out] output pointer to array g1p[blocksize*512]
- * @param[in] input pointer to array g1p[blocksize*512]
+ * @param[out] output pointer to 512*blocksize elements array of g1p_t
+ * @param[in] input pointer to 512*blocksize elements array of g1p_t
  * @return void 
  */
 __global__ void g1p_fft_wrapper(g1p_t *output, const g1p_t *input) { g1p_fft(output, input); }
 
 /**
- * @brief wrapper for g1p_ift: inverse FFT for g1p_t[512]
+ * @brief wrapper for g1p_ift: inverse FFT for arrays of g1p_t with length 512
  * 
- * Executes an Inverse FFT over many arrays g1p_t[512]. One array per block. input and 
+ * Executes an Inverse FFT over many arrays of arrays of g1p_t with length 512. One array per block. input and 
  * output can overlap without side effects. There is no interleaving of data for
  * different FFTs.
  * 
- * @param[out] output pointer to array g1p[blocksize*512]
- * @param[in] input pointer to array g1p[blocksize*512]
+ * @param[out] output pointer to 512*blocksize elements array of g1p_t
+ * @param[in] input pointer to 512*blocksize elements array of g1p_t
  * @return void 
  */
 __global__ void g1p_ift_wrapper(g1p_t *output, const g1p_t *input) { g1p_ift(output, input); }

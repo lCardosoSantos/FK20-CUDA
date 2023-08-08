@@ -7,7 +7,7 @@
 
 /**
  * @brief Computes the negative of the point p. 
- * Due to negation map automorphism on Elliptic Curves in Weistrass form, this
+ * Due to negation map automorphism on Elliptic Curves in Weierstrass form, this
  * operation is done by computing the additive inverse of the Y coordinate.
  * 
  * @param[in,out] p 

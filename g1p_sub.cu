@@ -7,11 +7,8 @@
 #include "fp.cuh"
 #include "g1.cuh"
 
-// p ← p-q
-// projective p and q
-
 /**
- * @brief Point subtraction p ← p-q
+ * @brief Point subtraction using projective coordinates.  p ← p-q
  * 
  * @param[in,out] p 
  * @param[in] q 

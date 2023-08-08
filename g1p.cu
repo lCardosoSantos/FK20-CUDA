@@ -127,7 +127,7 @@ __device__ __host__ void g1p_gen(g1p_t &p) {
 /**
  * @brief Kernel wrapper, host-callable comparison of arrays of g1p_t. 
  * 
- * @param[out] eq Array of size count, will stop the result of the comparison. eq[i]==1 if p[i]==q[i]
+ * @param[out] eq Array of size count, will store the result of the comparison. eq[i]==1 iff p[i]==q[i]
  * @param[in] count number of elements to be compared
  * @param[in] p Array g1p_t[count]
  * @param[in] q Array g1p_t[count]
@@ -152,7 +152,7 @@ __global__ void g1p_eq_wrapper(uint8_t *eq, size_t count, const g1p_t *p, const 
 }
 
 /**
- * @brief Kernel wrappers, host-callable  conversion of points in projective coordinates into affine coordinates.
+ * @brief Kernel wrappers, host-callable conversion of points in projective coordinates into affine coordinates.
  * 
  * @param[out] a Array g1a_t[count]
  * @param[in] count number of elements in the array

@@ -43,10 +43,10 @@ extern __device__ void g1p_fromG1a(g1p_t &p, const g1a_t &a);
 extern __device__ __host__ void g1p_print(const char *s, const g1p_t &p);
 extern __device__ __host__ void g1p_cpy(g1p_t &p, const g1p_t &q);
 
-extern __device__ bool g1p_eq(const g1p_t &p, const g1p_t &q);
-extern __device__ bool g1p_neq(const g1p_t &p, const g1p_t &q);
-extern __device__ bool g1p_isInf(const g1p_t &p);
-extern __device__ bool g1p_isPoint(const g1p_t &p);
+extern __device__  bool g1p_eq(const g1p_t &p, const g1p_t &q);
+extern __device__  bool g1p_neq(const g1p_t &p, const g1p_t &q);
+extern __device__  bool g1p_isInf(const g1p_t &p);
+extern __device__  bool g1p_isPoint(const g1p_t &p);
 
 extern __device__ void g1p_neg(g1p_t &p);
 extern __device__ void g1p_scale(g1p_t &p, const fp_t &s);

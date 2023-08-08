@@ -7,12 +7,9 @@
 #include "fp.cuh"
 #include "g1.cuh"
 
-// p,q ← p+q,p-q
-// projective p and q
-
 /**
  * @brief Stores the sum and difference of p and q into p and q.
- * Projective p and q.
+ * Projective p and q, p,q ← p+q,p-q
  * 
  * @param[in, out] p First parameter, stores p+q
  * @param[in, out] q Second parameter, stores p-q
