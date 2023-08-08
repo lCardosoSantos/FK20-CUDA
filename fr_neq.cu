@@ -13,12 +13,7 @@
  * @return bool 
  */
 __device__ bool fr_neq(const fr_t &x, const fr_t &y) {
-        fr_t t;
-
-        fr_cpy(t, x);
-        fr_sub(t, y);
-
-        return fr_nonzero(t);
+        return !fr_eq(x, y);
 }
 
 // vim: ts=4 et sw=4 si
