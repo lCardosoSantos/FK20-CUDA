@@ -32,17 +32,15 @@ __device__ __host__ void fp_one(fp_t &z) {
 /**
  * @brief Prints the canonical representation of x to STDOUT
  * 
- * @param[in] x 
+ * @param[in] s Description string
+ * @param[in] x Residue modulo p
  * @return void 
  */
-__device__ void fp_print(const fp_t &x) {
-    //TODO: Optional string argument like g1? 142 substitutions
-    //regex: 
-    // printf\(([^)]*)\); fp_print\(([^)]*)\);
-    // fp_print($1, $2);
+__device__ void fp_print(const char *s, const fp_t &x) {
     fp_t t;
     fp_cpy(t, x);
     fp_reduce6(t);
+    printf("%s", s);
 //  printf("#x%016lx%016lx%016lx%016lx%016lx%016lx\n",  // clisp
     printf("%016lX%016lX%016lX%016lX%016lX%016lX\n",    // dc
 //  printf("0x%016lx%016lx%016lx%016lx%016lx%016lx\n",  // python

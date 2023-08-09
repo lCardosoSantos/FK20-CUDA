@@ -38,7 +38,7 @@ extern __device__ bool fp_nonzero(const fp_t &x);
 extern __device__ bool fp_iszero(const fp_t &x);
 extern __device__ bool fp_isone(const fp_t &x);
 
-extern __device__ void fp_print(const fp_t &x);
+extern __device__ void fp_print(const char *s, const fp_t &x);
 
 #endif
 // vim: ts=4 et sw=4 si

@@ -40,11 +40,11 @@ __global__ void FpTestAddDistributiveLeft(testval_t *testval) {
                     pass = false;
 
                     printf("%d,%d: FAILED: inconsistent result\n", i, j);
-                    printf("a = "); fp_print(testval[i]);
-                    printf("b = "); fp_print(testval[j]);
-                    printf("c = "); fp_print(testval[k]);
-                    printf("ab+ac = "); fp_print(u);
-                    printf("a(b+c) = "); fp_print(v);
+                    fp_print("a = ",  testval[i]);
+                    fp_print("b = ",  testval[j]);
+                    fp_print("c = ",  testval[k]);
+                    fp_print("ab+ac = ",  u);
+                    fp_print("a(b+c) = ",  v);
                 }
                 ++count;
             }
@@ -90,11 +90,11 @@ __global__ void FpTestAddDistributiveRight(testval_t *testval) {
                     pass = false;
 
                     printf("%d,%d: FAILED: inconsistent result\n", i, j);
-                    printf("a = "); fp_print(testval[i]);
-                    printf("b = "); fp_print(testval[j]);
-                    printf("c = "); fp_print(testval[k]);
-                    printf("ac+bc = "); fp_print(u);
-                    printf("(a+b)c = "); fp_print(v);
+                    fp_print("a = ",  testval[i]);
+                    fp_print("b = ",  testval[j]);
+                    fp_print("c = ",  testval[k]);
+                    fp_print("ac+bc = ",  u);
+                    fp_print("(a+b)c = ",  v);
                 }
                 ++count;
             }
@@ -141,11 +141,11 @@ __global__ void FpTestSubDistributiveLeft(testval_t *testval) {
                     pass = false;
 
                     printf("%d,%d: FAILED: inconsistent result\n", i, j);
-                    printf("a = "); fp_print(testval[i]);
-                    printf("b = "); fp_print(testval[j]);
-                    printf("c = "); fp_print(testval[k]);
-                    printf("ab-ac = "); fp_print(u);
-                    printf("a(b-c) = "); fp_print(v);
+                    fp_print("a = ",  testval[i]);
+                    fp_print("b = ",  testval[j]);
+                    fp_print("c = ",  testval[k]);
+                    fp_print("ab-ac = ",  u);
+                    fp_print("a(b-c) = ",  v);
                 }
                 ++count;
             }
@@ -191,11 +191,11 @@ __global__ void FpTestSubDistributiveRight(testval_t *testval) {
                     pass = false;
 
                     printf("%d,%d: FAILED: inconsistent result\n", i, j);
-                    printf("a = "); fp_print(testval[i]);
-                    printf("b = "); fp_print(testval[j]);
-                    printf("c = "); fp_print(testval[k]);
-                    printf("ac-bc = "); fp_print(u);
-                    printf("(a-b)c = "); fp_print(v);
+                    fp_print("a = ",  testval[i]);
+                    fp_print("b = ",  testval[j]);
+                    fp_print("c = ",  testval[k]);
+                    fp_print("ac-bc = ",  u);
+                    fp_print("(a-b)c = ",  v);
                 }
                 ++count;
             }

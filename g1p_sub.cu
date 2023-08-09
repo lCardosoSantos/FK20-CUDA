@@ -38,137 +38,137 @@ __device__ void g1p_sub(g1p_t &p, const g1p_t &q) {
 
     fp_add(t0, X1, Y1); // t3
 
-    //printf("T3 = "); fp_print(t0);
+    //fp_print("T3 = ",  t0);
 
     fp_add(t1, Y1, Z1); // t8
 
-    //printf("T8 = "); fp_print(t1);
+    //fp_print("T8 = ",  t1);
 
     fp_add(t2, Z1, X1); // td
 
-    //printf("Td = "); fp_print(t2);
+    //fp_print("Td = ",  t2);
 
 
     fp_mul(X1, X1, X2); // t0
 
-    //printf("T0 = "); fp_print(X1);
+    //fp_print("T0 = ",  X1);
 
     fp_mul(Y1, Y1, Y2); // t1
 
-    //printf("T1 = "); fp_print(Y1);
+    //fp_print("T1 = ",  Y1);
 
     fp_mul(Z1, Z1, Z2); // t2
 
-    //printf("T2 = "); fp_print(Z1);
+    //fp_print("T2 = ",  Z1);
 
 
     fp_add(t3, X2, Y2); // t4
 
-    //printf("T4 = "); fp_print(t3);
+    //fp_print("T4 = ",  t3);
 
     fp_add(Y2, Y2, Z2); // t9
 
-    //printf("T9 = "); fp_print(Y2);
+    //fp_print("T9 = ",  Y2);
 
     fp_add(Z2, Z2, X2); // te
 
-    //printf("Te = "); fp_print(Z2);
+    //fp_print("Te = ",  Z2);
 
 
     fp_mul(X2, t3, t0); // t5
 
-    //printf("T5 = "); fp_print(X2);
+    //fp_print("T5 = ",  X2);
 
     fp_mul(Y2, Y2, t1); // ta
 
-    //printf("Ta = "); fp_print(Y2);
+    //fp_print("Ta = ",  Y2);
 
     fp_mul(Z2, Z2, t2); // tf
 
-    //printf("Tf = "); fp_print(Z2);
+    //fp_print("Tf = ",  Z2);
 
 
     fp_x3(t0, X1);      // ti
 
-    //printf("Ti = "); fp_print(t0);
+    //fp_print("Ti = ",  t0);
 
     fp_add(t1, Y1, Z1); // tb
 
-    //printf("Tb = "); fp_print(t1);
+    //fp_print("Tb = ",  t1);
 
     fp_add(t2, Z1, X1); // tg
 
-    //printf("Tg = "); fp_print(t2);
+    //fp_print("Tg = ",  t2);
 
     fp_x12(t3, Z1);     // tk
 
-    //printf("Tk = "); fp_print(t3);
+    //fp_print("Tk = ",  t3);
 
 
     fp_add(X1, X1, Y1); // t6
 
-    //printf("T6 = "); fp_print(X1);
+    //fp_print("T6 = ",  X1);
 
     fp_add(Z1, Y1, t3); // tl
 
-    //printf("Tl = "); fp_print(Z1);
+    //fp_print("Tl = ",  Z1);
 
     fp_sub(Y1, Y1, t3); // tm
 
-    //printf("Tm = "); fp_print(Y1);
+    //fp_print("Tm = ",  Y1);
 
 
     fp_sub(X1, X2, X1); // t7
 
-    //printf("T7 = "); fp_print(X1);
+    //fp_print("T7 = ",  X1);
 
     fp_mul(X2, X1, t0); // ts
 
-    //printf("Ts = "); fp_print(X2);
+    //fp_print("Ts = ",  X2);
 
 
     fp_mul(X1, X1, Y1); // tp
 
-    //printf("Tp = "); fp_print(X1);
+    //fp_print("Tp = ",  X1);
 
     fp_mul(Y1, Y1, Z1); // tr
 
-    //printf("Tr = "); fp_print(Y1);
+    //fp_print("Tr = ",  Y1);
 
 
     fp_sub(Y2, Y2, t1); // tc
 
-    //printf("Tc = "); fp_print(Y2);
+    //fp_print("Tc = ",  Y2);
 
     fp_mul(Z1, Z1, Y2); // tt
 
-    //printf("Tt = "); fp_print(Z1);
+    //fp_print("Tt = ",  Z1);
 
     fp_sub(Z2, Z2, t2); // th
 
-    //printf("Th = "); fp_print(Z2);
+    //fp_print("Th = ",  Z2);
 
 
     fp_x12(Z2, Z2);     // tn
 
-    //printf("Tn = "); fp_print(Z2);
+    //fp_print("Tn = ",  Z2);
 
     fp_mul(Y2, Y2, Z2); // to
 
-    //printf("To = "); fp_print(Y2);
+    //fp_print("To = ",  Y2);
 
     fp_mul(Z2, Z2, t0); // tq
 
-    //printf("Tq = "); fp_print(Z2);
+    //fp_print("Tq = ",  Z2);
 
 
     fp_sub(X1, X1, Y2); // X3
     fp_add(Y1, Y1, Z2); // Y3
     fp_add(Z1, Z1, X2); // Z3
 
-    //printf("X4 = "); fp_print(X1);
-    //printf("Y4 = "); fp_print(Y1);
-    //printf("Z4 = "); fp_print(Z1);
+    //fp_print("X4 = ",  X1);
+    //fp_print("Y4 = ",  Y1);
+    //fp_print("Z4 = ",  Z1);
 
     fp_cpy(p.x, X1);
     fp_cpy(p.y, Y1);

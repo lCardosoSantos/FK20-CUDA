@@ -27,9 +27,9 @@ __global__ void FpTestSub(testval_t *testval) {
             pass = false;
 
             printf("%d: FAILED\n", i);
-            printf("x    : "); fp_print(x);
-            printf("2x   : "); fp_print(l);
-            printf("3x-x : "); fp_print(r);
+            fp_print("x    : ",  x);
+            fp_print("2x   : ",  l);
+            fp_print("3x-x : ",  r);
         }
         ++count;
     }

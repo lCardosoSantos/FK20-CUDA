@@ -45,9 +45,9 @@ __global__ void FpTestSqr(testval_t *testval) {
             pass = false;
 
             printf("%d: FAILED\n", i);
-            printf("x        : "); fp_print(x);
-            printf("(x+1)^2  : "); fp_print(l);
-            printf("x^2+2x+1 : "); fp_print(r);
+            fp_print("x        : ",  x);
+            fp_print("(x+1)^2  : ",  l);
+            fp_print("x^2+2x+1 : ",  r);
             break;
         }
         ++count;
@@ -64,9 +64,9 @@ __global__ void FpTestSqr(testval_t *testval) {
             pass = false;
 
             printf("%d: FAILED\n", i);
-            printf("x        : "); fp_print(x);
-            printf("(x+2)^2  : "); fp_print(l);
-            printf("x^2+4x+4 : "); fp_print(r);
+            fp_print("x        : ",  x);
+            fp_print("(x+2)^2  : ",  l);
+            fp_print("x^2+4x+4 : ",  r);
             break;
         }
         ++count;
@@ -83,9 +83,9 @@ __global__ void FpTestSqr(testval_t *testval) {
             pass = false;
 
             printf("%d: FAILED\n", i);
-            printf("x         : "); fp_print(x);
-            printf("(x+4)^2   : "); fp_print(l);
-            printf("x^2+8x+16 : "); fp_print(r);
+            fp_print("x         : ",  x);
+            fp_print("(x+4)^2   : ",  l);
+            fp_print("x^2+8x+16 : ",  r);
             break;
         }
         ++count;
@@ -102,9 +102,9 @@ __global__ void FpTestSqr(testval_t *testval) {
             pass = false;
 
             printf("%d: FAILED\n", i);
-            printf("x          : "); fp_print(x);
-            printf("(x+6)^2    : "); fp_print(l);
-            printf("x^2+12x+36 : "); fp_print(r);
+            fp_print("x          : ",  x);
+            fp_print("(x+6)^2    : ",  l);
+            fp_print("x^2+12x+36 : ",  r);
             break;
         }
         ++count;
@@ -146,10 +146,10 @@ __global__ void FpTestSqr2(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED\n", i);
-                printf("x           : "); fp_print(x);
-                printf("y           : "); fp_print(y);
-                printf("(x+y)^2     : "); fp_print(l);
-                printf("x^2+2xy+y^2 : "); fp_print(r);
+                fp_print("x           : ",  x);
+                fp_print("y           : ",  y);
+                fp_print("(x+y)^2     : ",  l);
+                fp_print("x^2+2xy+y^2 : ",  r);
                 break;
             }
             ++count;

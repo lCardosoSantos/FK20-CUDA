@@ -34,9 +34,9 @@ __global__ void FpTestMulConst(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED: inconsistent result\n", j);
-                printf("1   : "); fp_print(x1);
-                printf("2*4 : "); fp_print(x2x4);
-                printf("8   : "); fp_print(x8);
+                fp_print("1   : ",  x1);
+                fp_print("2*4 : ",  x2x4);
+                fp_print("8   : ",  x8);
             }
             ++count;
         }
@@ -73,10 +73,10 @@ __global__ void FpTestMulConst(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED: inconsistent result\n", j);
-                printf("1   : "); fp_print(x1);
-                printf("2^6 : "); fp_print(x2);
-                printf("4^3 : "); fp_print(x4);
-                printf("8^2 : "); fp_print(x8);
+                fp_print("1   : ",  x1);
+                fp_print("2^6 : ",  x2);
+                fp_print("4^3 : ",  x4);
+                fp_print("8^2 : ",  x8);
             }
             ++count;
         }
@@ -103,9 +103,9 @@ __global__ void FpTestMulConst(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED: inconsistent result\n", j);
-                printf("1   : "); fp_print(x1);
-                printf("3*4 : "); fp_print(x3x4);
-                printf("12  : "); fp_print(x12);
+                fp_print("1   : ",  x1);
+                fp_print("3*4 : ",  x3x4);
+                fp_print("12  : ",  x12);
             }
             ++count;
         }
@@ -137,9 +137,9 @@ __global__ void FpTestMulConst(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED: inconsistent result\n", i);
-                printf("1      : "); fp_print(x1);
-                printf("12+8   : "); fp_print(l);
-                printf("4(3+2) : "); fp_print(r);
+                fp_print("1      : ",  x1);
+                fp_print("12+8   : ",  l);
+                fp_print("4(3+2) : ",  r);
             }
             ++count;
         }
@@ -172,9 +172,9 @@ __global__ void FpTestMulConst(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED: inconsistent result\n", i);
-                printf("1           : "); fp_print(x1);
-                printf("3*3*3*2*4*8 : "); fp_print(l);
-                printf("12*12*12    : "); fp_print(r);
+                fp_print("1           : ",  x1);
+                fp_print("3*3*3*2*4*8 : ",  l);
+                fp_print("12*12*12    : ",  r);
             }
             ++count;
         }

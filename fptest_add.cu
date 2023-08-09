@@ -27,9 +27,9 @@ __global__ void FpTestAdd(testval_t *testval) {
             pass = false;
 
             printf("%d: FAILED\n", i);
-            printf("x    : "); fp_print(x);
-            printf("2x+x : "); fp_print(l);
-            printf("3x   : "); fp_print(r);
+            fp_print("x    : ",  x);
+            fp_print("2x+x : ",  l);
+            fp_print("3x   : ",  r);
         }
         ++count;
     }
@@ -62,10 +62,10 @@ __global__ void FpTestCommutativeAdd(testval_t *testval) {
                 pass = false;
 
                 printf("%d,%d: FAILED: inconsistent result\n", i, j);
-                printf("x = "); fp_print(testval[i]);
-                printf("y = "); fp_print(testval[j]);
-                printf("x+y = "); fp_print(x);
-                printf("y+x = "); fp_print(y);
+                fp_print("x = ",  testval[i]);
+                fp_print("y = ",  testval[j]);
+                fp_print("x+y = ",  x);
+                fp_print("y+x = ",  y);
             }
             ++count;
         }
@@ -103,11 +103,11 @@ __global__ void FpTestAssociativeAdd(testval_t *testval) {
                     pass = false;
 
                     printf("%d,%d,%d: FAILED: inconsistent result\n", i, j, k);
-                    printf("x = "); fp_print(testval[i]);
-                    printf("y = "); fp_print(testval[j]);
-                    printf("z = "); fp_print(testval[k]);
-                    printf("(x+y)+z = "); fp_print(a);
-                    printf("x+(y+z) = "); fp_print(c);
+                    fp_print("x = ",  testval[i]);
+                    fp_print("y = ",  testval[j]);
+                    fp_print("z = ",  testval[k]);
+                    fp_print("(x+y)+z = ",  a);
+                    fp_print("x+(y+z) = ",  c);
                 }
                 ++count;
             }
