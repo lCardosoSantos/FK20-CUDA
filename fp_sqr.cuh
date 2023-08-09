@@ -1,7 +1,14 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #ifndef FP_SQR
 
-// Needs Z0..Zb, q0..q7, r0..r6
-
+/**
+ * @brief PTX macro for computing the square of the residue x modulo p. Stores in z
+ * 
+ *  Needs Z0..Zb, q0..q7, r0..r6
+ */
 #define FP_SQR(Z, X) \
 \
     "\n\tmul.lo.u64     "#Z"5, "#X"0, "#X"5    ; mul.hi.u64     "#Z"6, "#X"0, "#X"5    ;" \

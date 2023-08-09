@@ -1,5 +1,13 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #ifndef FP_ADD
 
+/**
+ * @brief PTX macro for addition of two residues modulo p. Z←X+Y
+ * 
+ */
 #define FP_ADD(Z, X, Y) \
     /* z = x + y */ \
  \

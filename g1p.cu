@@ -9,6 +9,8 @@
 
 /**
  * @brief Converts G1 point into arrays of uint64_t. Each array must be uint64_t[6]
+ * This function does not validate if the coordinates
+ * are a valid point in the curve
  * 
  * @param[in] p point in G1 
  * @param[out] x Array with the x coordinate
@@ -17,13 +19,15 @@
  * @return void 
  */
 __device__ void g1p_toUint64(const g1p_t &p, uint64_t *x, uint64_t *y, uint64_t *z) {
-    fp_toUint64(p.x, x);
-    fp_toUint64(p.y, y);
-    fp_toUint64(p.z, z);
+    fp_toUint64(x, p.x);
+    fp_toUint64(y, p.y);
+    fp_toUint64(z, p.z);
 }
 
 /**
  * @brief Converts arrays of uint64_t into a G1 point. Each array must be uint64_t[6]
+ * This function does not validate if the coordinates
+ * are a valid point in the curve
  * 
  * @param[out] p point in G1 
  * @param[in] x Array with the x coordinate
@@ -97,7 +101,7 @@ __device__ __host__ void g1p_inf(g1p_t &p) {
  * @brief Sets p to the generator point G1 of bls12_381
  * 
  * @param p 
- * @return Void 
+ * @return void 
  */
 __device__ __host__ void g1p_gen(g1p_t &p) {
     p.x[5] = 0x17F1D3A73197D794;

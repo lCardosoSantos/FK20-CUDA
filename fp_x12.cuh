@@ -1,5 +1,12 @@
-#ifndef FP_X12
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
+#ifndef FP_X12
+/**
+ * @brief PTX macro for multiplication by 12. Stores in Z.
+ * 
+ */
 #define FP_X12(Z, X) \
     /* t = x + x */ \
  \

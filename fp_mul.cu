@@ -1,10 +1,19 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fp_mul.cuh"
 #include "fp_reduce12.cuh"
 
+/**
+ * @brief Multiplies two Fp residues, stores in z.
+ * 
+ * @param[out] z 
+ * @param[in] x 
+ * @param[in] y 
+ * @return void 
+ */
 __device__ void fp_mul(fp_t &z, const fp_t &x, const fp_t &y) {
     uint64_t
         x0 = x[0], x1 = x[1], x2 = x[2], x3 = x[3], x4 = x[4], x5 = x[5],

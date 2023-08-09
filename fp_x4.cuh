@@ -1,5 +1,13 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #ifndef FP_X4
 
+/**
+ * @brief PTX macro for multiplication by 4. Stores in Z.
+ * 
+ */
 #define FP_X4(Z, X) \
     /* z = x + x */ \
  \

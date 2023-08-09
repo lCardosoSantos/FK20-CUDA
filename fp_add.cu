@@ -1,10 +1,18 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fp_add.cuh"
 
-// fp_add: Compute the sum of two residues x and y modulo p.
+/**
+ * @brief Compute the sum of two residues x and y modulo p. Stores in z.
+ * 
+ * @param[out] z 
+ * @param[in] x 
+ * @param[in] y 
+ * @return void 
+ */
 __device__ void fp_add(fp_t &z, const fp_t &x, const fp_t &y) {
     uint64_t
         x0 = x[0], y0 = y[0], z0,

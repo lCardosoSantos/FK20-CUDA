@@ -1,7 +1,14 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #ifndef FP_REDUCE12
 
-/* Reads Z0..Zb. Writes q0..q7, r0..r6 and Z0..Z5 */
-
+/**
+ * @brief Wide reduction over 12 words.
+ * 
+ *  Reads Z0..Zb. Writes q0..q7, r0..r6 and Z0..Z5 
+ */
 #define FP_REDUCE12(Z) \
 \
     /* q2 = q1 * mu; q3 = q2 / 2^448 */ \

@@ -1,9 +1,17 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fp_x3.cuh"
 
+/**
+ * @brief Multiply x by 3, stores into z
+ * 
+ * @param[out] z 
+ * @param[in] x 
+ * @return void 
+ */
 __device__ void fp_x3(fp_t &z, const fp_t &x) {
     uint64_t
         x0 = x[0], z0,

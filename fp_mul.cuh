@@ -1,6 +1,10 @@
 #ifndef FP_MUL
-/* Reads X0..X5 and Y0..Y5. Writes Z0..Zb */
 
+/**
+ * @brief PTX macro for multiplication of two residues mod p
+ * Reads X0..X5 and Y0..Y5. Writes Z0..Zb
+ * 
+ */
 #define FP_MUL(Z, X, Y) \
     "\n\tmul.lo.u64     "#Z"1, "#X"0, "#Y"1       ; mul.hi.u64     "#Z"2, "#X"0, "#Y"1       ;" \
     "\n\tmul.lo.u64     "#Z"3, "#X"0, "#Y"3       ; mul.hi.u64     "#Z"4, "#X"0, "#Y"3       ;" \

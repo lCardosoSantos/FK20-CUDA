@@ -27,7 +27,7 @@
  * Although this is asymptotically worse than EEA, this implementation avoid flow 
  * divergence and uses 258 squarings and 55 multiplications. 
  * Furthermore, since curve operations are done in projective coordinates, inversions
- * are needed only at the very when projective coordinates are translated into 
+ * are needed only at the very end when projective coordinates are translated into 
  * affine coordinates.
  */
 __device__ void fr_inv(fr_t &z) {

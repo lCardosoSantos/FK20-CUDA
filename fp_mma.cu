@@ -1,13 +1,22 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fp_mul.cuh"
 #include "fp_reduce12.cuh"
 
-// fp_mma: Fp multiply-multiply-add
-// z = (v*w + x*y) mod p
-// The double-wide products are added before reduction, saving one reduction.
+/**
+ * @brief Fp multiply-multiply-add. Fast execution of z = (v*w + x*y) mod p
+ * The double-wide products are added before reduction, saving one reduction.
+ * 
+ * @param[out] z 
+ * @param[in] v 
+ * @param[in] w 
+ * @param[in] x 
+ * @param[in] y 
+ * @return void
+ */
 __device__ void fp_mma(fp_t &z, const fp_t &v, const fp_t &w, const fp_t &x, const fp_t &y) {
     uint64_t
         v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3], v4 = v[4], v5 = v[5],

@@ -1,8 +1,10 @@
 # FK20 project
 
-## Documentation TODO list
+## Documentation
+### Documentation TODO list
+
 Todo list (subtasks removed for clarity)
-Last update: 20230807
+Last update: 20230808
 
 - [ ] Check if parameter order in the functions is consistent. Intel notation mainly
 - [ ] Make FR functions non destructive (might cause side effects)
@@ -13,6 +15,7 @@ Last update: 20230807
 - [ ] doc for module fp
   - `fp_add.cu fp_add.cuh fp_cpy.cu fp.cu fp.cuh fp_eq.cu fp_inv.cu fp_isone.cu fp_iszero.cu fp_mma.cu fp_mul.cu fp_mul.cuh fp_neg.cu fp_neq.cu fp_nonzero.cu fp_reduce12.cuh fp_reduce6.cu fp_sqr.cu fp_sqr.cuh fp_sub.cu fp_sub.cuh fp_x12.cu fp_x12.cuh fp_x2.cu fp_x2.cuh fp_x3.cu fp_x3.cuh fp_x4.cu fp_x4.cuh fp_x8.cu fp_x8.cuh`
 - [ ] doc for module tests
+  - [ ] Change `*_neq to !*_neg`
   - `fr_fft_testvector.cu, frtest_add.cu, frtest_addsub.cu, frtest_cmp.cu, frtest.cu, frtest.cuh, frtest_distributive.cu, frtest_fft.cu, frtest_fibonacci.cu, frtest_kat.cu, frtest_mulconst.cu, frtest_mul.cu, frtest_sub.cu, fptest_add.cu, fptest_cmp.cu, fptest.cu, fptest.cuh, fptest_distributive.cu, fptest_fibonacci.cu, fptest_inv.cu, fptest_kat.cu, fptest_mma.cu, fptest_mulconst.cu, fptest_mul.cu, fptest_sqr.cu, fptest_sub.cu, g1test.cu, g1test.cuh, g1test_dbl.cu, g1test_fft.cu, g1test_fibonacci.cu, g1test_kat.cu`
 - [ ] doc for module fk20
   - `fk20_512test.cu, fk20benchmark.cu, fk20.cu, fk20.cuh, fk20_hext_fft2h_fft.cu, fk20_msm.cu, fk20_poly2hext_fft.cu, fk20_poly2h_fft.cu, fk20_poly2toeplitz_coefficients.cu, fk20_poly2toeplitz_coefficients_fft.cu`
@@ -25,6 +28,7 @@ Last update: 20230807
 - [ ] README
 ---------------------------------------------------------------------------------
 - [x] ~~doc for module g1p~~ 20230807
+  - [x] ~~fixes~~ 20230808
   - `g1p_add.cu, g1p_addsub.cu, g1p_compare.cu, g1p.cu, g1p_dbl.cu, g1p_fft.cu, g1p_ispoint.cu, g1p_mul.cu, g1p_neg.cu, g1p_scale.cu, g1p_sub.cu`
 - [x] ~~doc for module fr~~ 20230803
   - `fr_add.cu, fr_add.cuh, fr_addsub.cu, fr_cpy.cu, fr.cu, fr.cuh, fr_eq.cu, fr_fft.cu, fr_inv.cu, fr_isone.cu, fr_iszero.cu, fr_mul.cu, fr_neg.cu, fr_neq.cu, fr_nonzero.cu, fr_reduce4.cu, fr_roots.cu, fr_sqr.cu, fr_sub.cu, fr_sub.cuh, fr_x12.cu, fr_x2.cu, fr_x3.cu, fr_x4.cu, fr_x8.cu`
@@ -64,39 +68,42 @@ Last update: 20230807
 
 - [ ] fp
     - [ ] Change comments where the modulus values are mu mmu0 and mmu1 to pmu, pmmu0, pmmu1
-    - [ ] [fp_add.cu](./fp_add.cu)
-    - [ ] [fp_add.cuh](./fp_add.cuh)
-    - [ ] [fp_cpy.cu](./fp_cpy.cu)
+    - [x] [fp_add.cu](./fp_add.cu)
+    - [x] [fp_add.cuh](./fp_add.cuh)
+    - [x] [fp_cpy.cu](./fp_cpy.cu)
     - [ ] [fp.cu](./fp.cu)
-    - [ ] [fp.cuh](./fp.cuh)
-    - [ ] [fp_eq.cu](./fp_eq.cu)
-    - [ ] [fp_inv.cu](./fp_inv.cu)
-    - [ ] [fp_isone.cu](./fp_isone.cu)
-    - [ ] [fp_iszero.cu](./fp_iszero.cu)
-    - [ ] [fp_mma.cu](./fp_mma.cu)
-    - [ ] [fp_mul.cu](./fp_mul.cu)
-    - [ ] [fp_mul.cuh](./fp_mul.cuh)
-    - [ ] [fp_neg.cu](./fp_neg.cu)
-    - [ ] [fp_neq.cu](./fp_neq.cu)
-    - [ ] [fp_nonzero.cu](./fp_nonzero.cu)
-    - [ ] [fp_reduce12.cuh](./fp_reduce12.cuh)
-    - [ ] [fp_reduce6.cu](./fp_reduce6.cu)
-    - [ ] [fp_sqr.cu](./fp_sqr.cu)
-    - [ ] [fp_sqr.cuh](./fp_sqr.cuh)
-    - [ ] [fp_sub.cu](./fp_sub.cu)
-    - [ ] [fp_sub.cuh](./fp_sub.cuh)
-    - [ ] [fp_x12.cu](./fp_x12.cu)
-    - [ ] [fp_x12.cuh](./fp_x12.cuh)
-    - [ ] [fp_x2.cu](./fp_x2.cu)
-    - [ ] [fp_x2.cuh](./fp_x2.cuh)
-    - [ ] [fp_x3.cu](./fp_x3.cu)
-    - [ ] [fp_x3.cuh](./fp_x3.cuh)
-    - [ ] [fp_x4.cu](./fp_x4.cu)
-    - [ ] [fp_x4.cuh](./fp_x4.cuh)
-    - [ ] [fp_x8.cu](./fp_x8.cu)
-    - [ ] [fp_x8.cuh](./fp_x8.cuh)
+    - [x] [fp.cuh](./fp.cuh)
+    - [x] [fp_eq.cu](./fp_eq.cu)
+    - [x] [fp_inv.cu](./fp_inv.cu)
+    - [x] [fp_isone.cu](./fp_isone.cu)
+    - [x] [fp_iszero.cu](./fp_iszero.cu)
+    - [x] [fp_mma.cu](./fp_mma.cu)
+    - [x] [fp_mul.cu](./fp_mul.cu)
+    - [x] [fp_mul.cuh](./fp_mul.cuh)
+    - [x] [fp_neg.cu](./fp_neg.cu)
+    - [x] [fp_neq.cu](./fp_neq.cu)
+    - [x] [fp_nonzero.cu](./fp_nonzero.cu)
+    - [x] [fp_reduce12.cuh](./fp_reduce12.cuh)
+      - name means "reduce wide" since it operates over 12 qwords
+    - [x] [fp_reduce6.cu](./fp_reduce6.cu)
+      - name means "reduce narrow" since it operates over 6 qwords. This reduces to canonical representation.
+    - [x] [fp_sqr.cu](./fp_sqr.cu)
+    - [x] [fp_sqr.cuh](./fp_sqr.cuh)
+    - [x] [fp_sub.cu](./fp_sub.cu)
+    - [x] [fp_sub.cuh](./fp_sub.cuh)
+    - [x] [fp_x2.cu](./fp_x2.cu)
+    - [x] [fp_x2.cuh](./fp_x2.cuh)
+    - [x] [fp_x3.cu](./fp_x3.cu)
+    - [x] [fp_x3.cuh](./fp_x3.cuh)
+    - [x] [fp_x4.cu](./fp_x4.cu)
+    - [x] [fp_x4.cuh](./fp_x4.cuh)
+    - [x] [fp_x8.cu](./fp_x8.cu)
+    - [x] [fp_x8.cuh](./fp_x8.cuh)
+    - [x] [fp_x12.cu](./fp_x12.cu)
+    - [x] [fp_x12.cuh](./fp_x12.cuh)
 
 - [ ] Tests
+    - [ ] Change `*_neq to !*_neg`
     - [ ] [fr_fft_testvector.cu](./fr_fft_testvector.cu)
     - [ ] [frtest_add.cu](./frtest_add.cu)
     - [ ] [frtest_addsub.cu](./frtest_addsub.cu)
@@ -165,7 +172,7 @@ Last update: 20230807
     - [ ] [fk20_testvector.cuh](./fk20_testvector.cuh)
     
 - [x] g1p files
-    - [ ] [g1a.cu](./g1a.cu)
+    - [x] [g1a.cu](./g1a.cu)
     - [x] [g1p_add.cu](./g1p_add.cu)
     - [x] [g1p_addsub.cu](./g1p_addsub.cu)
     - [x] [g1p_compare.cu](./g1p_compare.cu)

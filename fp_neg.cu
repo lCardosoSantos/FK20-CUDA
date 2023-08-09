@@ -1,11 +1,18 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 
-// fp_neg: Compute an additive inverse of a residue x modulo p.
-// Subtracts x from the highest multiple of p less than 2^384,
-// then adds p in case of underflow.
+/**
+ * @brief Compute an additive inverse of a residue x modulo p. Stores in z.
+ * Subtracts x from the highest multiple of p less than 2^384,
+ * then adds p in case of underflow.
+ * 
+ * @param[out] z 
+ * @param[in] x 
+ * @return __device__ 
+ */
 __device__ void fp_neg(fp_t &z, const fp_t &x) {
     uint64_t
         x0 = x[0], z0,
@@ -20,7 +27,7 @@ __device__ void fp_neg(fp_t &z, const fp_t &x) {
     "\n\t.reg .u32 z6;"
     "\n\t.reg .pred nz;"
 
-    // z = mmu0 - x
+    // z = pmmu0 - x
 
     "\n\tsub.u64.cc  %0, 0x89F6FFFFFFFD0003U,  %6;"
     "\n\tsubc.u64.cc %1, 0x140BFFF43BF3FFFDU,  %7;"

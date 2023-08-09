@@ -1,9 +1,18 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fp_sub.cuh"
 
+/**
+ * @brief Calculates de difference of two residues modulo p, stores into z
+ * 
+ * @param[out] z 
+ * @param[in] x minuend
+ * @param[in] y subtrahend
+ * @return void 
+ */
 __device__ void fp_sub(fp_t &z, const fp_t &x, const fp_t &y) {
     uint64_t
         x0 = x[0], y0 = y[0], z0,

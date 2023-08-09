@@ -1,15 +1,20 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #ifndef FP_CUH
 #define FP_CUH
 
 #include <stdint.h>
 
+/**
+ * @brief Residue module p with 381 bits
+ * Bitfields are not used since the extra 3 bits can be used for flags
+ */
 typedef uint64_t fp_t[6];
 
 extern __device__ __host__ void fp_fromUint64(fp_t &z, const uint64_t *x);
-extern __device__ void fp_toUint64(const fp_t &x, uint64_t *z);
+extern __device__ void fp_toUint64(uint64_t *z, const fp_t &x);
 extern __device__ __host__ void fp_cpy(fp_t &z, const fp_t &x);
 extern __device__ void fp_reduce6(fp_t &z);
 extern __device__ void fp_neg(fp_t &z, const fp_t &x);

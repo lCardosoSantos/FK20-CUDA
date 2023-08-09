@@ -1,10 +1,35 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 
-// Raise the argument to the power p-2
-// This avoids control flow divergence
+/**
+ * @brief  Calculates the multiplicative inverse of x and stores in z
+ * 
+ * * This function calculates the multiplicative inverse of the argument.
+ * An integer a is the inverse of z if a*z mod r == 1
+ * 
+ * Normally, the inverse is found by using the Extended Euclidean Algorithm, to 
+ * find integers (z,y) to satisfy the Bézout's identity:
+ * a*z + r*y == gcd(a, r) == 1
+ * which can be rewritten as:
+ * az-1 == (-y)*m which follows that a*z mod r == 1. This approach has complexity 
+ * in the order of O(log2(r)).
+ * 
+ * This implementation uses Euler's theorem, calculating the inverse as z^(phi(r)-1). 
+ * where phi is Euler's totient function. For the special case where r is prime, 
+ * phi(r) = r-1. Therefore, the inverse here is calculated as z^(r-2). 
+ * Although this is asymptotically worse than EEA, this implementation avoid flow 
+ * divergence and uses 279 squarings and 128 multiplications. 
+ * Furthermore, since curve operations are done in projective coordinates, inversions
+ * are needed only at the very end when projective coordinates are translated into 
+ * affine coordinates.
+ * 
+ * @param[out] z 
+ * @param[in] x 
+ * @return void
+ */
 __device__ void fp_inv(fp_t &z, const fp_t &x) {
 
     // p-2 = 4002409555221667393417789825735904156556882819939007885332058136124031650490837864442687629129015664037894272559785

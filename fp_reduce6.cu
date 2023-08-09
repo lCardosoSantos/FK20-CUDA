@@ -1,8 +1,16 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 
+/**
+ * @brief Narrow reduction of a residue modulo p, reducing to the canonical 
+ * representation
+ * 
+ * @param[in,out] z residue modulo p
+ * @return void 
+ */
 __device__ void fp_reduce6(fp_t &z) {
     uint64_t
         z0 = z[0],

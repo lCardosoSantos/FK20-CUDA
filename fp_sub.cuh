@@ -1,5 +1,14 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #ifndef FP_SUB
 
+/**
+ * @brief PTX macro for calculating de difference of two residues modulo p, 
+ * Z = X-Y
+ * 
+ */
 #define FP_SUB(Z, X, Y) \
     /* z = x - y */ \
  \
