@@ -54,7 +54,7 @@ extern __device__ bool fr_nonzero(const fr_t &x);
 extern __device__ bool fr_iszero(const fr_t &x);
 extern __device__ bool fr_isone(const fr_t &x);
 
-extern __device__ void fr_print(const fr_t &x);
+extern __device__ void fr_print(const char *s, const fr_t &x);
 
 // Device-side FFT functions
 

@@ -29,10 +29,10 @@ __global__ void FrTestSub(testval_t *testval) {
                 pass = false;
 
                 printf("%d,%d: FAILED: inconsistent result\n", i, j);
-                printf("x = "); fr_print(testval[i]);
-                printf("y = "); fr_print(testval[j]);
-                printf("y-x = "); fr_print(a);
-                printf("y-(y-x) = "); fr_print(b);
+                fr_print("x = ",  testval[i]);
+                fr_print("y = ",  testval[j]);
+                fr_print("y-x = ",  a);
+                fr_print("y-(y-x) = ",  b);
             }
             ++count;
         }

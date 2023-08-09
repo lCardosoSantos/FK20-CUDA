@@ -3450,8 +3450,8 @@ __global__ void fr_fft_verify() {
     for (int i=0; i<512; i++) {
         if (fr_neq(fr_output[i], fr_correct[i])) {
             printf("Error at %d\n", i);
-            printf("expected "); fr_print(fr_correct[i]);
-            printf("received "); fr_print(fr_output[i]);
+            fr_print("expected ",  fr_correct[i]);
+            fr_print("received ",  fr_output[i]);
             ok = false;
         }
     }
@@ -3473,8 +3473,8 @@ __global__ void fr_ift_verify() {
     for (int i=0; i<512; i++) {
         if (fr_neq(fr_output[i], fr_input[i])) {
             printf("Error at %d\n", i);
-            printf("expected "); fr_print(fr_input[i]);
-            printf("received "); fr_print(fr_output[i]);
+            fr_print("expected ",  fr_input[i]);
+            fr_print("received ",  fr_output[i]);
             ok = false;
         }
     }

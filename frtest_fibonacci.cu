@@ -27,10 +27,10 @@ __global__ void FrTestFibonacci(testval_t *) {
         fr_sub(u, t);
 
         if (fr_neq(u, y)) {
-            printf("x ="); fr_print(x);
-            printf("y ="); fr_print(y);
-            printf("x+y ="); fr_print(t);
-            printf("x+y-x ="); fr_print(u);
+            fr_print("x =",  x);
+            fr_print("y =",  y);
+            fr_print("x+y =",  t);
+            fr_print("x+y-x =",  u);
             pass = false;
             break;
         }
@@ -44,10 +44,10 @@ __global__ void FrTestFibonacci(testval_t *) {
         fr_sub(u, t);
 
         if (fr_neq(u, x)) {
-            printf("x ="); fr_print(x);
-            printf("y ="); fr_print(y);
-            printf("x+y ="); fr_print(t);
-            printf("x+y-y ="); fr_print(u);
+            fr_print("x =",  x);
+            fr_print("y =",  y);
+            fr_print("x+y =",  t);
+            fr_print("x+y-y =",  u);
             pass = false;
             break;
         }
@@ -62,8 +62,8 @@ __global__ void FrTestFibonacci(testval_t *) {
 
     if (!fr_isone(x) || !fr_isone(y)) {
         printf("Reverse iteration failed\n");
-        printf("x ="); fr_print(x);
-        printf("y ="); fr_print(y);
+        fr_print("x =",  x);
+        fr_print("y =",  y);
         pass = false;
     }
     else

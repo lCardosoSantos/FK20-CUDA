@@ -34,13 +34,15 @@ __device__ __host__ void fr_one(fr_t &z) {
  * 
  * Prints the canonical hexadecimal representation of x to stdout, followed by linefeed; 
  * prints with leading zeros, and without the hex prefix.
+ * @param[in] s Description string
  * @param[in] x 
  * @return void 
  */
-__device__ void fr_print(const fr_t &x) {
+__device__ void fr_print(const char *s, const fr_t &x) {
     fr_t t;
     fr_cpy(t, x);
     fr_reduce4(t);
+    printf("%s", s);
     printf("%016lX%016lX%016lX%016lX\n",    // dc
 //  printf("#x%016lx%016lx%016lx%016lx\n",  // clisp compatible format
 //  printf("0x%016lx%016lx%016lx%016lx\n",  // python compatible format

@@ -27,10 +27,10 @@ __global__ void FrTestCommutativeMul(testval_t *testval) {
                 pass = false;
 
                 printf("%d,%d: FAILED: inconsistent result\n", i, j);
-                printf("x = "); fr_print(testval[i]);
-                printf("y = "); fr_print(testval[j]);
-                printf("x*y = "); fr_print(x);
-                printf("y*x = "); fr_print(y);
+                fr_print("x = ",  testval[i]);
+                fr_print("y = ",  testval[j]);
+                fr_print("x*y = ",  x);
+                fr_print("y*x = ",  y);
             }
             ++count;
         }
@@ -68,11 +68,11 @@ __global__ void FrTestAssociativeMul(testval_t *testval) {
                     pass = false;
 
                     printf("%d,%d,%d: FAILED: inconsistent result\n", i, j, k);
-                    printf("x = "); fr_print(testval[i]);
-                    printf("y = "); fr_print(testval[j]);
-                    printf("z = "); fr_print(testval[k]);
-                    printf("(x*y)*z = "); fr_print(a);
-                    printf("x*(y*z) = "); fr_print(c);
+                    fr_print("x = ",  testval[i]);
+                    fr_print("y = ",  testval[j]);
+                    fr_print("z = ",  testval[k]);
+                    fr_print("(x*y)*z = ",  a);
+                    fr_print("x*(y*z) = ",  c);
                 }
                 ++count;
             }

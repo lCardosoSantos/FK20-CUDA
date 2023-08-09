@@ -32,12 +32,12 @@ __global__ void FrTestAddSub(testval_t *testval) {
                 pass = false;
 
                 printf("%d,%d: FAILED: inconsistent result\n", i, j);
-                printf("x = "); fr_print(testval[i]);
-                printf("y = "); fr_print(testval[j]);
-                printf("x+y = "); fr_print(a);
-                printf("x+y = "); fr_print(x);
-                printf("x-y = "); fr_print(b);
-                printf("x-y = "); fr_print(y);
+                fr_print("x = ",  testval[i]);
+                fr_print("y = ",  testval[j]);
+                fr_print("x+y = ",  a);
+                fr_print("x+y = ",  x);
+                fr_print("x-y = ",  b);
+                fr_print("x-y = ",  y);
             }
             ++count;
         }
@@ -67,12 +67,12 @@ __global__ void FrTestAddSub(testval_t *testval) {
                     pass = false;
 
                     printf("%d,%d,%d: FAILED: inconsistent result\n", i, j, k);
-                    printf("[%d]: ", i); fr_print(testval[i]);
-                    printf("[%d]: ", j); fr_print(testval[j]);
-                    printf("a = "); fr_print(a);
-                    printf("x = "); fr_print(x);
-                    printf("b = "); fr_print(b);
-                    printf("y = "); fr_print(y);
+                    printf("[%d]: ", i); fr_print("", testval[i]);
+                    printf("[%d]: ", j); fr_print("", testval[j]);
+                    fr_print("a = ",  a);
+                    fr_print("x = ",  x);
+                    fr_print("b = ",  b);
+                    fr_print("y = ",  y);
                 }
                 ++count;
             }

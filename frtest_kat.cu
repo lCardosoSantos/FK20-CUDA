@@ -254,8 +254,8 @@ __global__ void FrTestKAT(testval_t *) {
                 printf("%d: 0x%016lx%016lx%016lx%016lx\n", i,
                 q[i][3], q[i][2], q[i][1], q[i][0]);
 
-                printf("Expected "); fr_print(a[i]);
-                printf("Received "); fr_print(t);
+                fr_print("Expected ",  a[i]);
+                fr_print("Received ",  t);
         }
 
             ++count;
@@ -302,8 +302,8 @@ __global__ void FrTestKAT(testval_t *) {
                 printf("2 * 0x%016lx%016lx%016lx%016lx\n",
                 q[i][3], q[i][2], q[i][1], q[i][0]);
 
-                printf("Expected "); fr_print(a[i]);
-                printf("Received "); fr_print(t);
+                fr_print("Expected ",  a[i]);
+                fr_print("Received ",  t);
             }
 
             ++count;
@@ -350,8 +350,8 @@ __global__ void FrTestKAT(testval_t *) {
                 printf("3 * 0x%016lx%016lx%016lx%016lx\n",
                 q[i][3], q[i][2], q[i][1], q[i][0]);
 
-                printf("Expected "); fr_print(a[i]);
-                printf("Received "); fr_print(t);
+                fr_print("Expected ",  a[i]);
+                fr_print("Received ",  t);
             }
 
             ++count;
@@ -407,8 +407,8 @@ __global__ void FrTestKAT(testval_t *) {
                 x[i][3], x[i][2], x[i][1], x[i][0],
                 y[i][3], y[i][2], y[i][1], y[i][0]);
 
-                printf("Expected "); fr_print(a[i]);
-                printf("Received "); fr_print(t);
+                fr_print("Expected ",  a[i]);
+                fr_print("Received ",  t);
             }
 
             ++count;
@@ -466,8 +466,8 @@ __global__ void FrTestKAT(testval_t *) {
                 x[i][5], x[i][4], x[i][3], x[i][2], x[i][1], x[i][0],
                 y[i][5], y[i][4], y[i][3], y[i][2], y[i][1], y[i][0]);
 
-                printf("Expected "); fr_print(a[i]);
-                printf("Received "); fr_print(t);
+                fr_print("Expected ",  a[i]);
+                fr_print("Received ",  t);
             }
 
             ++count;
@@ -514,8 +514,8 @@ __global__ void FrTestKAT(testval_t *) {
                 printf("0x%016lx%016lx%016lx%016lx^2\n",
                 q[i][3], q[i][2], q[i][1], q[i][0]);
 
-                printf("Expected "); fr_print(a[i]);
-                printf("Received "); fr_print(t);
+                fr_print("Expected ",  a[i]);
+                fr_print("Received ",  t);
             }
 
             ++count;
@@ -576,8 +576,8 @@ __global__ void FrTestKAT(testval_t *) {
                 x[i][3], x[i][2], x[i][1], x[i][0],
                 y[i][3], y[i][2], y[i][1], y[i][0]);
 
-                printf("Expected "); fr_print(a[i]);
-                printf("Received "); fr_print(t);
+                fr_print("Expected ",  a[i]);
+                fr_print("Received ",  t);
             }
 
             ++count;
@@ -626,8 +626,8 @@ __global__ void FrTestKAT(testval_t *) {
                 printf("1 / 0x%016lx%016lx%016lx%016lx\n",
                 q[i][3], q[i][2], q[i][1], q[i][0]);
 
-                printf("Expected "); fr_print(a[i]);
-                printf("Received "); fr_print(t);
+                fr_print("Expected ",  a[i]);
+                fr_print("Received ",  t);
             }
 
             ++count;

@@ -34,9 +34,9 @@ __global__ void FrTestMulConst(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED: inconsistent result\n", j);
-                printf("1   : "); fr_print(x1);
-                printf("2*4 : "); fr_print(x2x4);
-                printf("8   : "); fr_print(x8);
+                fr_print("1   : ",  x1);
+                fr_print("2*4 : ",  x2x4);
+                fr_print("8   : ",  x8);
             }
             ++count;
         }
@@ -73,10 +73,10 @@ __global__ void FrTestMulConst(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED: inconsistent result\n", j);
-                printf("1   : "); fr_print(x1);
-                printf("2^6 : "); fr_print(x2);
-                printf("4^3 : "); fr_print(x4);
-                printf("8^2 : "); fr_print(x8);
+                fr_print("1   : ",  x1);
+                fr_print("2^6 : ",  x2);
+                fr_print("4^3 : ",  x4);
+                fr_print("8^2 : ",  x8);
             }
             ++count;
         }
@@ -103,9 +103,9 @@ __global__ void FrTestMulConst(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED: inconsistent result\n", j);
-                printf("1   : "); fr_print(x1);
-                printf("3*4 : "); fr_print(x3x4);
-                printf("12  : "); fr_print(x12);
+                fr_print("1   : ",  x1);
+                fr_print("3*4 : ",  x3x4);
+                fr_print("12  : ",  x12);
             }
             ++count;
         }
@@ -144,9 +144,9 @@ __global__ void FrTestMulConst(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED: inconsistent result\n", i);
-                printf("1      : "); fr_print(x1);
-                printf("12+8   : "); fr_print(l);
-                printf("4(3+2) : "); fr_print(r);
+                fr_print("1      : ",  x1);
+                fr_print("12+8   : ",  l);
+                fr_print("4(3+2) : ",  r);
             }
             ++count;
         }
@@ -179,9 +179,9 @@ __global__ void FrTestMulConst(testval_t *testval) {
                 pass = false;
 
                 printf("%d: FAILED: inconsistent result\n", i);
-                printf("1           : "); fr_print(x1);
-                printf("3*3*3*2*4*8 : "); fr_print(l);
-                printf("12*12*12    : "); fr_print(r);
+                fr_print("1           : ",  x1);
+                fr_print("3*3*3*2*4*8 : ",  l);
+                fr_print("12*12*12    : ",  r);
             }
             ++count;
         }
