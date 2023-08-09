@@ -26,8 +26,8 @@ __device__ bool g1p_eq(const g1p_t &p, const g1p_t &q) {
 #ifndef NDEBUG
     if (!g1p_isPoint(p) || !(g1p_isPoint(q))) {
        // printf("ERROR in g1p_eq(): Invalid point(s)\n");
-       // g1p_print("p:", p);
-       // g1p_print("q:", q);
+       // g1p_print("p: ", p);
+       // g1p_print("q: ", q);
 
         return false;
     }
@@ -70,8 +70,8 @@ __device__ bool g1p_neq(const g1p_t &p, const g1p_t &q) {
 #ifndef NDEBUG
     if (!g1p_isPoint(p) || !(g1p_isPoint(q))) {
         printf("ERROR in g1p_neq(): Invalid point(s)\n");
-        g1p_print("p:", p);
-        g1p_print("q:", q);
+        g1p_print("p: ", p);
+        g1p_print("q: ", q);
 
         return true;
     }

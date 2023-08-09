@@ -55,7 +55,7 @@ __global__ void G1TestKAT(testval_t *) {
         if (g1p_neq(p, g1p_x0)) {
             pass = false;
 
-            g1p_print("0=0: FAIL: 0 != ", p);
+            g1p_print("0=0: FAIL: 0 !=  ", p);
         }
         ++count;
     }
@@ -71,7 +71,7 @@ __global__ void G1TestKAT(testval_t *) {
         if (g1p_neq(p, q)) {
             pass = false;
 
-            g1p_print("0+0: FAIL: 0 != ", p);
+            g1p_print("0+0: FAIL: 0 !=  ", p);
         }
         ++count;
     }
@@ -90,9 +90,9 @@ __global__ void G1TestKAT(testval_t *) {
         if (g1p_neq(p, r) || g1p_neq(q, r)) {
             pass = false;
 
-            g1p_print("0+G: = ", p);
-            g1p_print("G+0: = ", q);
-            g1p_print("  G: = ", r);
+            g1p_print("0+G: =  ", p);
+            g1p_print("G+0: =  ", q);
+            g1p_print("  G: =  ", r);
         }
         ++count;
     }
@@ -108,7 +108,7 @@ __global__ void G1TestKAT(testval_t *) {
         if (g1p_neq(p, g1p_x2)) {
             pass = false;
 
-            g1p_print("G+G: FAIL: 2G != ", p);
+            g1p_print("G+G: FAIL: 2G !=  ", p);
         }
         ++count;
     }
@@ -123,7 +123,7 @@ __global__ void G1TestKAT(testval_t *) {
         if (g1p_neq(p, g1p_x2)) {
             pass = false;
 
-            g1p_print("2G FAIL: 2G != ", p);
+            g1p_print("2G FAIL: 2G !=  ", p);
         }
         ++count;
     }
@@ -138,7 +138,7 @@ __global__ void G1TestKAT(testval_t *) {
         if (g1p_neq(p, g1p_x3)) {
             pass = false;
 
-            g1p_print("G+2G FAIL: 3G != ", p);
+            g1p_print("G+2G FAIL: 3G !=  ", p);
         }
         ++count;
     }
@@ -154,7 +154,7 @@ __global__ void G1TestKAT(testval_t *) {
         if (g1p_neq(p, g1p_x24)) {
             pass = false;
 
-            g1p_print("2*2*2*3G FAIL: 24G != ", p);
+            g1p_print("2*2*2*3G FAIL: 24G !=  ", p);
         }
         ++count;
     }
@@ -169,7 +169,7 @@ __global__ void G1TestKAT(testval_t *) {
         if (g1p_neq(p, g1p_x25)) {
             pass = false;
 
-            g1p_print("24G-2G+3G FAIL: 25G != ", p);
+            g1p_print("24G-2G+3G FAIL: 25G !=  ", p);
         }
         ++count;
     }
@@ -186,7 +186,7 @@ __global__ void G1TestKAT(testval_t *) {
         if (g1p_neq(p, g1p_x25)) {
             pass = false;
 
-            g1p_print("25G FAIL: 25G != ", p);
+            g1p_print("25G FAIL: 25G !=  ", p);
         }
         ++count;
     }
@@ -214,7 +214,7 @@ __global__ void G1TestKAT(testval_t *) {
 
         if (g1p_neq(p, g1p_x3)) {
             pass = false;
-            g1p_print("FAIL: 2G+G != ", p);
+            g1p_print("FAIL: 2G+G !=  ", p);
         }
 
         g1p_gen(p);
@@ -222,7 +222,7 @@ __global__ void G1TestKAT(testval_t *) {
         if (g1p_neq(q, p)) {
             pass = false;
 
-            g1p_print("FAIL: 2G-G != ", q);
+            g1p_print("FAIL: 2G-G !=  ", q);
         }
         ++count;
     }
@@ -246,12 +246,12 @@ __global__ void G1TestKAT(testval_t *) {
                 pass = false;
 
                 printf("FAIL after %d ok:\n", i);
-                g1p_print("t = ", t);
-                g1p_print("u = ", u);
-                g1p_print("v = ", v);
-                g1p_print("p = ", p);
-                g1p_print("q = ", q);
-                g1p_print("r = ", r);
+                g1p_print("t =  ", t);
+                g1p_print("u =  ", u);
+                g1p_print("v =  ", v);
+                g1p_print("p =  ", p);
+                g1p_print("q =  ", q);
+                g1p_print("r =  ", r);
             }
             ++count;
         }

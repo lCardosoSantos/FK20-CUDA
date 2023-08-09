@@ -32,10 +32,10 @@ __global__ void G1TestDbl(testval_t *) {
             pass = false;
 
             printf("%d: FAILED\n", i);
-            g1p_print("u   =", u);
-            g1p_print("v   =", v);
-            g1p_print("u+u =", p);
-            g1p_print("2v  =", q);
+            g1p_print("u   = ", u);
+            g1p_print("v   = ", v);
+            g1p_print("u+u = ", p);
+            g1p_print("2v  = ", q);
         }
         ++count;
     }

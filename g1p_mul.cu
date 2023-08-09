@@ -20,7 +20,7 @@ __device__ void g1p_mul(g1p_t &p, const fr_t &k) {
     // TODO: Use 4-bit lookup table to reduce additions by a factor 4.
     
     if (!g1p_isPoint(p)) {
-        //g1p_print("ERROR in g1p_mul(): Invalid point", p);
+        //g1p_print("ERROR in g1p_mul(): Invalid point ", p);
 
         // return invalid point as result
         fp_zero(p.x);

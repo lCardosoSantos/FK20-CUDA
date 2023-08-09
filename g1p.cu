@@ -73,12 +73,12 @@ __device__ __host__ void g1p_cpy(g1p_t &p, const g1p_t &q) {
 /**
  * @brief Print a standard representation of p, preceded by the user-set string s
  * 
- * @param[out] s message string
- * @param[out] p point in g1
+ * @param[out] s Description string
+ * @param[out] p Point in g1
  * @return void 
  */
 __device__ __host__ void g1p_print(const char *s, const g1p_t &p) {
-    printf("%s ", s);
+    printf("%s", s);
     printf("#x%016lx%016lx%016lx%016lx%016lx%016lx ",  p.x[5], p.x[4], p.x[3], p.x[2], p.x[1], p.x[0]);
     printf("#x%016lx%016lx%016lx%016lx%016lx%016lx ",  p.y[5], p.y[4], p.y[3], p.y[2], p.y[1], p.y[0]);
     printf("#x%016lx%016lx%016lx%016lx%016lx%016lx\n", p.z[5], p.z[4], p.z[3], p.z[2], p.z[1], p.z[0]);

@@ -3374,7 +3374,7 @@ __global__ void g1p_fft_verify() {
     for (int i=0; i<512; i++) {
         if (!g1p_isPoint(g1p_input[i])) {
             printf("Input %d not on the curve:\n", i);
-            g1p_print("", g1p_input[i]);
+            g1p_print(" ", g1p_input[i]);
             return;
         }
     }
@@ -3382,8 +3382,8 @@ __global__ void g1p_fft_verify() {
     for (int i=0; i<512; i++) {
         if (g1p_neq(g1p_output[i], g1p_correct[i])) {
             printf("Error at %d\n", i);
-            g1p_print("expected", g1p_correct[i]);
-            g1p_print("received", g1p_output[i]);
+            g1p_print("expected ", g1p_correct[i]);
+            g1p_print("received ", g1p_output[i]);
             ok = false;
         }
     }
@@ -3391,7 +3391,7 @@ __global__ void g1p_fft_verify() {
     for (int i=0; i<512; i++) {
         if (!g1p_isPoint(g1p_output[i])) {
             printf("Output %d not on the curve:\n", i);
-            g1p_print("", g1p_output[i]);
+            g1p_print(" ", g1p_output[i]);
             return;
         }
     }
@@ -3416,7 +3416,7 @@ __global__ void g1p_ift_verify() {
     for (int i=0; i<512; i++) {
         if (!g1p_isPoint(g1p_correct[i])) {
             printf("Input %d not on the curve:\n", i);
-            g1p_print("", g1p_correct[i]);
+            g1p_print(" ", g1p_correct[i]);
             return;
         }
     }

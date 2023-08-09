@@ -23,7 +23,7 @@
 __device__ void g1p_dbl(g1p_t &p) {
 
     if (!g1p_isPoint(p)) {
-        g1p_print("ERROR in g1p_dbl(): Invalid point", p);
+        g1p_print("ERROR in g1p_dbl(): Invalid point ", p);
 
         // return invalid point as result
         fp_zero(p.x);

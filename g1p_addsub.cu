@@ -20,8 +20,8 @@ __device__ void g1p_addsub(g1p_t &p, g1p_t &q) {
 #ifndef NDEBUG
     if (!g1p_isPoint(p) || !(g1p_isPoint(q))) {
         //printf("ERROR in g1p_addsub(): Invalid point(s)\n");
-        //g1p_print("p:", p);
-        //g1p_print("q:", q);
+        //g1p_print("p: ", p);
+        //g1p_print("q: ", q);
 
         // return invalid points as result
         fp_zero(p.x); fp_zero(q.x);
