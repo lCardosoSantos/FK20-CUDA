@@ -1,16 +1,23 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #include <stdio.h>
 
 #include "fr.cuh"
 #include "g1.cuh"
 #include "fk20.cuh"
 
-////////////////////////////////////////////////////////////////////////////////
-// fk20_hext_fft2h_fft(): hext_fft -> h_fft
-//
-// parameters:
-// -in hext_fft    g1p_t hext_fft[blockDim.x][512]
-// -out h_fft      g1p_T h_fft[blockDim.x][512]
-//
+/**
+ * @brief hext_fft -> h_fft
+ * 
+ * Grid must be 1-D, 256 threads per block.
+ * Dynamic shared memory: g1p_sharedmem(73728 Bytes)
+ * 
+ * @param[out] h_fft array with dimensions [gridDim.x * 512]
+ * @param[in] hext_fft array with dimensions [gridDim.x * 512]
+ * @return void 
+ */
 __global__ void fk20_hext_fft2h_fft(g1p_t *h_fft, const g1p_t *hext_fft){
     if (gridDim.y  !=   1) return;
     if (gridDim.z  !=   1) return;

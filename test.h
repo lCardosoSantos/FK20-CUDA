@@ -59,18 +59,22 @@ extern void testinit();
 
 // Syncronizes the Device, making sure that the kernel has finished the execution. Checks for any errors, and report if
 // errors are found.
+#ifndef CUDASYNC
 #define CUDASYNC(fmt, ...)                                                                                             \
     err = cudaDeviceSynchronize();                                                                                     \
     if (err != cudaSuccess)                                                                                            \
     printf("%s:%d " fmt " Error: %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err), ##__VA_ARGS__)
+#endif
 
 // The necessary shared memory is larger than what we can statically allocate, hence it is allocated dynamically in the
 // kernel call. Because cuda, we need to set the maximum allowed size using this macro.
+#ifndef SET_SHAREDMEM
 #define SET_SHAREDMEM(SZ, FN)                                                                                          \
     err = cudaFuncSetAttribute(FN, cudaFuncAttributeMaxDynamicSharedMemorySize, SZ);                                   \
     cudaDeviceSynchronize();                                                                                           \
     if (err != cudaSuccess)                                                                                            \
         printf("Error cudaFuncSetAttribute: %s:%d, error %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err));
+#endif
 
 // Clears the array used on the comparison kernel.
 #define clearRes                                                                                                       \

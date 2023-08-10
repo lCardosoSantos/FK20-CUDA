@@ -1,16 +1,22 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #include "fr.cuh"
 #include "g1.cuh"
 #include "fk20.cuh"
 
-////////////////////////////////////////////////////////////////////////////////
-
-// fk20_msm(): toeplitz_coefficients_fft + xext_fft -> hext_fft
-
-// parameters: 
-// - in  xe_fft    array with dimensions [16][512]
-// - in  tc_fft    array with dimensions [16][512]
-// - out he_fft    array with dimensions [512]
-
+/**
+ * @brief toeplitz_coefficients_fft + xext_fft -> hext_fft
+ * 
+ * Grid must be 1-D, 256 threads per block.
+ * WARN: Calling this function with dynamic shared memory introduces unpredictable behavior.
+ * 
+ * @param[out] he_fft array with dimensions [gridDim.x * 512]
+ * @param[in] tc_fft array with dimensions [gridDim.x * 16][512]
+ * @param[in] xe_fft array with dimensions [16][512]
+ * @return void 
+ */
 __global__ void fk20_msm(g1p_t *he_fft, const fr_t *tc_fft, const g1p_t *xe_fft) {
     if (gridDim.y  !=   1) return;
     if (gridDim.z  !=   1) return;

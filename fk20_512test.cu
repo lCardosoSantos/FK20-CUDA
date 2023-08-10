@@ -21,7 +21,7 @@ extern __managed__ fr_t toeplitz_coefficients_fft[512*16][512];
 extern __managed__ g1p_t hext_fft[512*512];
 extern __managed__ g1p_t h[512*512];
 
-// Testvector output
+// Test vector output
 
 extern __managed__ g1p_t h_fft[512*512];
 
@@ -52,7 +52,7 @@ void fk20_poly2toeplitz_coefficients_512(unsigned rows);
 void fk20_poly2hext_fft_512(unsigned rows);
 void fk20_poly2h_fft_512(unsigned rows);
 void fk20_msmloop_512(unsigned rows);
-void fk20_poly2toeplitz_coefficients_fft_test(unsigned rows);
+//void fk20_poly2toeplitz_coefficients_fft_test(unsigned rows);
 void fullTest_512(unsigned rows);
 void fullTestFalseability_512(unsigned rows);
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     fk20_poly2h_fft_512(rows);
     fullTest_512(rows);
     fullTestFalseability_512(rows);
-    //fk20_poly2toeplitz_coefficients_fft_test(rows); //TODO: Superfluos function?
+    //fk20_poly2toeplitz_coefficients_fft_test(rows); //Deprecated funtion
 
     return 0;
 }
@@ -594,30 +594,30 @@ void fk20_msmloop_512(unsigned rows){
     }
 }
 
-// void fk20_poly2toeplitz_coefficients_fft_test(unsigned rows){
-//     // TODO: Superfluous test?
-//     // Note from u1d4db:    I think we can remove this function, since it is just poly2tc + fr_fft
-//     //                      it is also probably broken with recent code changes.
-//     PTRN_FRTMP;
-//     CLOCKINIT;
-//     cudaError_t err;
-//     bool pass = true;
+#if 0
+    void fk20_poly2toeplitz_coefficients_fft_test(unsigned rows){
+        // Test for deprecated function.
+        PTRN_FRTMP;
+        CLOCKINIT;
+        cudaError_t err;
+        bool pass = true;
 
-//     printf("=== RUN   %s\n", "fk20_poly2toeplitz_coefficients_fft: polynomial -> toeplitz_coefficients_fft");
-//     memset(fr_tmp_, 0xdeadbeef,512*16*512*sizeof(fr_t)); //pattern on tmp dest.
-//     CLOCKSTART;
-//     fk20_poly2toeplitz_coefficients_fft<<<rows, 256>>>(fr_tmp_, polynomial);
-//     err = cudaDeviceSynchronize();
-//     CUDASYNC("fk20_poly2toeplitz_coefficients_fft"); 
-//     CLOCKEND;
-//     clearRes;
-//     fr_eq_wrapper<<<16, 256>>>(cmp, rows*16*512, fr_tmp_, (fr_t *)toeplitz_coefficients_fft);
-//     CUDASYNC("fr_eq_wrapper");
-//     // Check result
+        printf("=== RUN   %s\n", "fk20_poly2toeplitz_coefficients_fft: polynomial -> toeplitz_coefficients_fft");
+        memset(fr_tmp_, 0xdeadbeef,512*16*512*sizeof(fr_t)); //pattern on tmp dest.
+        CLOCKSTART;
+        fk20_poly2toeplitz_coefficients_fft<<<rows, 256>>>(fr_tmp_, polynomial);
+        err = cudaDeviceSynchronize();
+        CUDASYNC("fk20_poly2toeplitz_coefficients_fft"); 
+        CLOCKEND;
+        clearRes;
+        fr_eq_wrapper<<<16, 256>>>(cmp, rows*16*512, fr_tmp_, (fr_t *)toeplitz_coefficients_fft);
+        CUDASYNC("fr_eq_wrapper");
+        // Check result
 
-//     CMPCHECK(rows*16*512);
-//     PRINTPASS(pass);
-// }
+        CMPCHECK(rows*16*512);
+        PRINTPASS(pass);
+    }
+#endif
 
 // Useful for the Falsifiability tests
 // If you are using a variable where i*step == i*step+1, you can end up with a false(false positive).

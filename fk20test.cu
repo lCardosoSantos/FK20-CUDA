@@ -13,14 +13,26 @@ int main() {
     FK20TestFFT();
     FK20TestPoly();
     //FK20TestFFTRand(NULL); 
-    // TODO: Luan's note: This function here hasn't been updated in a while. 
-    // Probably not worth the effort to debug it, since the scope of it is now 
-    // covered by the 512 row tests.
+        // Luan's note: This function here hasn't been updated in a while. 
+        // The scope of it is now covered by the 512 row tests, but can be useful
+        // for debugging future optimizations.
 
     return 0;
 }
 
-//Usefull for the Falsifiability tests
+////////////////////////////////////////////////////////////////////////////////
+//Useful functions for the falsifiability tests
+////////////////////////////////////////////////////////////////////////////////
+
+
+/**
+ * @brief swap elements at positions multiple of step. Nondestructive, call
+ * a second time to undo the changes
+ * 
+ * @param[out] target Pointer to array
+ * @param[in] size length of the array
+ * @param[in] step distance between elements swapped.
+ */
 void varMangle(fr_t *target, size_t size, unsigned step){
     fr_t tmp;
     if (target == NULL || size <= 0 || step <= 0)
@@ -36,6 +48,14 @@ void varMangle(fr_t *target, size_t size, unsigned step){
     
 }
 
+/**
+ * @brief swap elements at positions multiple of step. Nondestructive, call
+ * a second time to undo the changes
+ * 
+ * @param[out] target Pointer to array
+ * @param[in] size length of the array
+ * @param[in] step distance between elements swapped.
+ */
 void varMangle(g1p_t *target, size_t size, unsigned step){
     g1p_t tmp;
     if (target == NULL || size <= 0 || step <= 0)

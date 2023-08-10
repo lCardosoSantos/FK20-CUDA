@@ -19,7 +19,7 @@ static __managed__ g1p_t g1p_tmp[512];
 void FK20TestPoly() {
     printf(">>>> Poly Tests\n");
     fk20_poly2toeplitz_coefficients_test(polynomial, toeplitz_coefficients);
-    //fk20_poly2toeplitz_coefficients_fft_test(polynomial, toeplitz_coefficients_fft); //TODO: Not necessary, check fk20_poly2h_fft.cu
+    //fk20_poly2toeplitz_coefficients_fft_test(polynomial, toeplitz_coefficients_fft); //deprecated
     fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
     fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
     fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
@@ -28,7 +28,7 @@ void FK20TestPoly() {
 
 }
 
-void fullTest() { //TODO: How to do the Falsifiability here?
+void fullTest() { 
     const int rows = 1;
     cudaError_t err;
     bool pass = true;
@@ -117,7 +117,7 @@ void fullTest() { //TODO: How to do the Falsifiability here?
     PRINTPASS(pass);
 }
 
-void fullTestFalsifiability() { //TODO: How to do the Falsifiability here?
+void fullTestFalsifiability() {
     const int rows = 1;
     cudaError_t err;
     bool pass = true;

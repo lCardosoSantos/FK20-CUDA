@@ -1,20 +1,26 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #include "fr.cuh"
 #include "g1.cuh"
 #include "fk20.cuh"
 
 static __device__ fr_t fr_tmp[512*512];     // 16 KiB memory per threadblock
 
-////////////////////////////////////////////////////////////////////////////////
-
-// fk20_poly2hext_fft(): polynomial + xext_fft -> hext_fft
-
-// parameters:
-// - in  xext_fft   array with 16*512 elements, computed using fk20_setup2xext_fft()
-// - in  polynomial array with 16*512*gridDim.x elements
-// - out hext_fft   array with    512*gridDim.x elements
-
-// Note: shared memory is used both in MSM loop and FFTs, without conflict
-
+/**
+ * @brief polynomial + xext_fft -> hext_fft
+ * 
+ * Grid must be 1-D, 256 threads per block.
+ * Dynamic shared memory: fr_sharedmem (16384 Bytes)
+ * shared memory is used both in MSM loop and FFTs, without conflict
+ * 
+ * @param[out] hext_fft   array with dimensions [gridDim.x * 16 * 512]
+ * @param[in]  polynomial array with dimensions [gridDim.x * 16 * 512]
+ * @param[in]  xext_fft   array with dimensions [16 * 512], computed with fk20_setup2xext_fft()
+ * 
+ * @return void 
+ */
 __global__ void fk20_poly2hext_fft(g1p_t *hext_fft, const fr_t *polynomial, const g1p_t xext_fft[8192]) {
 
     // gridDim.x is the number of rows

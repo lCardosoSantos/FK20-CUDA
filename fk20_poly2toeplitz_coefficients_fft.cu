@@ -1,3 +1,7 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #include <stdio.h>
 
 #include "fr.cuh"
@@ -5,15 +9,17 @@
 
 static __device__ fr_t fr_tmp[512*16*512];     // 256 KiB memory per threadblock
 
-////////////////////////////////////////////////////////////////////////////////
-
-// fk20_poly2toeplitz_coefficients_fft(): polynomial -> toeplitz_coefficients_fft
-
-// parameters:
-// - in  polynomial                 array with 16*512*gridDim.x elements
-// - out toeplitz_coefficients_fft  array with 16*512*gridDim.x elements
-// TODO: unecessary function: Remove, replace with poly2tc()+fr_fft()
-
+/**
+ * @brief  polynomial -> toeplitz_coefficients_fft
+ * 
+ * WARN: Usage of this function is deprecated: Instead use fk20_poly2toeplitz_coefficients()
+ * followed by fr_fft(). This function is not covered in the test suit. 
+ * This function remains in the repository for future optimizations.
+ * 
+ * @param[out] toeplitz_coefficients_fft array with 16*512*gridDim.x elements
+ * @param[in] polynomial array with 16*512*gridDim.x elements
+ * @return void 
+ */
 __global__ void fk20_poly2toeplitz_coefficients_fft(fr_t *toeplitz_coefficients_fft, const fr_t *polynomial) {
 
     // gridDim.x is the number of rows

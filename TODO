@@ -4,7 +4,7 @@
 ### Documentation TODO list
 
 Todo list (subtasks removed for clarity)
-Last update: 20230808
+Last update: 20230809
 
 - [ ] Check if parameter order in the functions is consistent. Intel notation mainly
 - [ ] Make FR functions non destructive (might cause side effects)
@@ -12,13 +12,11 @@ Last update: 20230808
   - [ ] change organization of code (adding cmake style subdirs)
 - [ ] Array Syntax: Follow the one from g1p_fft.cu
 - [ ] fp_fft can -> may
-- [ ] doc for module fp
-  - `fp_add.cu fp_add.cuh fp_cpy.cu fp.cu fp.cuh fp_eq.cu fp_inv.cu fp_isone.cu fp_iszero.cu fp_mma.cu fp_mul.cu fp_mul.cuh fp_neg.cu fp_neq.cu fp_nonzero.cu fp_reduce12.cuh fp_reduce6.cu fp_sqr.cu fp_sqr.cuh fp_sub.cu fp_sub.cuh fp_x12.cu fp_x12.cuh fp_x2.cu fp_x2.cuh fp_x3.cu fp_x3.cuh fp_x4.cu fp_x4.cuh fp_x8.cu fp_x8.cuh`
+- [ ] doc for module fk20
+  - `fk20_512test.cu, fk20benchmark.cu, fk20.cu, fk20.cuh, fk20_hext_fft2h_fft.cu, fk20_msm.cu, fk20_poly2hext_fft.cu, fk20_poly2h_fft.cu, fk20_poly2toeplitz_coefficients.cu, fk20_poly2toeplitz_coefficients_fft.cu`
 - [ ] doc for module tests
   - [ ] Change `*_neq to !*_neg`
   - `fr_fft_testvector.cu, frtest_add.cu, frtest_addsub.cu, frtest_cmp.cu, frtest.cu, frtest.cuh, frtest_distributive.cu, frtest_fft.cu, frtest_fibonacci.cu, frtest_kat.cu, frtest_mulconst.cu, frtest_mul.cu, frtest_sub.cu, fptest_add.cu, fptest_cmp.cu, fptest.cu, fptest.cuh, fptest_distributive.cu, fptest_fibonacci.cu, fptest_inv.cu, fptest_kat.cu, fptest_mma.cu, fptest_mulconst.cu, fptest_mul.cu, fptest_sqr.cu, fptest_sub.cu, g1test.cu, g1test.cuh, g1test_dbl.cu, g1test_fft.cu, g1test_fibonacci.cu, g1test_kat.cu`
-- [ ] doc for module fk20
-  - `fk20_512test.cu, fk20benchmark.cu, fk20.cu, fk20.cuh, fk20_hext_fft2h_fft.cu, fk20_msm.cu, fk20_poly2hext_fft.cu, fk20_poly2h_fft.cu, fk20_poly2toeplitz_coefficients.cu, fk20_poly2toeplitz_coefficients_fft.cu`
 - [ ] doc for fk20test
   - `fk20test.cu, fk20test.cuh, fk20test_fft.cu, fk20test_fft_rand.cu, fk20test_kat.cu, fk20test_poly2toeplitz_coefficients.cu, fk20test_poly2toeplitz_coefficients_fft.cu, fk20test_poly.cu, fk20_testvector.cu, fk20_testvector.cuh`
 - [ ] doc for scripts
@@ -27,6 +25,8 @@ Last update: 20230808
   - `fftTest.cu, h.cu, hext_fft.cu, h_fft.cu, polynomial.cu, toeplitz_coefficients.cu, toeplitz_coefficients_fft.cu, xext_fft.cu`
 - [ ] README
 ---------------------------------------------------------------------------------
+- [x] ~~doc for module fp~~ 2020809
+  - `fp_add.cu fp_add.cuh fp_cpy.cu fp.cu fp.cuh fp_eq.cu fp_inv.cu fp_isone.cu fp_iszero.cu fp_mma.cu fp_mul.cu fp_mul.cuh fp_neg.cu fp_neq.cu fp_nonzero.cu fp_reduce12.cuh fp_reduce6.cu fp_sqr.cu fp_sqr.cuh fp_sub.cu fp_sub.cuh fp_x12.cu fp_x12.cuh fp_x2.cu fp_x2.cuh fp_x3.cu fp_x3.cuh fp_x4.cu fp_x4.cuh fp_x8.cu fp_x8.cuh`
 - [x] ~~doc for module g1p~~ 20230807
   - [x] ~~fixes~~ 20230808
   - `g1p_add.cu, g1p_addsub.cu, g1p_compare.cu, g1p.cu, g1p_dbl.cu, g1p_fft.cu, g1p_ispoint.cu, g1p_mul.cu, g1p_neg.cu, g1p_scale.cu, g1p_sub.cu`
@@ -66,12 +66,12 @@ Last update: 20230808
     - [x] [fr_x8.cu](./fr_x8.cu)
     - [x] [fr_x12.cu](./fr_x12.cu)
 
-- [ ] fp
-    - [ ] Change comments where the modulus values are mu mmu0 and mmu1 to pmu, pmmu0, pmmu1
+- [x] fp
+    - [x] Change comments where the modulus values are mu mmu0 and mmu1 to pmu, pmmu0, pmmu1
     - [x] [fp_add.cu](./fp_add.cu)
     - [x] [fp_add.cuh](./fp_add.cuh)
     - [x] [fp_cpy.cu](./fp_cpy.cu)
-    - [ ] [fp.cu](./fp.cu)
+    - [x] [fp.cu](./fp.cu)
     - [x] [fp.cuh](./fp.cuh)
     - [x] [fp_eq.cu](./fp_eq.cu)
     - [x] [fp_inv.cu](./fp_inv.cu)
@@ -148,20 +148,22 @@ Last update: 20230808
     - [ ] [xext_fft.cu](./xext_fft.cu)
 
 - [ ] fk20
-    - [ ] [fk20_512test.cu](./fk20_512test.cu)
-    - [ ] [fk20benchmark.cu](./fk20benchmark.cu)
-    - [ ] [fk20.cu](./fk20.cu)
-    - [ ] [fk20.cuh](./fk20.cuh)
-    - [ ] [fk20_hext_fft2h_fft.cu](./fk20_hext_fft2h_fft.cu)
-    - [ ] [fk20_msm.cu](./fk20_msm.cu)
-    - [ ] [fk20_poly2hext_fft.cu](./fk20_poly2hext_fft.cu)
-    - [ ] [fk20_poly2h_fft.cu](./fk20_poly2h_fft.cu)
-    - [ ] [fk20_poly2toeplitz_coefficients.cu](./fk20_poly2toeplitz_coefficients.cu)
-    - [ ] [fk20_poly2toeplitz_coefficients_fft.cu](./fk20_poly2toeplitz_coefficients_fft.cu)
+    - [x] [fk20.cu](./fk20.cu)
+      - [ ] Add test coverage for fk20_setup2xext_fft
+    - [x] [fk20.cuh](./fk20.cuh)
+      - [x] Move around the cudasync and shared memory defs to fk20.cuh
+    - [x] [fk20_hext_fft2h_fft.cu](./fk20_hext_fft2h_fft.cu)
+    - [x] [fk20_msm.cu](./fk20_msm.cu)
+    - [x] [fk20_poly2hext_fft.cu](./fk20_poly2hext_fft.cu)
+    - [x] [fk20_poly2h_fft.cu](./fk20_poly2h_fft.cu)
+    - [x] [fk20_poly2toeplitz_coefficients.cu](./fk20_poly2toeplitz_coefficients.cu)
+    - [x] [fk20_poly2toeplitz_coefficients_fft.cu](./fk20_poly2toeplitz_coefficients_fft.cu)
     
 - [ ] fk20 test
+    - [ ] [fk20benchmark.cu](./fk20benchmark.cu)
     - [ ] [fk20test.cu](./fk20test.cu)
     - [ ] [fk20test.cuh](./fk20test.cuh)
+    - [ ] [fk20_512test.cu](./fk20_512test.cu)
     - [ ] [fk20test_fft.cu](./fk20test_fft.cu)
     - [ ] [fk20test_fft_rand.cu](./fk20test_fft_rand.cu)
     - [ ] [fk20test_kat.cu](./fk20test_kat.cu)
