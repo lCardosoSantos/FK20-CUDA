@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include <cstring>
 #include <time.h>
@@ -9,7 +10,7 @@
 #include "fk20.cuh"
 #include "fk20test.cuh"
 
-// Testvector inputs
+// Test vector inputs
 
 extern __managed__ g1p_t xext_fft[16][512];
 extern __managed__ fr_t polynomial[512*4096];
@@ -60,9 +61,19 @@ void fullTestFalseability_512(unsigned rows);
 void varMangle(fr_t *target, size_t size, unsigned step);
 void varMangle(g1p_t *target, size_t size, unsigned step);
 
-int main(int argc, char **argv) {
+/******************************************************************************/
 
-    testinit();
+/**
+ * @brief Executes a many-row tests on FK20. Behavior is similar to fk20test.cu
+ * but using many GPU blocks, each one executing one known-answer test. All tests
+ * are different. KATS are statically linked in the binary.
+ * 
+ * @param argc Command line argument cont
+ * @param argv Command line argument values
+ * @return int 0
+ */
+int main(int argc, char **argv) {
+    testinit(); // setup functions here
 
     unsigned rows = 2;
 
@@ -78,32 +89,47 @@ int main(int argc, char **argv) {
     printf("=== RUN test with %d rows\n\n", rows);
 
     // FFT tests
-
     toeplitz_coefficients2toeplitz_coefficients_fft_512(rows);
     h2h_fft_512(rows);
     h_fft2h_512(rows);
     hext_fft2h_512(rows);
-    // hext_fft2h_fft_512(rows); // fails, but components work
+    // hext_fft2h_fft_512(rows); //Deprecated function
 
     // Polynomial tests
-
     fk20_poly2toeplitz_coefficients_512(rows);
     fk20_poly2hext_fft_512(rows);
 
     // MSM test
-
     fk20_msmloop_512(rows);
 
     // Full FK20 tests
-
     fk20_poly2h_fft_512(rows);
     fullTest_512(rows);
     fullTestFalseability_512(rows);
-    //fk20_poly2toeplitz_coefficients_fft_test(rows); //Deprecated funtion
+    //fk20_poly2toeplitz_coefficients_fft_test(rows); //Deprecated function
 
     return 0;
 }
 
+/**
+ * NOTE ON DEPRECATED FUNCTIONS
+ * 
+ * In the main call, some tests are commented out, namely:
+ * -hext_fft2h_fft_512
+ * -fk20_poly2toeplitz_coefficients_fft_test
+ * Those tests are regarding fk20 functions that execute more than one step in
+ * a single kernel. They cover a unimplemented (possible) future optimization.
+ * 
+ */
+/******************************************************************************/
+
+/**
+ * @brief Executes many FK20 computations on a single row, with a check on 
+ * each step. A computation failure will not cause a cascade effect, eliminating
+ * false-fails due to data dependencies.
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void fullTest_512(unsigned rows){
     cudaError_t err;
     bool pass = true;
@@ -198,6 +224,14 @@ void fullTest_512(unsigned rows){
     PRINTPASS(pass);
 }
 
+/**
+ * @brief Similar to fullTest, but polynomial is has changes done to it. The
+ * function checks for false-positive in the tests.
+ * 
+ * polynomial is restored after execution.
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void fullTestFalseability_512(unsigned rows){
     cudaError_t err;
     bool pass = true;
@@ -290,6 +324,17 @@ void fullTestFalseability_512(unsigned rows){
     NEGPRINTPASS(pass);
 }
 
+/*******************************************************************************
+
+The testing functions follow an common template, described in ./doc/fk20test.md
+
+*******************************************************************************/
+
+/**
+ * @brief Test for fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void toeplitz_coefficients2toeplitz_coefficients_fft_512(unsigned rows){
     PTRN_FRTMP;
     cudaError_t err;
@@ -323,6 +368,11 @@ void toeplitz_coefficients2toeplitz_coefficients_fft_512(unsigned rows){
     }
 }
 
+/**
+ * @brief Test for g1p_fft: h -> h_fft"
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void h2h_fft_512(unsigned rows){
     PTRN_G1PTMP;
     cudaError_t err;
@@ -358,6 +408,11 @@ void h2h_fft_512(unsigned rows){
     }
 }
 
+/**
+ * @brief Test for g1p_ift: h_fft -> h
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void h_fft2h_512(unsigned rows){
     PTRN_G1PTMP;
     cudaError_t err;
@@ -394,6 +449,11 @@ void h_fft2h_512(unsigned rows){
     }
 }
 
+/**
+ * @brief Test for g1p_ift: hext_fft -> h
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void hext_fft2h_512(unsigned rows){
     PTRN_G1PTMP;
     cudaError_t err;
@@ -429,6 +489,11 @@ void hext_fft2h_512(unsigned rows){
     }
 }
 
+/**
+ * @brief Test for fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void fk20_poly2toeplitz_coefficients_512(unsigned rows) {
     PTRN_FRTMP;
     cudaError_t err;
@@ -462,6 +527,11 @@ void fk20_poly2toeplitz_coefficients_512(unsigned rows) {
     }
 }
 
+/**
+ * @brief Test for fk20_poly2hext_fft: polynomial -> hext_fft
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void fk20_poly2hext_fft_512(unsigned rows){
     PTRN_G1PTMP;
     cudaError_t err;
@@ -497,6 +567,11 @@ void fk20_poly2hext_fft_512(unsigned rows){
     }
 }
 
+/**
+ * @brief Test for fk20_poly2h_fft: polynomial -> h_fft
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void fk20_poly2h_fft_512(unsigned rows){
     PTRN_G1PTMP; PTRN_FRTMP;
     cudaError_t err;
@@ -529,6 +604,11 @@ void fk20_poly2h_fft_512(unsigned rows){
     }
 }
 
+/**
+ * @brief Test for hext_fft2h_fft_512: hext_fft -> h_fft
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void hext_fft2h_fft_512(unsigned rows){
     PTRN_G1PTMP;
     cudaError_t err;
@@ -562,6 +642,11 @@ void hext_fft2h_fft_512(unsigned rows){
     }
 }
 
+/**
+ * @brief Test for fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft
+ * 
+ * @param rows number of blocks in the range [1,512]
+ */
 void fk20_msmloop_512(unsigned rows){
     CLOCKINIT;
     cudaError_t err;
@@ -594,6 +679,7 @@ void fk20_msmloop_512(unsigned rows){
     }
 }
 
+//Deprecated funtion
 #if 0
     void fk20_poly2toeplitz_coefficients_fft_test(unsigned rows){
         // Test for deprecated function.
@@ -619,12 +705,28 @@ void fk20_msmloop_512(unsigned rows){
     }
 #endif
 
-// Useful for the Falsifiability tests
-// If you are using a variable where i*step == i*step+1, you can end up with a false(false positive).
-// A staggered start helps to mitigate it, but it can happen with a very small probability.
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//           Useful functions for the falsifiability tests                    //
+//                                                                            //
+// Useful for the Falsifiability tests                                        //
+// If you are using a variable where i*step == i*step+1, you can end up with  //
+// a false(false positive).                                                   //
+// A staggered start helps to mitigate it, but it can happen with a very      //
+// small probability.                                                         //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 #define START_INDEX 3
 
+/**
+ * @brief swap elements at positions multiple of step. Nondestructive, call
+ * a second time to undo the changes
+ * 
+ * @param[out] target Pointer to array
+ * @param[in] size length of the array
+ * @param[in] step distance between elements swapped.
+ */
 void varMangle(fr_t *target, size_t size, unsigned step){
     fr_t tmp;
     if (target == NULL || size <= 0 || step <= 0)
@@ -639,6 +741,14 @@ void varMangle(fr_t *target, size_t size, unsigned step){
     }
 }
 
+/**
+ * @brief swap elements at positions multiple of step. Nondestructive, call
+ * a second time to undo the changes
+ * 
+ * @param[out] target Pointer to array
+ * @param[in] size length of the array
+ * @param[in] step distance between elements swapped.
+ */
 void varMangle(g1p_t *target, size_t size, unsigned step){
     g1p_t tmp;
     if (target == NULL || size <= 0 || step <= 0)
@@ -653,4 +763,5 @@ void varMangle(g1p_t *target, size_t size, unsigned step){
     }
 }
 
+#undef START_INDEX
 // vim: ts=4 et sw=4 si

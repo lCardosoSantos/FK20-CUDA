@@ -12,19 +12,22 @@ Last update: 20230809
   - [ ] change organization of code (adding cmake style subdirs)
 - [ ] Array Syntax: Follow the one from g1p_fft.cu
 - [ ] fp_fft can -> may
-- [ ] doc for module fk20
-  - `fk20_512test.cu, fk20benchmark.cu, fk20.cu, fk20.cuh, fk20_hext_fft2h_fft.cu, fk20_msm.cu, fk20_poly2hext_fft.cu, fk20_poly2h_fft.cu, fk20_poly2toeplitz_coefficients.cu, fk20_poly2toeplitz_coefficients_fft.cu`
+- [ ] Add test coverage for fk20_setup2xext_fft
+- [ ] Change `*_neq to !*_neg`
 - [ ] doc for module tests
-  - [ ] Change `*_neq to !*_neg`
   - `fr_fft_testvector.cu, frtest_add.cu, frtest_addsub.cu, frtest_cmp.cu, frtest.cu, frtest.cuh, frtest_distributive.cu, frtest_fft.cu, frtest_fibonacci.cu, frtest_kat.cu, frtest_mulconst.cu, frtest_mul.cu, frtest_sub.cu, fptest_add.cu, fptest_cmp.cu, fptest.cu, fptest.cuh, fptest_distributive.cu, fptest_fibonacci.cu, fptest_inv.cu, fptest_kat.cu, fptest_mma.cu, fptest_mulconst.cu, fptest_mul.cu, fptest_sqr.cu, fptest_sub.cu, g1test.cu, g1test.cuh, g1test_dbl.cu, g1test_fft.cu, g1test_fibonacci.cu, g1test_kat.cu`
-- [ ] doc for fk20test
-  - `fk20test.cu, fk20test.cuh, fk20test_fft.cu, fk20test_fft_rand.cu, fk20test_kat.cu, fk20test_poly2toeplitz_coefficients.cu, fk20test_poly2toeplitz_coefficients_fft.cu, fk20test_poly.cu, fk20_testvector.cu, fk20_testvector.cuh`
 - [ ] doc for scripts
   - `512.sh, FFTTest.sh, hext_fft.sh, h_fft.sh, h.sh, polynomial.sh, toeplitz_coefficients_fft.sh, toeplitz_coefficients.sh`
 - [ ] doc for other files
   - `fftTest.cu, h.cu, hext_fft.cu, h_fft.cu, polynomial.cu, toeplitz_coefficients.cu, toeplitz_coefficients_fft.cu, xext_fft.cu`
 - [ ] README
+  - [ ] fk20test.md
+
 ---------------------------------------------------------------------------------
+- [x] ~~doc for fk20test~~ 20230815  
+  - `fk20test.cu, fk20test.cuh, fk20test_fft.cu, fk20test_fft_rand.cu, fk20test_kat.cu, fk20test_poly2toeplitz_coefficients.cu, fk20test_poly2toeplitz_coefficients_fft.cu, fk20test_poly.cu, fk20_testvector.cu, fk20_testvector.cuh`
+- [x] ~~doc for module fk20~~ 20200810
+  - `fk20_512test.cu, fk20benchmark.cu, fk20.cu, fk20.cuh, fk20_hext_fft2h_fft.cu, fk20_msm.cu, fk20_poly2hext_fft.cu, fk20_poly2h_fft.cu, fk20_poly2toeplitz_coefficients.cu, fk20_poly2toeplitz_coefficients_fft.cu`
 - [x] ~~doc for module fp~~ 2020809
   - `fp_add.cu fp_add.cuh fp_cpy.cu fp.cu fp.cuh fp_eq.cu fp_inv.cu fp_isone.cu fp_iszero.cu fp_mma.cu fp_mul.cu fp_mul.cuh fp_neg.cu fp_neq.cu fp_nonzero.cu fp_reduce12.cuh fp_reduce6.cu fp_sqr.cu fp_sqr.cuh fp_sub.cu fp_sub.cuh fp_x12.cu fp_x12.cuh fp_x2.cu fp_x2.cuh fp_x3.cu fp_x3.cuh fp_x4.cu fp_x4.cuh fp_x8.cu fp_x8.cuh`
 - [x] ~~doc for module g1p~~ 20230807
@@ -102,7 +105,7 @@ Last update: 20230809
     - [x] [fp_x12.cu](./fp_x12.cu)
     - [x] [fp_x12.cuh](./fp_x12.cuh)
 
-- [ ] Tests
+- [ ] Tests target monday
     - [ ] Change `*_neq to !*_neg`
     - [ ] [fr_fft_testvector.cu](./fr_fft_testvector.cu)
     - [ ] [frtest_add.cu](./frtest_add.cu)
@@ -137,7 +140,7 @@ Last update: 20230809
     - [ ] [g1test_fibonacci.cu](./g1test_fibonacci.cu)
     - [ ] [g1test_kat.cu](./g1test_kat.cu)
 
-- [ ] misc
+- [ ] misc target tuesday
     - [ ] [fftTest.cu](./fftTest.cu)
     - [ ] [h.cu](./h.cu)
     - [ ] [hext_fft.cu](./hext_fft.cu)
@@ -147,9 +150,19 @@ Last update: 20230809
     - [ ] [toeplitz_coefficients_fft.cu](./toeplitz_coefficients_fft.cu)
     - [ ] [xext_fft.cu](./xext_fft.cu)
 
-- [ ] fk20
+- [ ] Bash scripts tuesday
+    - [ ] [512.sh](./512.sh)
+    - [ ] [FFTTest.sh](./FFTTest.sh)
+    - [ ] [hext_fft.sh](./hext_fft.sh)
+    - [ ] [h_fft.sh](./h_fft.sh)
+    - [ ] [h.sh](./h.sh)
+    - [ ] [polynomial.sh](./polynomial.sh)
+    - [ ] [toeplitz_coefficients_fft.sh](./toeplitz_coefficients_fft.sh)
+    - [ ] [toeplitz_coefficients.sh](./toeplitz_coefficients.sh)
+  
+- [x] fk20
     - [x] [fk20.cu](./fk20.cu)
-      - [ ] Add test coverage for fk20_setup2xext_fft
+      - [x] Add test coverage for fk20_setup2xext_fft
     - [x] [fk20.cuh](./fk20.cuh)
       - [x] Move around the cudasync and shared memory defs to fk20.cuh
     - [x] [fk20_hext_fft2h_fft.cu](./fk20_hext_fft2h_fft.cu)
@@ -159,19 +172,20 @@ Last update: 20230809
     - [x] [fk20_poly2toeplitz_coefficients.cu](./fk20_poly2toeplitz_coefficients.cu)
     - [x] [fk20_poly2toeplitz_coefficients_fft.cu](./fk20_poly2toeplitz_coefficients_fft.cu)
     
-- [ ] fk20 test
-    - [ ] [fk20benchmark.cu](./fk20benchmark.cu)
-    - [ ] [fk20test.cu](./fk20test.cu)
-    - [ ] [fk20test.cuh](./fk20test.cuh)
-    - [ ] [fk20_512test.cu](./fk20_512test.cu)
-    - [ ] [fk20test_fft.cu](./fk20test_fft.cu)
-    - [ ] [fk20test_fft_rand.cu](./fk20test_fft_rand.cu)
-    - [ ] [fk20test_kat.cu](./fk20test_kat.cu)
-    - [ ] [fk20test_poly2toeplitz_coefficients.cu](./fk20test_poly2toeplitz_coefficients.cu)
-    - [ ] [fk20test_poly2toeplitz_coefficients_fft.cu](./fk20test_poly2toeplitz_coefficients_fft.cu)
-    - [ ] [fk20test_poly.cu](./fk20test_poly.cu)
-    - [ ] [fk20_testvector.cu](./fk20_testvector.cu)
-    - [ ] [fk20_testvector.cuh](./fk20_testvector.cuh)
+- [x] fk20 test target friday
+    - [x] [fk20benchmark.cu](./fk20benchmark.cu)
+    - [x] [fk20test.cu](./fk20test.cu)
+    - [x] [fk20test.cuh](./fk20test.cuh)
+    - [x] [test.h](./test.h)
+    - [x] [fk20test_fft.cu](./fk20test_fft.cu)
+    - [x] [fk20test_poly.cu](./fk20test_poly.cu)
+    - [x] [fk20test_fft_rand.cu](./fk20test_fft_rand.cu)
+    - [x] [fk20test_kat.cu](./fk20test_kat.cu)
+    - [x] [fk20_512test.cu](./fk20_512test.cu)
+    - [x] [fk20test_poly2toeplitz_coefficients.cu](./fk20test_poly2toeplitz_coefficients.cu)
+    - [x] [fk20test_poly2toeplitz_coefficients_fft.cu](./fk20test_poly2toeplitz_coefficients_fft.cu)
+    - [x] [fk20_testvector.cu](./fk20_testvector.cu)
+    - [x] [fk20_testvector.cuh](./fk20_testvector.cuh)
     
 - [x] g1p files
     - [x] [g1a.cu](./g1a.cu)
@@ -187,16 +201,7 @@ Last update: 20230809
     - [x] [g1p_scale.cu](./g1p_scale.cu)
     - [x] [g1p_sub.cu](./g1p_sub.cu)
 
-- [ ] Bash scripts
-    - [ ] [512.sh](./512.sh)
-    - [ ] [FFTTest.sh](./FFTTest.sh)
-    - [ ] [hext_fft.sh](./hext_fft.sh)
-    - [ ] [h_fft.sh](./h_fft.sh)
-    - [ ] [h.sh](./h.sh)
-    - [ ] [polynomial.sh](./polynomial.sh)
-    - [ ] [toeplitz_coefficients_fft.sh](./toeplitz_coefficients_fft.sh)
-    - [ ] [toeplitz_coefficients.sh](./toeplitz_coefficients.sh)
-  
+
 
 
 ## Luan's todolist

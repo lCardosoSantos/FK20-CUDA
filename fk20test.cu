@@ -21,9 +21,8 @@ int main() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//Useful functions for the falsifiability tests
+//           Useful functions for the falsifiability tests                    //
 ////////////////////////////////////////////////////////////////////////////////
-
 
 /**
  * @brief swap elements at positions multiple of step. Nondestructive, call

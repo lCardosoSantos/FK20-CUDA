@@ -1,4 +1,9 @@
 // bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
+#warn "Functionality of this file has been replaced by fk20_512."
+
 #include <stdio.h>
 #include <unistd.h>
 
@@ -11,6 +16,7 @@
 //static __managed__ fr_t fr_tmp[16*512];
 //static __managed__ g1p_t g1p_tmp[512];
 
+//Global correct answers, read from the instrumented fk20 python implementation
 static  __managed__ size_t elementsRead;
 static  __managed__ fr_t  polynomial[4096];
 static  __managed__ g1p_t setup[4097];

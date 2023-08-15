@@ -1,5 +1,7 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 
 #include <stdio.h>
 #include <time.h>
@@ -14,25 +16,36 @@ static __managed__ uint8_t cmp[16*512];
 static __managed__ fr_t fr_tmp[16*512];
 static __managed__ g1p_t g1p_tmp[512];
 
-
-
+/**
+ * Executes the tests if the subfunctions that either execute more than one step,
+ * or that execute an operation other than (i)FFT
+ * 
+ */
 void FK20TestPoly() {
     printf(">>>> Poly Tests\n");
+    //fk20_setup2xext_fft_test(setup, xext_fft); //deprecated
     fk20_poly2toeplitz_coefficients_test(polynomial, toeplitz_coefficients);
     //fk20_poly2toeplitz_coefficients_fft_test(polynomial, toeplitz_coefficients_fft); //deprecated
     fk20_poly2hext_fft_test(polynomial, xext_fft, hext_fft);
     fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
     fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
+
     fullTest(); 
     fullTestFalsifiability();
 
 }
 
+/**
+ * Executes a full FK20 computation on a single row. Checking each step. 
+ * A computation failure will not cause a cascade effect, eliminating 
+ * false-failures due to data dependencies.
+ * 
+ */
 void fullTest() { 
     const int rows = 1;
     cudaError_t err;
     bool pass = true;
-    CLOCKINIT;
+    CLOCKINIT; //Initializes the time variables
 
     // Setup
 
@@ -41,14 +54,14 @@ void fullTest() {
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
     // polynomial -> tc
-
+    // all steps follow the same format
     printf("\n>>>>Full integration test\n"); fflush(stdout);
     printf("polynomial -> tc\n"); fflush(stdout);
 
-    CLOCKSTART;
+    CLOCKSTART; //starts a basic timer
     fk20_poly2toeplitz_coefficients<<<rows, 256>>>(fr_tmp, polynomial);
-    CUDASYNC("fk20_poly2toeplitz_coefficients"); 
-    CLOCKEND;
+    CUDASYNC("fk20_poly2toeplitz_coefficients"); //ensures the GPU has finished the computation, and check for errors
+    CLOCKEND; //reports time
 
     clearRes;
     fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients);
@@ -117,6 +130,13 @@ void fullTest() {
     PRINTPASS(pass);
 }
 
+/**
+ * Similar to fullTest, but polynomial is has a few values changed. The function
+ * checks for false-positives in the tests.
+ * 
+ * polynomial is restored after execution.
+ * 
+ */
 void fullTestFalsifiability() {
     const int rows = 1;
     cudaError_t err;
@@ -129,7 +149,7 @@ void fullTestFalsifiability() {
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
-    varMangle((fr_t*)polynomial, 4096, 512);
+    varMangle((fr_t*)polynomial, 4096, 512); //non destructively changes polynomial
 
     printf("\n>>>>Full integration test\n"); fflush(stdout);
 
@@ -212,9 +232,22 @@ void fullTestFalsifiability() {
     NEGCMPCHECK(512);
     NEGPRINTPASS(pass);
 
-    varMangle((fr_t*)polynomial, 4096, 512); //unmangle
+    varMangle((fr_t*)polynomial, 4096, 512); //restore polynomial
 }
 
+/*******************************************************************************
+
+The testing functions follow an common template, described in ./doc/fk20test.md
+
+*******************************************************************************/
+
+
+/**
+ * @brief Test for fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients
+ * 
+ * @param[in] polynomial_l 
+ * @param[in] toeplitz_coefficients_l 
+ */
 void fk20_poly2toeplitz_coefficients_test(fr_t polynomial_l[4096], fr_t toeplitz_coefficients_l[16][512]){
     cudaError_t err;
     bool pass = true;
@@ -249,6 +282,13 @@ void fk20_poly2toeplitz_coefficients_test(fr_t polynomial_l[4096], fr_t toeplitz
     }
 }
 
+/**
+ * @brief Test for fk20_poly2hext_fft: polynomial -> hext_fft
+ * 
+ * @param[in] polynomial_l 
+ * @param[in] xext_fft_l 
+ * @param[in] hext_fft_l 
+ */
 void fk20_poly2hext_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1p_t hext_fft_l[512]){
     cudaError_t err;
     CLOCKINIT;
@@ -282,6 +322,13 @@ void fk20_poly2hext_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512],
     }
 }
 
+/**
+ * @brief Test for fk20_poly2h_fft: polynomial -> h_fft 
+ * 
+ * @param[in] polynomial_l 
+ * @param[in] xext_fft_l 
+ * @param[in] h_fft_l 
+ */
 void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1p_t h_fft_l[512]){
     cudaError_t err;
     CLOCKINIT;
@@ -315,6 +362,13 @@ void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1
     }
 }
 
+/**
+ * @brief Test for fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft
+ * 
+ * @param hext_fft_l 
+ * @param toeplitz_coefficients_fft_l 
+ * @param xext_fft_l 
+ */
 void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][512], 
                   g1p_t xext_fft_l[16][512]){
     cudaError_t err;
@@ -346,6 +400,45 @@ void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][51
             varMangle(hext_fft_l, 512, 64);
         }
 }
+
+//Deprecated function
+/*
+void fk20_setup2xext_fft_test(g1p_t setup_l[4097], g1p_t xext_fft_l[16][512]){
+    cudaError_t err;
+    bool pass = true;
+    g1p_t g1ptmp[16*512];
+
+    CLOCKINIT;
+    
+    printf("=== RUN   %s\n", "fk20_setup2xext_fft: setup -> xext_fft");
+    memset(g1ptmp, 0xAA, 16*512*sizeof(g1p_t)); //pattern on tmp dest.
+    SET_SHAREDMEM(g1p_sharedmem, fk20_setup2xext_fft)
+    for(int testIDX=0; testIDX<=1; testIDX++){
+
+        CLOCKSTART;
+        fk20_setup2xext_fft<<<16, 256, g1p_sharedmem>>>(g1ptmp, setup);
+
+        CUDASYNC("fk20_setup2xext_fft");
+        CLOCKEND;
+
+        clearRes;
+        g1p_eq_wrapper<<<256, 32>>>(cmp, 16*512, g1ptmp, (g1p_t*)xext_fft);
+        CUDASYNC("g1p_eq_wrapper");
+
+        // Check result
+        if (testIDX == 0){
+            CMPCHECK(16 * 512)
+            PRINTPASS(pass);
+            }
+        else{
+            NEGCMPCHECK(16*512);
+            NEGPRINTPASS(pass);
+        }
+        
+        varMangle((g1p_t*)xext_fft_l, 4096, 512);
+    }
+}
+*/
 
 //Deprecated function
 /*

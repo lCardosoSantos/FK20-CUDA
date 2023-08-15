@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "fk20.cuh"
@@ -18,6 +19,19 @@ extern __managed__ fr_t toeplitz_coefficients_fft[512*16][512];
 static __managed__ uint8_t cmp[512*16*512];
 static __managed__ fr_t fr_tmp[512*16*512];
 
+/**
+ * @brief Tests only fk20_poly2toeplitz_coefficients_fft, five successive times.
+ * This testing is to catch a condition in which uninitialized memory caused a false
+ * positive. 
+ * 
+ * DEPRECATED: This test is covered by fk20_512test.cu
+ * DEPRECATED: fk20_poly2toeplitz_coefficients_fft has the fft part moved to a
+ * separated kernel
+ * 
+ * @param argc Command line argument cont
+ * @param argv Command line argument values
+ * @return int 0
+ */
 int main(int argc, char **argv) {
 
     testinit();

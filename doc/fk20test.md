@@ -7,7 +7,7 @@
 Testing of FK20* functions
 ===============================================================================
 
-This file document some characteristics of the test of fk20* functions.
+This file document some characteristics of the tests of fk20* functions.
 
 ## FK20 Test
 <!--- TODO: Write introduction ---> 
@@ -21,6 +21,7 @@ void input2output($type_t  $input[$x][$y], $type_t $output[$v][$w]) {
     bool pass = true;
     CLOCKINIT; //Macro to initialize code variables
 
+    SET_SHAREDMEM($sharedmem, $functionName); //Not all functions need it.
     printf("=== RUN   %s\n", "functionName: $input -> $output");
     memset($res, 0xAA, $v * $w * sizeof($type_t)); 
     for(int testIDX=0; testIDX<=1; testIDX++){
@@ -64,7 +65,7 @@ with the following metavariables:
 
 The main parts of the test function are:
 
-### False positive mitigations
+### False positive mitigation
 ```C
     memset($res, 0xAA, $v * $w * sizeof($type_t)); 
 ```
@@ -78,6 +79,14 @@ This initializes the array where the test function will write to with the bit pa
     }
 ```
 The tests are executed twice, with the second one expecting a failure. This is helped by the function `varMangle` which non destructively changes the input array. A second call to it resets the array back to it's correct state.
+
+## Dynamic shared memory
+```C
+SET_SHAREDMEM($sharedmem, $functionName);
+```
+
+Some of the functions used in the FK20 computation use shared memory. While the ammount of shared memory allocated to those functions is constant, due to a limitation of CUDA it cannot be statically allocated. The same limitation also makes it necessary to set a proper CUDA function attribute. `SET_SHAREDMEM` is a macro that uses the proper `cudaFuncSetAttribute` call and check for any errors resulting fromm it. 
+The sizes of shared memory are defined in `fk20.cuh`.
 
 ### Testing
 

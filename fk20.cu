@@ -25,7 +25,7 @@
  * @return void 
  */
 __global__ void fk20_setup2xext_fft(g1p_t *xext_fft, const g1p_t *setup) {
-    //TODO: NO TEST COVERAGE!
+    //TODO: Not passing test, probably bad block indexing
     if (gridDim.x  !=  16) return;
     if (gridDim.y  !=   1) return;
     if (gridDim.z  !=   1) return;

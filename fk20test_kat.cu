@@ -1,3 +1,11 @@
+/**
+ * Old version of the test, superseded by fk20test.cu
+ * 
+ * TODO: Marked for deletion
+ */
+
+#error "This file should not be used, use fk20test.cu instead"
+
 // bls12_381: Arithmetic for BLS12-381
 // Copyright 2022 Dag Arne Osvik
 
