@@ -4,7 +4,7 @@
 ### Documentation TODO list
 
 Todo list (subtasks removed for clarity)
-Last update: 20230809
+Last update: 20230815 
 
 - [ ] Check if parameter order in the functions is consistent. Intel notation mainly
 - [ ] Make FR functions non destructive (might cause side effects)
@@ -105,21 +105,37 @@ Last update: 20230809
     - [x] [fp_x12.cu](./fp_x12.cu)
     - [x] [fp_x12.cuh](./fp_x12.cuh)
 
+- [x] g1p files
+    - [x] [g1a.cu](./g1a.cu)
+    - [x] [g1p_add.cu](./g1p_add.cu)
+    - [x] [g1p_addsub.cu](./g1p_addsub.cu)
+    - [x] [g1p_compare.cu](./g1p_compare.cu)
+    - [x] [g1p.cu](./g1p.cu)
+    - [x] [g1p_dbl.cu](./g1p_dbl.cu)
+    - [x] [g1p_fft.cu](./g1p_fft.cu)
+    - [x] [g1p_ispoint.cu](./g1p_ispoint.cu)
+    - [x] [g1p_mul.cu](./g1p_mul.cu)
+    - [x] [g1p_neg.cu](./g1p_neg.cu)
+    - [x] [g1p_scale.cu](./g1p_scale.cu)
+    - [x] [g1p_sub.cu](./g1p_sub.cu)
+  
+
 - [ ] Tests target monday
     - [ ] Change `*_neq to !*_neg`
-    - [ ] [fr_fft_testvector.cu](./fr_fft_testvector.cu)
-    - [ ] [frtest_add.cu](./frtest_add.cu)
-    - [ ] [frtest_addsub.cu](./frtest_addsub.cu)
-    - [ ] [frtest_cmp.cu](./frtest_cmp.cu)
-    - [ ] [frtest.cu](./frtest.cu)
-    - [ ] [frtest.cuh](./frtest.cuh)
-    - [ ] [frtest_distributive.cu](./frtest_distributive.cu)
-    - [ ] [frtest_fft.cu](./frtest_fft.cu)
-    - [ ] [frtest_fibonacci.cu](./frtest_fibonacci.cu)
-    - [ ] [frtest_kat.cu](./frtest_kat.cu)
-    - [ ] [frtest_mulconst.cu](./frtest_mulconst.cu)
-    - [ ] [frtest_mul.cu](./frtest_mul.cu)
+    - [x] [fr_fft_testvector.cu](./fr_fft_testvector.cu)
+    - [x] [frtest_add.cu](./frtest_add.cu)
+    - [x] [frtest_addsub.cu](./frtest_addsub.cu)
+    - [x] [frtest_cmp.cu](./frtest_cmp.cu)
+    - [x] [frtest.cu](./frtest.cu)
+    - [x] [frtest.cuh](./frtest.cuh)
+    - [x] [frtest_distributive.cu](./frtest_distributive.cu)
+    - [x] [frtest_fft.cu](./frtest_fft.cu)
+    - [x] [frtest_fibonacci.cu](./frtest_fibonacci.cu)
+    - [x] [frtest_kat.cu](./frtest_kat.cu)
+    - [x] [frtest_mulconst.cu](./frtest_mulconst.cu)
+    - [x] [frtest_mul.cu](./frtest_mul.cu)
     - [ ] [frtest_sub.cu](./frtest_sub.cu)
+    - [ ] 
     - [ ] [fptest_add.cu](./fptest_add.cu)
     - [ ] [fptest_cmp.cu](./fptest_cmp.cu)
     - [ ] [fptest.cu](./fptest.cu)
@@ -186,20 +202,7 @@ Last update: 20230809
     - [x] [fk20test_poly2toeplitz_coefficients_fft.cu](./fk20test_poly2toeplitz_coefficients_fft.cu)
     - [x] [fk20_testvector.cu](./fk20_testvector.cu)
     - [x] [fk20_testvector.cuh](./fk20_testvector.cuh)
-    
-- [x] g1p files
-    - [x] [g1a.cu](./g1a.cu)
-    - [x] [g1p_add.cu](./g1p_add.cu)
-    - [x] [g1p_addsub.cu](./g1p_addsub.cu)
-    - [x] [g1p_compare.cu](./g1p_compare.cu)
-    - [x] [g1p.cu](./g1p.cu)
-    - [x] [g1p_dbl.cu](./g1p_dbl.cu)
-    - [x] [g1p_fft.cu](./g1p_fft.cu)
-    - [x] [g1p_ispoint.cu](./g1p_ispoint.cu)
-    - [x] [g1p_mul.cu](./g1p_mul.cu)
-    - [x] [g1p_neg.cu](./g1p_neg.cu)
-    - [x] [g1p_scale.cu](./g1p_scale.cu)
-    - [x] [g1p_sub.cu](./g1p_sub.cu)
+ 
 
 
 

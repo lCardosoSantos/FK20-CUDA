@@ -1,3 +1,12 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
+/**
+ * @brief test vector for fr_fft
+ *  
+ * a=fft(q)
+ */
 static __managed__ fr_t
 q[512] = {
 	{ 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000, }, // 0

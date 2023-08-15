@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #ifndef FR_TEST_CUH
 #define FR_TEST_CUH
@@ -20,6 +21,7 @@ typedef fr_t testval_t;
 
 void FrTestFFT();
 
+//shortcut for kernel declaration
 #define TESTFUN(X) extern __global__ void X(testval_t *testval)
 
 TESTFUN(FrTestKAT);

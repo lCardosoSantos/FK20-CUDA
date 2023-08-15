@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "frtest.cuh"
@@ -9,6 +10,10 @@
 __managed__ fr_t fft[512];
 __managed__ uint8_t cmp[512];
 
+/**
+ * @brief Tests fft and inverse fft over Fr using KAT
+ * 
+ */
 void FrTestFFT() {
 
     const size_t sharedmem = 512*4*8;   // 512 residues, 4 words/residue, 8 bytes/word

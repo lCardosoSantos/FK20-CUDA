@@ -1,9 +1,17 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "frtest.cuh"
 
+/**
+ * @brief tests using KAT for:
+ * fr_cpy, fr_reduce4, fr_eq, fr_neq, fr_neg, fr_x2, fr_x3, fr_add, fr_sub,fr_sqr
+ * fr_mul, fr_inv.
+ * 
+ * @return void 
+ */
 __global__ void FrTestKAT(testval_t *) {
 
     printf("=== RUN   %s\n", __func__);

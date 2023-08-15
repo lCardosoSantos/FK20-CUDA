@@ -1,11 +1,17 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "frtest.cuh"
 
-// x == y-(y-x)
+/**
+ * @brief Test of subtraction
+ * x == y-(y-x)
 
+ * @param testval 
+ * @return __global__ 
+ */
 __global__ void FrTestSub(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

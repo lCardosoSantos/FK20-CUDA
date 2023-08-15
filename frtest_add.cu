@@ -1,11 +1,18 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "frtest.cuh"
 
-// x+y == y+x
-
+/**
+ * @brief Test the cumulative property of addition
+ * 
+ * x+y == y+x
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FrTestCommutativeAdd(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -40,8 +47,14 @@ __global__ void FrTestCommutativeAdd(testval_t *testval) {
     PRINTPASS(pass);
 }
 
-// (x+y)+z == x+(y+z)
-
+/**
+ * @brief Test the associative property of addition
+ * 
+ * (x+y)+z == x+(y+z)
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FrTestAssociativeAdd(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

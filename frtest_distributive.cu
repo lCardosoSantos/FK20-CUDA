@@ -1,11 +1,19 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "frtest.cuh"
 
-// a(b+c) = ab+ac
 
+/**
+ * @brief Check the distributive property (left of addition):
+ * 
+ * a(b+c) = ab+ac
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FrTestAddDistributiveLeft(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -55,8 +63,14 @@ __global__ void FrTestAddDistributiveLeft(testval_t *testval) {
     PRINTPASS(pass);
 }
 
-// (a+b)c = ac+bc
-
+/**
+ * @brief Check the distributive property (right of addition):
+ * 
+ * (a+b)c = ac+bc
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FrTestAddDistributiveRight(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -105,8 +119,15 @@ __global__ void FrTestAddDistributiveRight(testval_t *testval) {
     printf("--- %s: %s\n", pass ? "PASS" : "FAIL", __func__);
 }
 
-// a(b-c) = ab-ac
 
+/**
+ * @brief Check the distributive property (left of subtraction):
+ * 
+ * a(b-c) = ab-ac
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FrTestSubDistributiveLeft(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -158,6 +179,14 @@ __global__ void FrTestSubDistributiveLeft(testval_t *testval) {
 
 // (a-b)c = ac-bc
 
+/**
+ * @brief Check the distributive property (right of subtraction):
+ * 
+ * (a-b)c = ac-bc
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FrTestSubDistributiveRight(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

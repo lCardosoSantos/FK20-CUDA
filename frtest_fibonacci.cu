@@ -1,11 +1,18 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "frtest.cuh"
 
 #define ITERATIONS 100000
 
+/**
+ * @brief Test addition and subtraction in Fr using a fibonacci sequence (chain
+ * dependency) from 1 to ITERATIONS and back
+ * 
+ * @return __global__ 
+ */
 __global__ void FrTestFibonacci(testval_t *) {
 
     printf("=== RUN   %s\n", __func__);

@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "frtest.cuh"
@@ -8,6 +9,10 @@ __managed__ testval_t testval[TESTVALS];
 
 ////////////////////////////////////////////////////////////
 
+/**
+ * @brief initialize test values
+ * 
+ */
 void init() {
 
     testinit();
@@ -68,7 +73,7 @@ void init() {
 }
 
 ////////////////////////////////////////////////////////////
-
+//Shorthand for testing a function, with an error check and timer
 #define TEST(X) \
     start = clock(); \
     X <<<1,block>>> (&testval[0]); \
@@ -79,6 +84,13 @@ void init() {
 
 ////////////////////////////////////////////////////////////
 
+/**
+ * @brief Self test of the functions over Fr
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
 int main(int argc, char **argv) {
     clock_t start, end;
     cudaError_t err;

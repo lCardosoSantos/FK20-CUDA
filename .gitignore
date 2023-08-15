@@ -2,6 +2,22 @@
 test/
 *.out
 *.7z
+.vscode/
+.clang-format
+.vscode_old/
+Doxyfile
+FK20Py/consumer
+FK20Py/consumer.c
+FK20Py/data
+FK20Py/datar
+FK20Py/scratchpad.py
+FK20Py/toeplitz_tmp.py
+fk20benchmark
+fk20test_poly2toeplitz_coefficients_fft
+gdb.in
+poly.txt
+scratchpad.py
+xext.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

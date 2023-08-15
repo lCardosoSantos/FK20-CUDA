@@ -1,11 +1,23 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fr.cuh"
 #include "frtest.cuh"
 
 #define ITER 5
 
+/**
+ * @brief Test for the fr_addsub kernel.
+ * 
+ * Tests using the following properties:
+ * 
+ * f(x,y) = (x+y,x-y)
+ * f(f(x,y)) = (2x, 2y)
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FrTestAddSub(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
