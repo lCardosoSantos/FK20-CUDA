@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include <stdio.h>
 
@@ -37,6 +38,23 @@ __managed__ g1p_t
         { 0x1bb5a6833e3677ae, 0xf3d50cd096cd2ceb, 0xa1d2c3cbc5527a6e, 0x60613c9426b3b9a1, 0xee0f3f71173f041c, 0x139ca4dd9f299816, }, // 0x139ca4dd9f299816ee0f3f71173f041c60613c9426b3b9a1a1d2c3cbc5527a6ef3d50cd096cd2ceb1bb5a6833e3677ae
     };
 
+/**
+ * @brief Test operation over G1 using KAT and self consistency:
+ * 
+ * inf==inf
+ * inf+inf == inf
+ * G+0 == 0+G == G
+ * G+G == 2*G
+ * 2*G == 2*G with KAT
+ * G+2*G == 3*G with KAT
+ * 2*2*2*3G == 24G with KAT
+ * 24G-2G+3G == 25G with KAT
+ * 25*G == 25G with KAT
+ * addsub(2G, G) == 3G, G with KAT
+ * addsub(G, G) = (2G, 2G) (dbl and add)
+ * 
+ * @return __global__ 
+ */
 __global__ void G1TestKAT(testval_t *) {
 
     printf("=== RUN   %s\n", __func__);

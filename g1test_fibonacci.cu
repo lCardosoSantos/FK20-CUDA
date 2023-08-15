@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include <stdio.h>
 
@@ -7,6 +8,12 @@
 #include "fr.cuh"
 #include "g1test.cuh"
 
+/**
+ * @brief Test addition and multiplication using a fibonacci sequence (cascading
+ * data dependency)
+ * 
+ * @return void 
+ */
 __global__ void G1TestFibonacci(testval_t *) {
 
     if ((blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) == 0)

@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #ifndef G1_TEST_CUH
 #define G1_TEST_CUH
@@ -13,6 +14,7 @@ typedef struct {
     uint64_t val[22];
 } testval_t;
 
+//shortcut for kernel declaration
 #define TESTFUN(X) extern __global__ void X(testval_t *testval)
 
 TESTFUN(G1TestKAT);

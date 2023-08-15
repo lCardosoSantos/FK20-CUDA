@@ -135,7 +135,7 @@ Last update: 20230815
     - [x] [frtest_mulconst.cu](./frtest_mulconst.cu)
     - [x] [frtest_mul.cu](./frtest_mul.cu)
     - [ ] [frtest_sub.cu](./frtest_sub.cu)
-    - [ ] 
+
     - [ ] [fptest_add.cu](./fptest_add.cu)
     - [ ] [fptest_cmp.cu](./fptest_cmp.cu)
     - [ ] [fptest.cu](./fptest.cu)
@@ -149,12 +149,13 @@ Last update: 20230815
     - [ ] [fptest_mul.cu](./fptest_mul.cu)
     - [ ] [fptest_sqr.cu](./fptest_sqr.cu)
     - [ ] [fptest_sub.cu](./fptest_sub.cu)
-    - [ ] [g1test.cu](./g1test.cu)
-    - [ ] [g1test.cuh](./g1test.cuh)
-    - [ ] [g1test_dbl.cu](./g1test_dbl.cu)
-    - [ ] [g1test_fft.cu](./g1test_fft.cu)
-    - [ ] [g1test_fibonacci.cu](./g1test_fibonacci.cu)
-    - [ ] [g1test_kat.cu](./g1test_kat.cu)
+
+    - [x] [g1test.cu](./g1test.cu)
+    - [x] [g1test.cuh](./g1test.cuh)
+    - [x] [g1test_dbl.cu](./g1test_dbl.cu)
+    - [x] [g1test_fft.cu](./g1test_fft.cu)
+    - [x] [g1test_fibonacci.cu](./g1test_fibonacci.cu)
+    - [x] [g1test_kat.cu](./g1test_kat.cu)
 
 - [ ] misc target tuesday
     - [ ] [fftTest.cu](./fftTest.cu)
