@@ -11,7 +11,7 @@
  * @brief Test addition and subtraction in Fr using a fibonacci sequence (chain
  * dependency) from 1 to ITERATIONS and back
  * 
- * @return __global__ 
+ * @return void 
  */
 __global__ void FrTestFibonacci(testval_t *) {
 

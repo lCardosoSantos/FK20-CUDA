@@ -16,7 +16,7 @@
  * 3(3(3(2(4(8x))))) == 12(12(12x))
  * 
  * @param testval 
- * @return __global__ 
+ * @return void 
  */
 __global__ void FrTestMulConst(testval_t *testval) {
 

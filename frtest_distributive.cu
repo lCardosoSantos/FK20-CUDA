@@ -7,7 +7,7 @@
 
 
 /**
- * @brief Check the distributive property (left of addition):
+ * @brief Check the distributive property of multiplication in Fr (left of addition):
  * 
  * a(b+c) = ab+ac
  * 
@@ -64,7 +64,7 @@ __global__ void FrTestAddDistributiveLeft(testval_t *testval) {
 }
 
 /**
- * @brief Check the distributive property (right of addition):
+ * @brief Check the distributive property of multiplication in Fr (right of addition):
  * 
  * (a+b)c = ac+bc
  * 
@@ -121,7 +121,7 @@ __global__ void FrTestAddDistributiveRight(testval_t *testval) {
 
 
 /**
- * @brief Check the distributive property (left of subtraction):
+ * @brief Check the distributive property of multiplication in Fr (left of subtraction):
  * 
  * a(b-c) = ab-ac
  * 
@@ -180,7 +180,7 @@ __global__ void FrTestSubDistributiveLeft(testval_t *testval) {
 // (a-b)c = ac-bc
 
 /**
- * @brief Check the distributive property (right of subtraction):
+ * @brief Check the distributive property of multiplication in Fr (right of subtraction):
  * 
  * (a-b)c = ac-bc
  * 
