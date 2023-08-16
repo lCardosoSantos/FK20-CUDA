@@ -1,11 +1,23 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fptest.cuh"
 
 #define ITER 100
 
+/**
+ * @brief Test self consistency in multiplication by constant:
+ * 
+ * 2(4x) = =8x
+ * 2(2(2(2(2(2x))))) == 4(4(4x)) == 8(8x)
+ * 3(4x) == 12(x)
+ * 3(3(3(2(4(8x))))) == 12(12(12x))
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestMulConst(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

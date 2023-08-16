@@ -1,11 +1,18 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fptest.cuh"
 
-// a(b+c) = ab+ac
-
+/**
+ * @brief Check the distributive property of multiplication in Fp (left of addition):
+ * 
+ * a(b+c) = ab+ac
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestAddDistributiveLeft(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -55,8 +62,14 @@ __global__ void FpTestAddDistributiveLeft(testval_t *testval) {
     PRINTPASS(pass);
 }
 
-// (a+b)c = ac+bc
-
+/**
+ * @brief Check the distributive property of multiplication in Fp (right of addition):
+ * 
+ * (a+b)c = ac+bc
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestAddDistributiveRight(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -105,8 +118,14 @@ __global__ void FpTestAddDistributiveRight(testval_t *testval) {
     PRINTPASS(pass);
 }
 
-// a(b-c) = ab-ac
-
+/**
+ * @brief Check the distributive property of multiplication in Fp (left of subtraction):
+ * 
+ * a(b-c) = ab-ac
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestSubDistributiveLeft(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -156,8 +175,14 @@ __global__ void FpTestSubDistributiveLeft(testval_t *testval) {
     PRINTPASS(pass);
 }
 
-// (a-b)c = ac-bc
-
+/**
+ * @brief Check the distributive property of multiplication in Fp (right of subtraction):
+ * 
+ * (a-b)c = ac-bc
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestSubDistributiveRight(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

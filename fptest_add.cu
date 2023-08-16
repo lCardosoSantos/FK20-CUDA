@@ -1,9 +1,18 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fptest.cuh"
 
+/**
+ * @brief Test for addition in Fp
+ * 
+ * 2x + x == 3x
+ * 
+ * @param testval 
+ * @return void
+ */
 __global__ void FpTestAdd(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -39,8 +48,14 @@ __global__ void FpTestAdd(testval_t *testval) {
     PRINTPASS(pass);
 }
 
-// x+y == y+x
-
+/**
+ * @brief Test for the commutative property of addition in Fp
+ * 
+ * x+y == y+x
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestCommutativeAdd(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -75,8 +90,14 @@ __global__ void FpTestCommutativeAdd(testval_t *testval) {
     PRINTPASS(pass);
 }
 
-// (x+y)+z == x+(y+z)
-
+/**
+ * @brief Test for the associative property of addition in Fp
+ * 
+ * (x+y)+z == x+(y+z)
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestAssociativeAdd(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

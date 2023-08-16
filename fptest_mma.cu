@@ -1,9 +1,17 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fptest.cuh"
 
+/**
+ * @brief Test for multiply-multiply-add. Compare with current standalone 
+ * implementation of multiplication adn addition functions.
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestMMA(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

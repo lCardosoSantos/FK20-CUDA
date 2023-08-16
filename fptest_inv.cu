@@ -4,6 +4,14 @@
 #include "fp.cuh"
 #include "fptest.cuh"
 
+/**
+ * @brief Test for multiplicative inverse mod p in Fp. 
+ *
+ * Test for self consistency as x == x*inv(x)*x
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestInv(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

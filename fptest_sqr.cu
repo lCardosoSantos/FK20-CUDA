@@ -1,9 +1,18 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fptest.cuh"
 
+/**
+ * @brief Test for squaring on Fp. Checks for self consistency:
+ * 
+ * (x+n)^2 == x^2 + 2nx + n^2
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestSqr(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -115,6 +124,14 @@ __global__ void FpTestSqr(testval_t *testval) {
     PRINTPASS(pass);
 }
 
+/**
+ * @brief Test for squaring on Fp. Checks for self consistency:
+ * 
+ * (x+y)^2 == x^2 + 2xy + y^2
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestSqr2(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

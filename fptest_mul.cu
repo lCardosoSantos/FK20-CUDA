@@ -1,11 +1,18 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fptest.cuh"
 
-// x*y == y*x
-
+/**
+ * @brief Test for the commutative property of addition
+ * 
+ * x*y == y*x
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestCommutativeMul(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -40,8 +47,16 @@ __global__ void FpTestCommutativeMul(testval_t *testval) {
     PRINTPASS(pass);
 }
 
-// (x*y)*z == x*(y*z)
+// 
 
+/**
+ * @brief Test for the associative property of multiplication
+ * 
+ * (x*y)*z == x*(y*z)
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestAssociativeMul(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);
@@ -83,6 +98,14 @@ __global__ void FpTestAssociativeMul(testval_t *testval) {
     PRINTPASS(pass);
 }
 
+/**
+ * @brief Multiplication test, comparing with the native uint64_t multiplication
+ * 
+ * (x*y)*z == x*(y*z)
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestMul(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

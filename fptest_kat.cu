@@ -1,9 +1,20 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fptest.cuh"
 
+/**
+ * @brief Test for fp functions using KAT
+ * 
+ * Tests: fp_copy, fp_reduce6, fp_eq, fp_neq, fp_neg, fp_x2, fp_x3, fp_add, fp_sub,
+ * fp_sqr, fp_mul, fp_inv.
+ * 
+ * This function also uses a mandelbrot iteration to test squaring and addition.
+ * 
+ * @return void 
+ */
 __global__ void FpTestKAT(testval_t *) {
 
     printf("=== RUN   %s\n", __func__);

@@ -1,9 +1,23 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fptest.cuh"
 
+/**
+ * @brief Test for the comparison function in Fp; checks for inconsistencies in the 
+ * following properties:
+ * 
+ * eq(x,x) != neq(x,x)
+ * neq(x,x) == false
+ * neq(x,y) == true
+ * eq(x,x) == true
+ * eq(x,y) == false
+ * 
+ * @param testval 
+ * @return void 
+ */
 __global__ void FpTestCmp(testval_t *testval) {
 
     printf("=== RUN   %s\n", __func__);

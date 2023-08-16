@@ -1,5 +1,6 @@
 // bls12_381: Arithmetic for BLS12-381
-// Copyright 2022 Dag Arne Osvik
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
 #include "fptest.cuh"
@@ -8,6 +9,10 @@ __managed__ testval_t testval[TESTVALS];
 
 ////////////////////////////////////////////////////////////
 
+/**
+ * @brief Variable initialization for the tests.
+ * 
+ */
 void init() {
 
     testinit();
@@ -93,6 +98,13 @@ void init() {
 
 ////////////////////////////////////////////////////////////
 
+/**
+ * @brief Run tests on Fp functions
+ * 
+ * @param argc 
+ * @param argv 
+ * @return int 
+ */
 int main(int argc, char **argv) {
     clock_t start, end;
     cudaError_t err;

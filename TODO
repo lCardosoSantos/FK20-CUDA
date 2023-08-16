@@ -4,7 +4,7 @@
 ### Documentation TODO list
 
 Todo list (subtasks removed for clarity)
-Last update: 20230815 
+Last update: 20230816
 
 - [ ] Check if parameter order in the functions is consistent. Intel notation mainly
 - [ ] Make FR functions non destructive (might cause side effects)
@@ -13,17 +13,20 @@ Last update: 20230815
 - [ ] Array Syntax: Follow the one from g1p_fft.cu
 - [ ] fp_fft can -> may
 - [ ] Add test coverage for fk20_setup2xext_fft
-- [ ] Change `*_neq to !*_neg`
-- [ ] doc for module tests
-  - `fr_fft_testvector.cu, frtest_add.cu, frtest_addsub.cu, frtest_cmp.cu, frtest.cu, frtest.cuh, frtest_distributive.cu, frtest_fft.cu, frtest_fibonacci.cu, frtest_kat.cu, frtest_mulconst.cu, frtest_mul.cu, frtest_sub.cu, fptest_add.cu, fptest_cmp.cu, fptest.cu, fptest.cuh, fptest_distributive.cu, fptest_fibonacci.cu, fptest_inv.cu, fptest_kat.cu, fptest_mma.cu, fptest_mulconst.cu, fptest_mul.cu, fptest_sqr.cu, fptest_sub.cu, g1test.cu, g1test.cuh, g1test_dbl.cu, g1test_fft.cu, g1test_fibonacci.cu, g1test_kat.cu`
+- [x] Change `*_neq to !*_neg`
+  - [x] ~~` g1test.cu, g1test.cuh, g1test_dbl.cu, g1test_fft.cu, g1test_fibonacci.cu, g1test_kat.cu`~~ 20230815
 - [ ] doc for scripts
   - `512.sh, FFTTest.sh, hext_fft.sh, h_fft.sh, h.sh, polynomial.sh, toeplitz_coefficients_fft.sh, toeplitz_coefficients.sh`
 - [ ] doc for other files
   - `fftTest.cu, h.cu, hext_fft.cu, h_fft.cu, polynomial.cu, toeplitz_coefficients.cu, toeplitz_coefficients_fft.cu, xext_fft.cu`
 - [ ] README
   - [ ] fk20test.md
+- [ ] Improvement ideia: change all the test functions to return a bool, for future automated detection of test failure.
 
 ---------------------------------------------------------------------------------
+- [x] ~~doc for module tests~~ 20230816 
+  - [x] ~~`fr_fft_testvector.cu, frtest_add.cu, frtest_addsub.cu, frtest_cmp.cu, frtest.cu, frtest.cuh, frtest_distributive.cu, frtest_fft.cu, frtest_fibonacci.cu, frtest_kat.cu, frtest_mulconst.cu, frtest_mul.cu, frtest_sub.cu`~~ 20230815 
+  - [x] ~~` fptest_add.cu, fptest_cmp.cu, fptest.cu, fptest.cuh, fptest_distributive.cu, fptest_fibonacci.cu, fptest_inv.cu, fptest_kat.cu, fptest_mma.cu, fptest_mulconst.cu, fptest_mul.cu, fptest_sqr.cu, fptest_sub.cu`~~ 20230816 
 - [x] ~~doc for fk20test~~ 20230815  
   - `fk20test.cu, fk20test.cuh, fk20test_fft.cu, fk20test_fft_rand.cu, fk20test_kat.cu, fk20test_poly2toeplitz_coefficients.cu, fk20test_poly2toeplitz_coefficients_fft.cu, fk20test_poly.cu, fk20_testvector.cu, fk20_testvector.cuh`
 - [x] ~~doc for module fk20~~ 20200810
@@ -134,21 +137,21 @@ Last update: 20230815
     - [x] [frtest_kat.cu](./frtest_kat.cu)
     - [x] [frtest_mulconst.cu](./frtest_mulconst.cu)
     - [x] [frtest_mul.cu](./frtest_mul.cu)
-    - [ ] [frtest_sub.cu](./frtest_sub.cu)
+    - [x] [frtest_sub.cu](./frtest_sub.cu)
 
-    - [ ] [fptest_add.cu](./fptest_add.cu)
-    - [ ] [fptest_cmp.cu](./fptest_cmp.cu)
-    - [ ] [fptest.cu](./fptest.cu)
-    - [ ] [fptest.cuh](./fptest.cuh)
-    - [ ] [fptest_distributive.cu](./fptest_distributive.cu)
-    - [ ] [fptest_fibonacci.cu](./fptest_fibonacci.cu)
-    - [ ] [fptest_inv.cu](./fptest_inv.cu)
-    - [ ] [fptest_kat.cu](./fptest_kat.cu)
-    - [ ] [fptest_mma.cu](./fptest_mma.cu)
-    - [ ] [fptest_mulconst.cu](./fptest_mulconst.cu)
-    - [ ] [fptest_mul.cu](./fptest_mul.cu)
-    - [ ] [fptest_sqr.cu](./fptest_sqr.cu)
-    - [ ] [fptest_sub.cu](./fptest_sub.cu)
+    - [x] [fptest.cu](./fptest.cu)
+    - [x] [fptest.cuh](./fptest.cuh)
+    - [x] [fptest_add.cu](./fptest_add.cu)
+    - [x] [fptest_cmp.cu](./fptest_cmp.cu)
+    - [x] [fptest_distributive.cu](./fptest_distributive.cu)
+    - [x] [fptest_fibonacci.cu](./fptest_fibonacci.cu)
+    - [x] [fptest_inv.cu](./fptest_inv.cu)
+    - [x] [fptest_kat.cu](./fptest_kat.cu)
+    - [x] [fptest_mma.cu](./fptest_mma.cu)
+    - [x] [fptest_mulconst.cu](./fptest_mulconst.cu)
+    - [x] [fptest_mul.cu](./fptest_mul.cu)
+    - [x] [fptest_sqr.cu](./fptest_sqr.cu)
+    - [x] [fptest_sub.cu](./fptest_sub.cu)
 
     - [x] [g1test.cu](./g1test.cu)
     - [x] [g1test.cuh](./g1test.cuh)
