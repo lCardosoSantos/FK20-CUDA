@@ -2,7 +2,7 @@
 // Copyright 2022-2023 Dag Arne Osvik
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
-#warn "Functionality of this file has been replaced by fk20_512."
+#warning "Functionality of this file has been replaced by fk20_512."
 
 #include <stdio.h>
 #include <unistd.h>
