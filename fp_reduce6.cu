@@ -5,11 +5,11 @@
 #include "fp.cuh"
 
 /**
- * @brief Narrow reduction of a residue modulo p, reducing to the canonical 
- * representation
- * 
+ * @brief Narrow reduction of a residue modulo p,
+ * reducing to the canonical representation.
+ *
  * @param[in,out] z residue modulo p
- * @return void 
+ * @return void
  */
 __device__ void fp_reduce6(fp_t &z) {
     uint64_t
@@ -100,7 +100,7 @@ __device__ void fp_reduce6(fp_t &z) {
     "\n\t}"
     :
     "+l"(z0), "+l"(z1), "+l"(z2), "+l"(z3), "+l"(z4), "+l"(z5)
-    ); 
+    );
 
     z[0] = z0, z[1] = z1, z[2] = z2, z[3] = z3, z[4] = z4, z[5] = z5;
 }

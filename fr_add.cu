@@ -6,7 +6,7 @@
 #include "fr_add.cuh"
 
 /**
- * @brief Accumulates x in z. Device only function
+ * @brief Accumulates x in z. Device only function.
  * 
  * @param[in, out] z 
  * @param[in ] x 

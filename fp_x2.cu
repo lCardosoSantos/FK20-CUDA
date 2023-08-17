@@ -6,7 +6,7 @@
 #include "fp_x2.cuh"
 
 /**
- * @brief Multiply x by 2, stores into z
+ * @brief Multiplies x by 2 and stores the result into z.
  * 
  * @param[out] z 
  * @param[in] x 

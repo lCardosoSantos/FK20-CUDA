@@ -8,24 +8,24 @@
 #include <stdint.h>
 
 /**
- * @brief Subgroup element stored as a 256 bit array. fr_t[0] is the LSB. 
- * 
- * This type is used for the BLS12-381 subgroup. This group is derived from the case 
- * \f$ k \equiv 0 (mod 6) \f$ of the Construction 6.6 in the taxonomy (eprint 2006/372), 
+ * @brief Subgroup element stored as a 256-bit array (a 4-element little-endian array of uint64_t). fr_t[0] is the least significant element.
+ *
+ * This type is used for the BLS12-381 subgroup. This group is derived from the case
+ * \f$ k \equiv 0 (mod 6) \f$ of Construction 6.6 in the taxonomy (eprint 2006/372),
  * which results in a parameter x = -0xd201000000010000. The subgroup size is given by
  * the equation  \f$ x^4 -x^2 +1 \f$ and is numerically 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001.
- * 
+ *
  * Implementation-wise, the following constants are hardcoded and indicated, when used:
  *  r     - Modulus
  *  rmu   - Reciprocal of the modulus
- *  rmmu0 - Maximum multiple of the modulus such that mmu0 < 2**256
- *  rmmu1 - Minimum multiple of the modulus such that mmu1 >= 2**256 
+ *  rmmu0 - Maximum integer multiple of the modulus such that rmmu0 < 2**256
+ *  rmmu1 - Minimum integer multiple of the modulus such that rmmu1 >= 2**256
  */
 typedef uint64_t fr_t[4];
 
 /**
  * @brief Table for the precomputed root-of-unity values.
- * 
+ *
  */
 extern __constant__ fr_t fr_roots[515];
 

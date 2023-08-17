@@ -17,12 +17,12 @@
 
 /**
  * @brief setup -> xext_fft
- * 
+ *
  * Grid must be 16, 256 threads per block.
- * 
+ *
  * @param[out] xext_fft array with dimension [16*512]
  * @param setup array with dimension [16*512]
- * @return void 
+ * @return void
  */
 __global__ void fk20_setup2xext_fft(g1p_t *xext_fft, const g1p_t *setup) {
     //TODO: Not passing test, probably bad block indexing
@@ -65,10 +65,10 @@ __global__ void fk20_setup2xext_fft(g1p_t *xext_fft, const g1p_t *setup) {
 
 /**
  * @brief hext_fft -> hext
- * 
+ *
  * @param[in] hext array with 512*gridDim.x elements
  * @param[out] hext_fft array with 512*gridDim.x elements
- * @return 
+ * @return
  */
 __global__ void fk20_hext_fft2hext(g1p_t *hext, const g1p_t *hext_fft) {
     g1p_ift(hext, hext_fft);
@@ -84,7 +84,7 @@ __global__ void fk20_hext_fft2hext(g1p_t *hext, const g1p_t *hext_fft) {
 
 /**
  * @brief h -> h_fft
- * 
+ *
  * @param[out] h_fft array with 512*gridDim.x elements
  * @param[in] h array with 512*gridDim.x elements
  * @return void

@@ -11,14 +11,14 @@ static __device__ fr_t fr_tmp[512*16*512];     // 256 KiB memory per threadblock
 
 /**
  * @brief  polynomial -> toeplitz_coefficients_fft
- * 
+ *
  * WARN: Usage of this function is deprecated: Instead use fk20_poly2toeplitz_coefficients()
- * followed by fr_fft(). This function is not covered in the test suit. 
+ * followed by fr_fft(). This function is not covered in the test suite.
  * This function remains in the repository for future optimizations.
- * 
+ *
  * @param[out] toeplitz_coefficients_fft array with 16*512*gridDim.x elements
  * @param[in] polynomial array with 16*512*gridDim.x elements
- * @return void 
+ * @return void
  */
 __global__ void fk20_poly2toeplitz_coefficients_fft(fr_t *toeplitz_coefficients_fft, const fr_t *polynomial) {
 

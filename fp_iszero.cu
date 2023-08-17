@@ -6,8 +6,8 @@
 
 /**
  * @brief Returns true iff x==0
- * 
- * @param[in] x 
+ *
+ * @param[in] x
  * @return bool 1 if true, 0 otherwise
  */
 __device__ bool fp_iszero(const fp_t &x) {

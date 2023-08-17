@@ -67,7 +67,7 @@ void varMangle(g1p_t *target, size_t size, unsigned step);
  * @brief Executes a many-row tests on FK20. Behavior is similar to fk20test.cu
  * but using many GPU blocks, each one executing one known-answer test. All tests
  * are different. KATS are statically linked in the binary.
- * 
+ *
  * @param argc Command line argument cont
  * @param argv Command line argument values
  * @return int 0
@@ -113,21 +113,21 @@ int main(int argc, char **argv) {
 
 /**
  * NOTE ON DEPRECATED FUNCTIONS
- * 
+ *
  * In the main call, some tests are commented out, namely:
  * -hext_fft2h_fft_512
  * -fk20_poly2toeplitz_coefficients_fft_test
  * Those tests are regarding fk20 functions that execute more than one step in
  * a single kernel. They cover a unimplemented (possible) future optimization.
- * 
+ *
  */
 /******************************************************************************/
 
 /**
- * @brief Executes many FK20 computations on a single row, with a check on 
+ * @brief Executes many FK20 computations on a single row, with a check on
  * each step. A computation failure will not cause a cascade effect, eliminating
  * false-fails due to data dependencies.
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void fullTest_512(unsigned rows){
@@ -137,7 +137,7 @@ void fullTest_512(unsigned rows){
 
     // Setup
 
-    //SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
+    SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
@@ -227,9 +227,9 @@ void fullTest_512(unsigned rows){
 /**
  * @brief Similar to fullTest, but polynomial is has changes done to it. The
  * function checks for false-positive in the tests.
- * 
+ *
  * polynomial is restored after execution.
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void fullTestFalseability_512(unsigned rows){
@@ -239,7 +239,7 @@ void fullTestFalseability_512(unsigned rows){
 
     // Setup
 
-    //SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
+    SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
@@ -332,7 +332,7 @@ The testing functions follow an common template, described in ./doc/fk20test.md
 
 /**
  * @brief Test for fr_fft: toeplitz_coefficients -> toeplitz_coefficients_fft
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void toeplitz_coefficients2toeplitz_coefficients_fft_512(unsigned rows){
@@ -370,7 +370,7 @@ void toeplitz_coefficients2toeplitz_coefficients_fft_512(unsigned rows){
 
 /**
  * @brief Test for g1p_fft: h -> h_fft"
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void h2h_fft_512(unsigned rows){
@@ -410,7 +410,7 @@ void h2h_fft_512(unsigned rows){
 
 /**
  * @brief Test for g1p_ift: h_fft -> h
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void h_fft2h_512(unsigned rows){
@@ -451,7 +451,7 @@ void h_fft2h_512(unsigned rows){
 
 /**
  * @brief Test for g1p_ift: hext_fft -> h
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void hext_fft2h_512(unsigned rows){
@@ -467,9 +467,9 @@ void hext_fft2h_512(unsigned rows){
 
         CLOCKSTART;
         g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(g1p_tmp, hext_fft);
-        CUDASYNC("g1p_ift_wrapper"); 
+        CUDASYNC("g1p_ift_wrapper");
         fk20_hext2h<<<rows, 256>>>(g1p_tmp);
-        CUDASYNC("fk20_hext2h"); 
+        CUDASYNC("fk20_hext2h");
         CLOCKEND;
 
         clearRes;
@@ -491,7 +491,7 @@ void hext_fft2h_512(unsigned rows){
 
 /**
  * @brief Test for fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void fk20_poly2toeplitz_coefficients_512(unsigned rows) {
@@ -529,7 +529,7 @@ void fk20_poly2toeplitz_coefficients_512(unsigned rows) {
 
 /**
  * @brief Test for fk20_poly2hext_fft: polynomial -> hext_fft
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void fk20_poly2hext_fft_512(unsigned rows){
@@ -540,7 +540,7 @@ void fk20_poly2hext_fft_512(unsigned rows){
 
     pass = true;
 
-    //SET_SHAREDMEM(g1p_sharedmem, fk20_poly2hext_fft);
+    SET_SHAREDMEM(g1p_sharedmem, fk20_poly2hext_fft);
 
     printf("=== RUN   %s\n", "fk20_poly2hext_fft: polynomial -> hext_fft");
     for(int testIDX=0; testIDX<=1; testIDX++){
@@ -569,7 +569,7 @@ void fk20_poly2hext_fft_512(unsigned rows){
 
 /**
  * @brief Test for fk20_poly2h_fft: polynomial -> h_fft
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void fk20_poly2h_fft_512(unsigned rows){
@@ -606,7 +606,7 @@ void fk20_poly2h_fft_512(unsigned rows){
 
 /**
  * @brief Test for hext_fft2h_fft_512: hext_fft -> h_fft
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void hext_fft2h_fft_512(unsigned rows){
@@ -644,7 +644,7 @@ void hext_fft2h_fft_512(unsigned rows){
 
 /**
  * @brief Test for fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft
- * 
+ *
  * @param rows number of blocks in the range [1,512]
  */
 void fk20_msmloop_512(unsigned rows){
@@ -693,7 +693,7 @@ void fk20_msmloop_512(unsigned rows){
         CLOCKSTART;
         fk20_poly2toeplitz_coefficients_fft<<<rows, 256>>>(fr_tmp_, polynomial);
         err = cudaDeviceSynchronize();
-        CUDASYNC("fk20_poly2toeplitz_coefficients_fft"); 
+        CUDASYNC("fk20_poly2toeplitz_coefficients_fft");
         CLOCKEND;
         clearRes;
         fr_eq_wrapper<<<16, 256>>>(cmp, rows*16*512, fr_tmp_, (fr_t *)toeplitz_coefficients_fft);
@@ -722,7 +722,7 @@ void fk20_msmloop_512(unsigned rows){
 /**
  * @brief swap elements at positions multiple of step. Nondestructive, call
  * a second time to undo the changes
- * 
+ *
  * @param[out] target Pointer to array
  * @param[in] size length of the array
  * @param[in] step distance between elements swapped.
@@ -744,7 +744,7 @@ void varMangle(fr_t *target, size_t size, unsigned step){
 /**
  * @brief swap elements at positions multiple of step. Nondestructive, call
  * a second time to undo the changes
- * 
+ *
  * @param[out] target Pointer to array
  * @param[in] size length of the array
  * @param[in] step distance between elements swapped.

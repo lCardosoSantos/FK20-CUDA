@@ -53,7 +53,7 @@ __managed__ g1p_t
  * addsub(2G, G) == 3G, G with KAT
  * addsub(G, G) = (2G, 2G) (dbl and add)
  * 
- * @return __global__ 
+ * @return void 
  */
 __global__ void G1TestKAT(testval_t *) {
 

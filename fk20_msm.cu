@@ -8,14 +8,14 @@
 
 /**
  * @brief toeplitz_coefficients_fft + xext_fft -> hext_fft
- * 
+ *
  * Grid must be 1-D, 256 threads per block.
  * WARN: Calling this function with dynamic shared memory introduces unpredictable behavior.
- * 
+ *
  * @param[out] he_fft array with dimensions [gridDim.x * 512]
  * @param[in] tc_fft array with dimensions [gridDim.x * 16][512]
  * @param[in] xe_fft array with dimensions [16][512]
- * @return void 
+ * @return void
  */
 __global__ void fk20_msm(g1p_t *he_fft, const fr_t *tc_fft, const g1p_t *xe_fft) {
     if (gridDim.y  !=   1) return;
@@ -32,7 +32,7 @@ __global__ void fk20_msm(g1p_t *he_fft, const fr_t *tc_fft, const g1p_t *xe_fft)
     g1p_inf(a0);
     g1p_inf(a1);
 
-    // move pointer for blocks
+    // Move pointer for blocks
     he_fft += 512*bid;
     tc_fft += 16*512*bid;
 

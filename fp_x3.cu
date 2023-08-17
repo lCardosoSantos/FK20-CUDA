@@ -6,7 +6,7 @@
 #include "fp_x3.cuh"
 
 /**
- * @brief Multiply x by 3, stores into z
+ * @brief Multiplies x by 3 and stores the result into z.
  * 
  * @param[out] z 
  * @param[in] x 

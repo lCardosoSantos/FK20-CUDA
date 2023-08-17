@@ -5,9 +5,9 @@
 
 /**
  * @brief Check if x is not zero.
- * 
- * @param [in] x 
- * @return bool 1 if true, zero otherwise. 
+ *
+ * @param [in] x
+ * @return bool 1 if true, zero otherwise.
  */
 __device__ bool fp_nonzero(const fp_t &x) {
     fp_t t;

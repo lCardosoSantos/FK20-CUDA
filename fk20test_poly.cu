@@ -19,7 +19,7 @@ static __managed__ g1p_t g1p_tmp[512];
 /**
  * Executes the tests if the subfunctions that either execute more than one step,
  * or that execute an operation other than (i)FFT
- * 
+ *
  */
 void FK20TestPoly() {
     printf(">>>> Poly Tests\n");
@@ -30,18 +30,18 @@ void FK20TestPoly() {
     fk20_msmloop(hext_fft, toeplitz_coefficients_fft, xext_fft);
     fk20_poly2h_fft_test(polynomial, xext_fft, h_fft);
 
-    fullTest(); 
+    fullTest();
     fullTestFalsifiability();
 
 }
 
 /**
- * Executes a full FK20 computation on a single row. Checking each step. 
- * A computation failure will not cause a cascade effect, eliminating 
+ * Executes a full FK20 computation on a single row. Checking each step.
+ * A computation failure will not cause a cascade effect, eliminating
  * false-failures due to data dependencies.
- * 
+ *
  */
-void fullTest() { 
+void fullTest() {
     const int rows = 1;
     cudaError_t err;
     bool pass = true;
@@ -49,23 +49,23 @@ void fullTest() {
 
     // Setup
 
-    //SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
+    SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
     // polynomial -> tc
-    // all steps follow the same format
+    // All steps follow the same format
     printf("\n>>>>Full integration test\n"); fflush(stdout);
     printf("polynomial -> tc\n"); fflush(stdout);
 
-    CLOCKSTART; //starts a basic timer
+    CLOCKSTART; // Starts a basic timer
     fk20_poly2toeplitz_coefficients<<<rows, 256>>>(fr_tmp, polynomial);
-    CUDASYNC("fk20_poly2toeplitz_coefficients"); //ensures the GPU has finished the computation, and check for errors
-    CLOCKEND; //reports time
+    CUDASYNC("fk20_poly2toeplitz_coefficients"); // Ensures the GPU has finished the computation, and check for errors
+    CLOCKEND; // Reports time
 
     clearRes;
     fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients);
-    CUDASYNC("fr_eq_wrapper"); 
+    CUDASYNC("fr_eq_wrapper");
     CMPCHECK(16*512);
     PRINTPASS(pass);
 
@@ -75,9 +75,9 @@ void fullTest() {
 
     CLOCKSTART;
     for(int i=0; i<16; i++){
-        fr_fft_wrapper<<<rows, 256, fr_sharedmem>>>(fr_tmp+512*i, fr_tmp+512*i);  //needs to do 16 of those
+        fr_fft_wrapper<<<rows, 256, fr_sharedmem>>>(fr_tmp+512*i, fr_tmp+512*i);  // Needs to do 16 of those
     }
-    CUDASYNC("fr_fft_wrapper"); 
+    CUDASYNC("fr_fft_wrapper");
     CLOCKEND;
 
     clearRes;
@@ -113,7 +113,7 @@ void fullTest() {
     CUDASYNC("g1p_eq_wrapper");
     CMPCHECK(256);
     PRINTPASS(pass);
-    
+
     // h -> h_fft
 
     printf("h -> h_fft\n"); fflush(stdout);
@@ -133,9 +133,9 @@ void fullTest() {
 /**
  * Similar to fullTest, but polynomial is has a few values changed. The function
  * checks for false-positives in the tests.
- * 
+ *
  * polynomial is restored after execution.
- * 
+ *
  */
 void fullTestFalsifiability() {
     const int rows = 1;
@@ -145,11 +145,11 @@ void fullTestFalsifiability() {
 
     // Setup
 
-    //SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
+    SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
-    varMangle((fr_t*)polynomial, 4096, 512); //non destructively changes polynomial
+    varMangle((fr_t*)polynomial, 4096, 512); // Non destructively changes polynomial
 
     printf("\n>>>>Full integration test\n"); fflush(stdout);
 
@@ -159,12 +159,12 @@ void fullTestFalsifiability() {
 
     CLOCKSTART;
     fk20_poly2toeplitz_coefficients<<<rows, 256, fr_sharedmem>>>(fr_tmp, polynomial);
-    CUDASYNC("fk20_poly2toeplitz_coefficients"); 
+    CUDASYNC("fk20_poly2toeplitz_coefficients");
     CLOCKEND;
 
     clearRes;
     fr_eq_wrapper<<<256, 32>>>(cmp, 16*512, fr_tmp, (fr_t *)toeplitz_coefficients);
-    CUDASYNC("fr_eq_wrapper"); 
+    CUDASYNC("fr_eq_wrapper");
     NEGCMPCHECK(16*512);
     NEGPRINTPASS(pass);
 
@@ -174,9 +174,9 @@ void fullTestFalsifiability() {
 
     CLOCKSTART;
     for(int i=0; i<16; i++){
-        fr_fft_wrapper<<<rows, 256, fr_sharedmem>>>(fr_tmp+512*i, fr_tmp+512*i);  //needs to do 16 of those
+        fr_fft_wrapper<<<rows, 256, fr_sharedmem>>>(fr_tmp+512*i, fr_tmp+512*i);  // Needs to do 16 of those
     }
-    CUDASYNC("fr_fft_wrapper"); 
+    CUDASYNC("fr_fft_wrapper");
     CLOCKEND;
 
     clearRes;
@@ -216,8 +216,8 @@ void fullTestFalsifiability() {
     CUDASYNC("g1p_eq_wrapper");
     NEGCMPCHECK(256);
     NEGPRINTPASS(pass);
-    
-    //h -> h_fft
+
+    // h -> h_fft
 
     printf("h -> h_fft\n"); fflush(stdout);
 
@@ -232,7 +232,7 @@ void fullTestFalsifiability() {
     NEGCMPCHECK(512);
     NEGPRINTPASS(pass);
 
-    varMangle((fr_t*)polynomial, 4096, 512); //restore polynomial
+    varMangle((fr_t*)polynomial, 4096, 512); // Restore polynomial
 }
 
 /*******************************************************************************
@@ -244,23 +244,23 @@ The testing functions follow an common template, described in ./doc/fk20test.md
 
 /**
  * @brief Test for fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients
- * 
- * @param[in] polynomial_l 
- * @param[in] toeplitz_coefficients_l 
+ *
+ * @param[in] polynomial_l
+ * @param[in] toeplitz_coefficients_l
  */
 void fk20_poly2toeplitz_coefficients_test(fr_t polynomial_l[4096], fr_t toeplitz_coefficients_l[16][512]){
     cudaError_t err;
     bool pass = true;
     CLOCKINIT;
-    
+
     printf("=== RUN   %s\n", "fk20_poly2toeplitz_coefficients: polynomial -> toeplitz_coefficients");
-    memset(fr_tmp, 0xAA,16*512*sizeof(fr_t)); //pattern on tmp dest.
+    memset(fr_tmp, 0xAA,16*512*sizeof(fr_t)); // Pattern on tmp dest.
     for(int testIDX=0; testIDX<=1; testIDX++){
 
         CLOCKSTART;
         fk20_poly2toeplitz_coefficients<<<1, 256 >>>(fr_tmp, polynomial_l);
-        //IMPORTANT: This function does not need shared memory. Making the kernel call with a dynamic shared memory allocation
-        //is known to cause some suble bugs, that not always show during normal execution.
+        // IMPORTANT: This function does not need shared memory. Making the kernel call with a dynamic shared
+        // memory allocation is known to cause some subtle bugs, which do not always show during normal execution.
         CUDASYNC("fk20_poly2toeplitz_coefficients");
         CLOCKEND;
 
@@ -277,27 +277,27 @@ void fk20_poly2toeplitz_coefficients_test(fr_t polynomial_l[4096], fr_t toeplitz
             NEGCMPCHECK(16*512);
             NEGPRINTPASS(pass);
         }
-        
+
         varMangle((fr_t*)polynomial_l, 4096, 512);
     }
 }
 
 /**
  * @brief Test for fk20_poly2hext_fft: polynomial -> hext_fft
- * 
- * @param[in] polynomial_l 
- * @param[in] xext_fft_l 
- * @param[in] hext_fft_l 
+ *
+ * @param[in] polynomial_l
+ * @param[in] xext_fft_l
+ * @param[in] hext_fft_l
  */
 void fk20_poly2hext_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1p_t hext_fft_l[512]){
     cudaError_t err;
     CLOCKINIT;
     bool pass = true;
 
-    //SET_SHAREDMEM(g1p_sharedmem, fk20_poly2hext_fft)
+    SET_SHAREDMEM(g1p_sharedmem, fk20_poly2hext_fft)
 
     printf("=== RUN   %s\n", "fk20_poly2hext_fft: polynomial -> hext_fft");
-    memset(g1p_tmp,0xAA,512*sizeof(g1p_t)); //pattern on tmp dest
+    memset(g1p_tmp,0xAA,512*sizeof(g1p_t)); // Pattern on tmp dest
     for(int testIDX=0; testIDX<=1; testIDX++){
 
         CLOCKSTART;
@@ -323,11 +323,11 @@ void fk20_poly2hext_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512],
 }
 
 /**
- * @brief Test for fk20_poly2h_fft: polynomial -> h_fft 
- * 
- * @param[in] polynomial_l 
- * @param[in] xext_fft_l 
- * @param[in] h_fft_l 
+ * @brief Test for fk20_poly2h_fft: polynomial -> h_fft
+ *
+ * @param[in] polynomial_l
+ * @param[in] xext_fft_l
+ * @param[in] h_fft_l
  */
 void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1p_t h_fft_l[512]){
     cudaError_t err;
@@ -335,13 +335,13 @@ void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1
     bool pass = true;
 
     printf("=== RUN   %s\n", "fk20_poly2h_fft: polynomial -> h_fft (full computation)");
-    //memset(g1p_tmp,0x88,512*sizeof(g1p_t)); //pattern on tmp dest
-    memset(g1p_tmp,0,512*sizeof(g1p_t)); //pattern on tmp dest
-    memset(fr_tmp,0xAA,8192*sizeof(fr_t)); //pattern on tmp dest
+    // memset(g1p_tmp,0x88,512*sizeof(g1p_t)); // Pattern on tmp dest
+    memset(g1p_tmp,0,512*sizeof(g1p_t)); // Pattern on tmp dest
+    memset(fr_tmp,0xAA,8192*sizeof(fr_t)); // Pattern on tmp dest
     for(int testIDX=0; testIDX<=1; testIDX++){
 
         CLOCKSTART;
-        fk20_poly2h_fft(g1p_tmp, polynomial_l, (const g1p_t *)xext_fft_l, 1); //this causes memory issues
+        fk20_poly2h_fft(g1p_tmp, polynomial_l, (const g1p_t *)xext_fft_l, 1); // This causes memory issues
         CUDASYNC("fk20_poly2h_fft");
         CLOCKEND;
 
@@ -364,19 +364,19 @@ void fk20_poly2h_fft_test(fr_t polynomial_l[4096], g1p_t xext_fft_l[16][512], g1
 
 /**
  * @brief Test for fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft
- * 
- * @param hext_fft_l 
- * @param toeplitz_coefficients_fft_l 
- * @param xext_fft_l 
+ *
+ * @param hext_fft_l
+ * @param toeplitz_coefficients_fft_l
+ * @param xext_fft_l
  */
-void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][512], 
+void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][512],
                   g1p_t xext_fft_l[16][512]){
     cudaError_t err;
     CLOCKINIT;
     bool pass = true;
 
     printf("=== RUN   %s\n", "fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft");
-    memset(g1p_tmp,0x88,512*sizeof(g1p_t)); //pattern on tmp dest
+    memset(g1p_tmp,0x88,512*sizeof(g1p_t)); // Pattern on tmp dest
     for(int testIDX=0; testIDX<=1; testIDX++){
 
         CLOCKSTART;
@@ -401,7 +401,7 @@ void fk20_msmloop(g1p_t hext_fft_l[512], fr_t toeplitz_coefficients_fft_l[16][51
         }
 }
 
-//Deprecated function
+// Deprecated function
 /*
 void fk20_setup2xext_fft_test(g1p_t setup_l[4097], g1p_t xext_fft_l[16][512]){
     cudaError_t err;
@@ -409,7 +409,7 @@ void fk20_setup2xext_fft_test(g1p_t setup_l[4097], g1p_t xext_fft_l[16][512]){
     g1p_t g1ptmp[16*512];
 
     CLOCKINIT;
-    
+
     printf("=== RUN   %s\n", "fk20_setup2xext_fft: setup -> xext_fft");
     memset(g1ptmp, 0xAA, 16*512*sizeof(g1p_t)); //pattern on tmp dest.
     SET_SHAREDMEM(g1p_sharedmem, fk20_setup2xext_fft)
@@ -434,7 +434,7 @@ void fk20_setup2xext_fft_test(g1p_t setup_l[4097], g1p_t xext_fft_l[16][512]){
             NEGCMPCHECK(16*512);
             NEGPRINTPASS(pass);
         }
-        
+
         varMangle((g1p_t*)xext_fft_l, 4096, 512);
     }
 }

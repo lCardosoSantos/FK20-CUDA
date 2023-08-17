@@ -6,7 +6,7 @@
 #include "fp_x8.cuh"
 
 /**
- * @brief Multiply x by 8, stores into z
+ * @brief Multiplies x by 8 and stores the result into z.
  * 
  * @param[out] z 
  * @param[in] x 

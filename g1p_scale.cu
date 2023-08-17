@@ -6,11 +6,11 @@
 #include "g1.cuh"
 
 /**
- * @brief Elliptic curve scaling. p = p*s
- * This operation multiplies each point coordinate of p by s.
+ * @brief Scale the coordinates of a projective point.
+ * This operation multiplies each coordinate of p by s: (x, y, z) := (x*s, y*s, z*s).
  * 
- * @param[in,out] p point in G1 (stores result after call)
- * @param[in] s multiplicand in Fp
+ * @param[in,out] p Point in G1 (stores result after call)
+ * @param[in] s Multiplicand in Fp. Must be nonzero.
  * @return void
  */
 __device__ void g1p_scale(g1p_t &p, const fp_t &s) {

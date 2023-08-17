@@ -7,11 +7,11 @@
 #include "fp_reduce12.cuh"
 
 /**
- * @brief Computes the square of the residue x modulo p. Stores in z
- * 
- * @param[out] z 
- * @param[in] x 
- * @return void 
+ * @brief Computes the square of the residue x modulo p and stores it in z.
+ *
+ * @param[out] z
+ * @param[in] x
+ * @return void
  */
 __device__ void fp_sqr(fp_t &z, const fp_t &x) {
     uint64_t
@@ -47,7 +47,7 @@ FP_REDUCE12(u)
     "=l"(z0), "=l"(z1), "=l"(z2), "=l"(z3), "=l"(z4), "=l"(z5)
     :
     "l"(x0), "l"(x1), "l"(x2), "l"(x3), "l"(x4), "l"(x5)
-    ); 
+    );
 
     z[0] = z0; z[1] = z1; z[2] = z2; z[3] = z3; z[4] = z4; z[5] = z5;
 }

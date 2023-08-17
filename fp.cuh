@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 /**
- * @brief Residue module p with 381 bits
- * Bitfields are not used since the extra 3 bits can be used for flags
+ * @brief Residue modulo p. Any 384-bit representative of each residue is
+ * allowed, and stored as a 6-element little-endian array of uint64_t.
  */
 typedef uint64_t fp_t[6];
 

@@ -10,10 +10,10 @@ __managed__ int stdout_isatty;
 /**
  * @brief Sets a global variable to true if the STDOUT is a terminal.
  * Needs to be done like so because while a kernel is able to print to stdout,
- * it is unable to execute isatty. 
- * 
+ * it is unable to execute isatty.
+ *
  * Currently used so piping to a file doesn't output terminal control characters.
- * 
+ *
  */
 void testinit() {
 	stdout_isatty = isatty(fileno(stdout));

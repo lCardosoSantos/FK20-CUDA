@@ -10,7 +10,7 @@
  * x == y-(y-x)
 
  * @param testval 
- * @return __global__ 
+ * @return void 
  */
 __global__ void FrTestSub(testval_t *testval) {
 

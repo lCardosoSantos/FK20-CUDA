@@ -6,21 +6,17 @@
 #include "g1.cuh"
 #include "fk20.cuh"
 
-//static __device__ fr_t fr_tmp[512*512];    // 16 KiB memory per threadblock
-//static __device__ g1p_t g1p_tmp[512*512];  // 72 KiB memory per threadblock
-
-
 /**
  * @brief polynomial -> toeplitz_coefficients
- * 
+ *
  * @param[out] toeplitz_coefficients  array with dimension [4096 * gridDim.x]
  * @param[in] polynomial array with dimensions [rows * 16 * 512]
- * @return void 
- * 
+ * @return void
+ *
  * Grid must be 1-D, 256 threads per block.
- * 
+ *
  * IMPORTANT: This function does not need shared memory. Making the kernel call with a dynamic shared memory allocation
- * is known to cause some subtle bugs, that not always show during normal execution. 
+ * is known to cause some subtle bugs, that not always show during normal execution.
  * Similar comment is present in fk20test_poly.cu and fk20_512test_poly.cu. In case this function changes and starts
  * needing shared memory, correct the tests on those two files.
  */

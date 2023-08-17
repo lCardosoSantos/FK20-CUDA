@@ -13,6 +13,7 @@ FK20Py/datar
 FK20Py/scratchpad.py
 FK20Py/toeplitz_tmp.py
 fk20benchmark
+fk20test_poly2toeplitz_coefficients
 fk20test_poly2toeplitz_coefficients_fft
 gdb.in
 poly.txt

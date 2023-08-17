@@ -28,12 +28,12 @@ __managed__ uint8_t cmp[512*512];
 
 /**
  * @brief Kernel wrapper for device addition
- * 
+ *
  * @param[out] sum Result array
- * @param[in] count Number of elements
- * @param[in] x Array of points in the curve
- * @param[in] y Array of points in the curve
- * @return __global__ 
+ * @param[in] count Number of array elements
+ * @param[in] x Array of points on the curve
+ * @param[in] y Array of points on the curve
+ * @return void
  */
 __global__ void g1p_add_wrapper(g1p_t *sum, int count, const g1p_t *x, const g1p_t *y) {
 
@@ -59,12 +59,12 @@ __global__ void g1p_add_wrapper(g1p_t *sum, int count, const g1p_t *x, const g1p
 
 /**
  * @brief Kernel wrapper for device multiplication
- * 
+ *
  * @param[out] q Product, array of G1 points
- * @param[in] count Number of elements
+ * @param[in] count Number of array elements
  * @param[in] x Array of factors
  * @param[in] p Array of factors
- * @return void 
+ * @return void
  */
 __global__ void g1p_mul_wrapper(g1p_t *q, int count, const fr_t *x, const g1p_t *p) {
 
@@ -89,12 +89,12 @@ __global__ void g1p_mul_wrapper(g1p_t *q, int count, const fr_t *x, const g1p_t 
 ////////////////////////////////////////////////////////////
 
 /**
- * @brief Kernel wrapper for the device multiplication 
- * 
- * @param[out] g1 Array of points in the curve
- * @param[in] count Number of elements
- * @param[in] fr residue in Fr
- * @return void 
+ * @brief Kernel wrapper for device multiplication computing k*G from k
+ *
+ * @param[out] g1 Array of points on the curve
+ * @param[in] count Number of array elements
+ * @param[in] fr Array of residues in Fr
+ * @return void
  */
 __global__ void g1p_fr2g1p_wrapper(g1p_t *g1, int count, const fr_t *fr) {
 
@@ -119,9 +119,9 @@ __global__ void g1p_fr2g1p_wrapper(g1p_t *g1, int count, const fr_t *fr) {
 ////////////////////////////////////////////////////////////
 
 /**
- * @brief Test for FFT and IFFT of points in the G1 curve. Checks self consistency
+ * @brief Test for FFT and IFFT of points on the G1 curve. Checks self consistency
  * with the following properties:
- * 
+ *
  * IFT(FFT(P)) == P
  * FFT(IFT(P)) == P
  * FFT(P+Q) == FFT(P) + FFT(Q)
@@ -130,8 +130,8 @@ __global__ void g1p_fr2g1p_wrapper(g1p_t *g1, int count, const fr_t *fr) {
  * IFT(x*P) == x*IFT(P)
  * FFT(G*X) == G*FFT(X) (FFT commutes with mapping from Fr to G1)
  * IFT(G*X) == G*IFT(X) (IFT commutes with mapping from Fr to G1)
- * 
- * @param rows 
+ *
+ * @param rows
  */
 void G1TestFFT(unsigned rows) {
     const char filename[] = "/dev/urandom";

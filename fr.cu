@@ -7,7 +7,7 @@
 #include "fr.cuh"
 
 /**
- * @brief Sets the value of z to zero
+ * @brief Sets the value of z to zero.
  * 
  * @param[out] z 
  * @return void 
@@ -30,7 +30,7 @@ __device__ __host__ void fr_one(fr_t &z) {
 }
 
 /**
- * @brief prints the canonical representation of x to STDOUT
+ * @brief prints the canonical representation of x to STDOUT.
  * 
  * Prints the canonical hexadecimal representation of x to stdout, followed by linefeed; 
  * prints with leading zeros, and without the hex prefix.
@@ -50,12 +50,10 @@ __device__ void fr_print(const char *s, const fr_t &x) {
 }
 
 /**
- * @brief Converts uint64_t[4] to fr_t
+ * @brief Converts from uint64_t[4] to a residue modulo r, without reduction.
  * 
- * Converts uint64_t[4] to fr_t. Word order is BIG endian.
- * 
- * @param[out] z Destination
- * @param[in] x Pointer to array to be converted.
+ * @param[out] z Residue modulo r
+ * @param[in] x Array of uint64_t
  * @return void 
  */
 __device__ __host__ void fr_fromUint64(fr_t &z, const uint64_t *x) {
@@ -68,10 +66,10 @@ __device__ __host__ void fr_fromUint64(fr_t &z, const uint64_t *x) {
 /**
  * @brief Converts fr_t to uint64_t[4]
  * 
- * Converts uint64_t[4] to fr_t. Word order is BIG endian. The 256-bit bit value
- * x is reduced before convert, the original value is unchanged.
+ * Converts uint64_t[4] to fr_t. The 256-bit value in x is reduced to the canonical
+ * residue before being stored into z. The original value of x is unchanged.
  * 
- * @param[out] z Pointer to destination array
+ * @param[out] z Pointer to destination array.
  * @param[in] x fr_t to be converted.
  * @return void 
  */

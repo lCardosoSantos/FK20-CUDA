@@ -8,10 +8,10 @@
  * @brief Compute an additive inverse of a residue x modulo p. Stores in z.
  * Subtracts x from the highest multiple of p less than 2^384,
  * then adds p in case of underflow.
- * 
- * @param[out] z 
- * @param[in] x 
- * @return __device__ 
+ *
+ * @param[out] z
+ * @param[in] x
+ * @return void
  */
 __device__ void fp_neg(fp_t &z, const fp_t &x) {
     uint64_t
@@ -52,7 +52,7 @@ __device__ void fp_neg(fp_t &z, const fp_t &x) {
     "=l"(z0), "=l"(z1), "=l"(z2), "=l"(z3), "=l"(z4), "=l"(z5)
     :
     "l"(x0), "l"(x1), "l"(x2), "l"(x3), "l"(x4), "l"(x5)
-    ); 
+    );
 
     z[0] = z0, z[1] = z1, z[2] = z2, z[3] = z3, z[4] = z4, z[5] = z5;
 }

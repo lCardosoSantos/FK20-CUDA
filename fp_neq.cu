@@ -6,9 +6,9 @@
 
 /**
  * @brief Compares two fp_t residues
- * 
- * @param[in] x 
- * @param[in] y 
+ *
+ * @param[in] x
+ * @param[in] y
  * @return bool 1 if the values are not equal, 0 otherwise
  */
 __device__ bool fp_neq(const fp_t &x, const fp_t &y) {

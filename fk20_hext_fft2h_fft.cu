@@ -10,13 +10,13 @@
 
 /**
  * @brief hext_fft -> h_fft
- * 
+ *
  * Grid must be 1-D, 256 threads per block.
  * Dynamic shared memory: g1p_sharedmem(73728 Bytes)
- * 
+ *
  * @param[out] h_fft array with dimensions [gridDim.x * 512]
  * @param[in] hext_fft array with dimensions [gridDim.x * 512]
- * @return void 
+ * @return void
  */
 __global__ void fk20_hext_fft2h_fft(g1p_t *h_fft, const g1p_t *hext_fft){
     if (gridDim.y  !=   1) return;
@@ -37,7 +37,7 @@ __global__ void fk20_hext_fft2h_fft(g1p_t *h_fft, const g1p_t *hext_fft){
     g1p_ift(h_fft, hext_fft);
     __syncthreads();
 
-    // zero second half of h
+    // Zero second half of h
     g1p_inf(h_fft[256+tid]);
     __syncthreads();
 

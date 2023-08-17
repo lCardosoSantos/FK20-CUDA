@@ -7,9 +7,9 @@
 #include "fp.cuh"
 
 /**
- * @brief Sets z to zero
- * 
- * @param[out] z 
+ * @brief Sets z to zero.
+ *
+ * @param[out] z
  * @return void
  */
 __device__ __host__ void fp_zero(fp_t &z) {
@@ -18,10 +18,10 @@ __device__ __host__ void fp_zero(fp_t &z) {
 }
 
 /**
- * @brief Sets z to one
- * 
- * @param[in,out] z 
- * @return __device__ 
+ * @brief Sets z to one.
+ *
+ * @param[in,out] z
+ * @return void
  */
 __device__ __host__ void fp_one(fp_t &z) {
     z[0] = 1;
@@ -30,11 +30,11 @@ __device__ __host__ void fp_one(fp_t &z) {
 }
 
 /**
- * @brief Prints the canonical representation of x to STDOUT
- * 
+ * @brief Prints the canonical representation of x to STDOUT.
+ *
  * @param[in] s Description string
  * @param[in] x Residue modulo p
- * @return void 
+ * @return void
  */
 __device__ void fp_print(const char *s, const fp_t &x) {
     fp_t t;
@@ -48,11 +48,12 @@ __device__ void fp_print(const char *s, const fp_t &x) {
 }
 
 /**
- * @brief Converts from uint64_t[6] to a residue modulo p, without reduction.
- * 
- * @param[out] z fp_t residue modulo p
- * @param[in] x array of uint64_t 
- * @return __device__ 
+ * @brief Converts uint64_t[6] to fp_t.
+ * After this operation, z represents x mod p.
+ *
+ * @param[out] z Residue modulo p
+ * @param[in] x Array of uint64_t
+ * @return void
  */
 __device__ __host__ void fp_fromUint64(fp_t &z, const uint64_t *x) {
     z[0] = x[0];
@@ -64,11 +65,11 @@ __device__ __host__ void fp_fromUint64(fp_t &z, const uint64_t *x) {
 }
 
 /**
- * @brief Converts from residue modulo p (fp_t) to uint64_t[6]. The converted value
- * is in canonical form
- * 
- * @param[in] x 
- * @param[out] z 
+ * @brief Converts from residue modulo p (fp_t) to uint64_t[6].
+ * The converted value is in canonical form.
+ *
+ * @param[out] z
+ * @param[in] x
  * @return void
  */
 __device__ void fp_toUint64(uint64_t *z, const fp_t &x) {

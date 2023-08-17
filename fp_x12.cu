@@ -6,7 +6,7 @@
 #include "fp_x12.cuh"
 
 /**
- * @brief Multiply x by 12, stores into z
+ * @brief Multiplies x by 12 and stores the result into z.
  * 
  * @param[out] z 
  * @param[in] x 

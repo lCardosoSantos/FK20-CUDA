@@ -6,12 +6,12 @@
 #include "fp_add.cuh"
 
 /**
- * @brief Compute the sum of two residues x and y modulo p. Stores in z.
- * 
- * @param[out] z 
- * @param[in] x 
- * @param[in] y 
- * @return void 
+ * @brief Computes the sum of two residues x and y modulo p and stores it in z.
+ *
+ * @param[out] z
+ * @param[in] x
+ * @param[in] y
+ * @return void
  */
 __device__ void fp_add(fp_t &z, const fp_t &x, const fp_t &y) {
     uint64_t
@@ -57,7 +57,7 @@ FP_ADD(z, x, y)
     :
     "l"(x0), "l"(x1), "l"(x2), "l"(x3), "l"(x4), "l"(x5),
     "l"(y0), "l"(y1), "l"(y2), "l"(y3), "l"(y4), "l"(y5)
-    ); 
+    );
 
     z[0] = z0, z[1] = z1, z[2] = z2, z[3] = z3, z[4] = z4, z[5] = z5;
 }

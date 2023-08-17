@@ -9,12 +9,12 @@
 /**
  * @brief Fp multiply-multiply-add. Fast execution of z = (v*w + x*y) mod p
  * The double-wide products are added before reduction, saving one reduction.
- * 
- * @param[out] z 
- * @param[in] v 
- * @param[in] w 
- * @param[in] x 
- * @param[in] y 
+ *
+ * @param[out] z
+ * @param[in] v
+ * @param[in] w
+ * @param[in] x
+ * @param[in] y
  * @return void
  */
 __device__ void fp_mma(fp_t &z, const fp_t &v, const fp_t &w, const fp_t &x, const fp_t &y) {
@@ -136,7 +136,7 @@ FP_REDUCE12(u)
     "l"(w0), "l"(w1), "l"(w2), "l"(w3), "l"(w4), "l"(w5),
     "l"(x0), "l"(x1), "l"(x2), "l"(x3), "l"(x4), "l"(x5),
     "l"(y0), "l"(y1), "l"(y2), "l"(y3), "l"(y4), "l"(y5)
-    ); 
+    );
 
     z[0] = z0; z[1] = z1; z[2] = z2; z[3] = z3; z[4] = z4; z[5] = z5;
 }

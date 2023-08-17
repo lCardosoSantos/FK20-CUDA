@@ -5,10 +5,10 @@
 #include "fp.cuh"
 
 /**
- * @brief Copy x into z
- * 
- * @param[out] z 
- * @param[in] x 
+ * @brief Copy x into z.
+ *
+ * @param[out] z
+ * @param[in] x
  * @return void
  */
 __device__ __host__ void fp_cpy(fp_t &z, const fp_t &x) {

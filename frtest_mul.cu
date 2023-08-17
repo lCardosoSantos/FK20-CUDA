@@ -51,7 +51,7 @@ __global__ void FrTestCommutativeMul(testval_t *testval) {
  * (x*y)*z == x*(y*z)
  * 
  * @param testval 
- * @return __global__ 
+ * @return void 
  */
 __global__ void FrTestAssociativeMul(testval_t *testval) {
 

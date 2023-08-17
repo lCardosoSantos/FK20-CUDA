@@ -6,8 +6,8 @@
 #include "fp_sub.cuh"
 
 /**
- * @brief Calculates de difference of two residues modulo p, stores into z
- * 
+ * @brief Calculates the difference of two residues modulo p and stores it into z.
+ *
  * @param[out] z 
  * @param[in] x minuend
  * @param[in] y subtrahend

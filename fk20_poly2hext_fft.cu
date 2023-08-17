@@ -10,16 +10,16 @@ static __device__ fr_t fr_tmp[512*512];     // 16 KiB memory per threadblock
 
 /**
  * @brief polynomial + xext_fft -> hext_fft
- * 
+ *
  * Grid must be 1-D, 256 threads per block.
  * Dynamic shared memory: fr_sharedmem (16384 Bytes)
  * shared memory is used both in MSM loop and FFTs, without conflict
- * 
+ *
  * @param[out] hext_fft   array with dimensions [gridDim.x * 16 * 512]
  * @param[in]  polynomial array with dimensions [gridDim.x * 16 * 512]
  * @param[in]  xext_fft   array with dimensions [16 * 512], computed with fk20_setup2xext_fft()
- * 
- * @return void 
+ *
+ * @return void
  */
 __global__ void fk20_poly2hext_fft(g1p_t *hext_fft, const fr_t *polynomial, const g1p_t xext_fft[8192]) {
 
