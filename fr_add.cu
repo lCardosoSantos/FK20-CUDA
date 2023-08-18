@@ -6,7 +6,8 @@
 #include "fr_add.cuh"
 
 /**
- * @brief Accumulates x in z. Device only function.
+ * @brief Computes the sum of two residues x and z modulo r and stores it in z.
+ * Device only function.
  * 
  * @param[in, out] z 
  * @param[in ] x 

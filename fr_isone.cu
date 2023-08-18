@@ -5,10 +5,10 @@
 #include "fr.cuh"
 
 /**
- * @brief checks if the reduced scalar x is equal to one
+ * @brief Checks if the residue x modulo f is congruent to one
  * 
  * @param[in] x 
- * @return bool 1 if the reduced value is one, 0 otherwise 
+ * @return bool 1 if true, 0 otherwise 
  */
 __device__ bool fr_isone(const fr_t &x) {
     fr_t t;

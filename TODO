@@ -13,12 +13,13 @@ Last update: 20230816
 - [ ] Array Syntax: Follow the one from g1p_fft.cu
 - [ ] fp_fft can -> may
 - [ ] Add test coverage for fk20_setup2xext_fft
-- [x] Change `*_neq to !*_neg`
+- [x] Change `*_neq to !*_eq`
   - [x] ~~` g1test.cu, g1test.cuh, g1test_dbl.cu, g1test_fft.cu, g1test_fibonacci.cu, g1test_kat.cu`~~ 20230815
 - [ ] doc for scripts
   - `512.sh, FFTTest.sh, hext_fft.sh, h_fft.sh, h.sh, polynomial.sh, toeplitz_coefficients_fft.sh, toeplitz_coefficients.sh`
 - [ ] doc for other files
   - `fftTest.cu, h.cu, hext_fft.cu, h_fft.cu, polynomial.cu, toeplitz_coefficients.cu, toeplitz_coefficients_fft.cu, xext_fft.cu`
+- [ ] Sync comments on Fr, Fp, G1.
 - [ ] README
   - [ ] fk20test.md
 - [ ] Improvement ideia: change all the test functions to return a bool, for future automated detection of test failure.
@@ -43,42 +44,37 @@ Last update: 20230816
 <!--- ls | egrep "g1p.*\.cu*" --->
 
 - [x] fr
-    - [x] commit and send to DAO
     - [x] [fr_add.cu](./fr_add.cu)
     - [x] [fr_add.cuh](./fr_add.cuh)
     - [x] [fr_addsub.cu](./fr_addsub.cu)
     - [x] [fr_cpy.cu](./fr_cpy.cu)
-    - [x] [fr.cu](./fr.cu) Note: Removed unnecessary conditional.
-    - [x] [fr.cuh](./fr.cuh)
     - [x] [fr_eq.cu](./fr_eq.cu)
     - [x] [fr_fft.cu](./fr_fft.cu)
     - [x] [fr_inv.cu](./fr_inv.cu)
     - [x] [fr_isone.cu](./fr_isone.cu)
     - [x] [fr_iszero.cu](./fr_iszero.cu)
     - [x] [fr_mul.cu](./fr_mul.cu)
-    - [?] [fr_neg.cu](./fr_neg.cu)
-      - [ ] ChkDA: what is rmmu0?
+    - [x] [fr_neg.cu](./fr_neg.cu)
     - [x] [fr_neq.cu](./fr_neq.cu)
     - [x] [fr_nonzero.cu](./fr_nonzero.cu)
     - [x] [fr_reduce4.cu](./fr_reduce4.cu)
-      - [ ] ChkDA: what is r?
     - [x] [fr_roots.cu](./fr_roots.cu)
     - [x] [fr_sqr.cu](./fr_sqr.cu)
     - [x] [fr_sub.cu](./fr_sub.cu)
     - [x] [fr_sub.cuh](./fr_sub.cuh)
+    - [x] [fr_x12.cu](./fr_x12.cu)
     - [x] [fr_x2.cu](./fr_x2.cu)
     - [x] [fr_x3.cu](./fr_x3.cu)
     - [x] [fr_x4.cu](./fr_x4.cu)
     - [x] [fr_x8.cu](./fr_x8.cu)
-    - [x] [fr_x12.cu](./fr_x12.cu)
+      vvv
+    - [x] [fr.cu](./fr.cu) Note: Removed unnecessary conditional.
+    - [x] [fr.cuh](./fr.cuh)
 
 - [x] fp
-    - [x] Change comments where the modulus values are mu mmu0 and mmu1 to pmu, pmmu0, pmmu1
     - [x] [fp_add.cu](./fp_add.cu)
     - [x] [fp_add.cuh](./fp_add.cuh)
     - [x] [fp_cpy.cu](./fp_cpy.cu)
-    - [x] [fp.cu](./fp.cu)
-    - [x] [fp.cuh](./fp.cuh)
     - [x] [fp_eq.cu](./fp_eq.cu)
     - [x] [fp_inv.cu](./fp_inv.cu)
     - [x] [fp_isone.cu](./fp_isone.cu)
@@ -89,14 +85,14 @@ Last update: 20230816
     - [x] [fp_neg.cu](./fp_neg.cu)
     - [x] [fp_neq.cu](./fp_neq.cu)
     - [x] [fp_nonzero.cu](./fp_nonzero.cu)
-    - [x] [fp_reduce12.cuh](./fp_reduce12.cuh)
-      - name means "reduce wide" since it operates over 12 qwords
-    - [x] [fp_reduce6.cu](./fp_reduce6.cu)
-      - name means "reduce narrow" since it operates over 6 qwords. This reduces to canonical representation.
+    - [x] [fp_reduce12.cuh](./fp_reduce12.cuh) name means "reduce wide" since it operates over 12 qwords
+    - [x] [fp_reduce6.cu](./fp_reduce6.cu) name means "reduce narrow" since it operates over 6 qwords. This reduces to canonical representation.
     - [x] [fp_sqr.cu](./fp_sqr.cu)
     - [x] [fp_sqr.cuh](./fp_sqr.cuh)
     - [x] [fp_sub.cu](./fp_sub.cu)
     - [x] [fp_sub.cuh](./fp_sub.cuh)
+    - [x] [fp_x12.cu](./fp_x12.cu)
+    - [x] [fp_x12.cuh](./fp_x12.cuh)
     - [x] [fp_x2.cu](./fp_x2.cu)
     - [x] [fp_x2.cuh](./fp_x2.cuh)
     - [x] [fp_x3.cu](./fp_x3.cu)
@@ -105,15 +101,15 @@ Last update: 20230816
     - [x] [fp_x4.cuh](./fp_x4.cuh)
     - [x] [fp_x8.cu](./fp_x8.cu)
     - [x] [fp_x8.cuh](./fp_x8.cuh)
-    - [x] [fp_x12.cu](./fp_x12.cu)
-    - [x] [fp_x12.cuh](./fp_x12.cuh)
+    - [x] [fp.cu](./fp.cu)
+    - [x] [fp.cuh](./fp.cuh)
+    - [x] Change comments where the modulus values are mu mmu0 and mmu1 to pmu, pmmu0, pmmu1
 
 - [x] g1p files
     - [x] [g1a.cu](./g1a.cu)
     - [x] [g1p_add.cu](./g1p_add.cu)
     - [x] [g1p_addsub.cu](./g1p_addsub.cu)
     - [x] [g1p_compare.cu](./g1p_compare.cu)
-    - [x] [g1p.cu](./g1p.cu)
     - [x] [g1p_dbl.cu](./g1p_dbl.cu)
     - [x] [g1p_fft.cu](./g1p_fft.cu)
     - [x] [g1p_ispoint.cu](./g1p_ispoint.cu)
@@ -121,9 +117,10 @@ Last update: 20230816
     - [x] [g1p_neg.cu](./g1p_neg.cu)
     - [x] [g1p_scale.cu](./g1p_scale.cu)
     - [x] [g1p_sub.cu](./g1p_sub.cu)
+    - [x] [g1p.cu](./g1p.cu)
   
 
-- [ ] Tests target monday
+- [x] Tests target monday
     - [ ] Change `*_neq to !*_neg`
     - [x] [fr_fft_testvector.cu](./fr_fft_testvector.cu)
     - [x] [frtest_add.cu](./frtest_add.cu)

@@ -5,7 +5,7 @@
 #include "fp.cuh"
 
 /**
- * @brief Compares two fp_t residues
+ * @brief Compares two residues modulo p
  *
  * @param[in] x
  * @param[in] y

@@ -7,6 +7,7 @@
 
 /**
  * @brief Computes the sum of two residues x and y modulo p and stores it in z.
+ * Device only function.
  *
  * @param[out] z
  * @param[in] x

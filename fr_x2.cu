@@ -5,7 +5,7 @@
 #include "fr.cuh"
 
 /**
- * @brief Duplicate the subgroup element z, with weak reduction
+ * @brief Multiply z by 2, and stores in z,  with weak reduction
  * 
  * @param[in, out] z 
  * @return void 

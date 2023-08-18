@@ -5,7 +5,7 @@
 #include "fp.cuh"
 
 /**
- * @brief Returns true iff x==0
+ * @brief  Checks if the residue x modulo p is congruent to zero
  *
  * @param[in] x
  * @return bool 1 if true, 0 otherwise

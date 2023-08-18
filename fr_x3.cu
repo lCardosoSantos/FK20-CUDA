@@ -4,7 +4,7 @@
 
 #include "fr.cuh"
 /**
- * @brief Multiply the subgroup element z by 3 with weak reduction
+ * @brief Multiply z by 3, and stores in z, with weak reduction
  * 
  * @param[in, out] z 
  * @return void 

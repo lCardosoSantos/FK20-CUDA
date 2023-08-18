@@ -4,7 +4,7 @@
 
 #include "fr.cuh"
 /**
- * @brief Multiply z by x, stores back into z
+ * @brief Multiply two residues module r z and x, stores back into z
  * 
  * @param[in, out] z first multiplicand, stores the product
  * @param[in] x  second multiplicand

@@ -16,7 +16,10 @@
 
 
 /** 
- * @brief Accumulates q into p, using projective coordinates. p ← p+q
+ * @brief Computes the sum of two points  q into p, using projective coordinates.
+ * and stores in p.
+ * 
+ *  p ← p+q
  * 
  * @param[in, out] p accumulator
  * @param[in] q second operand

@@ -6,7 +6,9 @@
 #include "fr_sub.cuh"
 
 /**
- * @brief Calculates z-x, and stores back into z
+ * @brief Calculates the difference of two residues modulo p and stores it into z.
+ * 
+ * z-=x
  * 
  * @param[in, out] z  minuend, difference
  * @param x subtrahend

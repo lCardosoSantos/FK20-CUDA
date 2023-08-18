@@ -6,7 +6,7 @@
 #include "fr.cuh"
 
 /**
- * @brief Squares the value in z, and stores back into z.
+ * @brief Squares the value in z as a residue modulo r, and stores back into z.
  * 
  * @param[in,out] z 
  * @return void 

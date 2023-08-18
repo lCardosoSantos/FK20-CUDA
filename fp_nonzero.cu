@@ -4,7 +4,7 @@
 #include "fp.cuh"
 
 /**
- * @brief Check if x is not zero.
+ * @brief Check if the reduced input x is different from zero
  *
  * @param [in] x
  * @return bool 1 if true, zero otherwise.

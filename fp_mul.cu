@@ -7,7 +7,7 @@
 #include "fp_reduce12.cuh"
 
 /**
- * @brief Multiplies two Fp residues, stores in z.
+ * @brief Multiplies two Fp residues x and y, stores in z.
  *
  * @param[out] z
  * @param[in] x

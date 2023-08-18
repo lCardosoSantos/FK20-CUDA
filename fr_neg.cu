@@ -5,7 +5,9 @@
 #include "fr.cuh"
 
 /**
- * @brief Calculates the inverse of z, and stores back into z
+ * @brief Compute an additive inverse of a residue x modulo r. Stores in x.
+ * Subtracts x from the highest multiple of R less than 2^256,
+ * then adds r in case of underflow.
  * 
  * @param z 
  * @return void 

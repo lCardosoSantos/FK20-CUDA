@@ -5,7 +5,7 @@
 #include "fr.cuh"
 
 /**
- * @brief Multiply the subgroup element z by 12 with weak reduction
+ * @brief Multiply the residue mod r z by 12 with weak reduction
  * 
  * @param[in,out] z 
  * @return void 

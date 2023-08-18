@@ -5,7 +5,7 @@
 #include "fr.cuh"
 
 /**
- * @brief Copy x into z.
+ * @brief Copy from x into z.
  *
  * @param[out] z
  * @param[in] x

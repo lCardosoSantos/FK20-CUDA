@@ -4,7 +4,7 @@
 
 #include "fr.cuh"
 /**
- * @brief Compares two fr_t subgroup elements
+ * @brief Compares two residues modulo r
  * 
  * @param[in] x 
  * @param[in] y 

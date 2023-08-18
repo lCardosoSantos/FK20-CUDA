@@ -5,7 +5,7 @@
 #include "fr.cuh"
 
 /**
- * @brief Checks if the (reduced) subgroup element x is equal to zero
+ * @brief  Checks if the residue x modulo f is congruent to zero
  * 
  * @param[in] x 
  * @return bool 1 if the reduced value is zero, 0 otherwise.

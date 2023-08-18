@@ -5,7 +5,7 @@
 #include "fr.cuh"
 
 /**
- * @brief Multiply the subgroup element z by 8 with weak reduction
+ * @brief Multiply z by 8, and stores in z, with weak reduction
  * 
  * @param[in,out] z 
  * @return void 

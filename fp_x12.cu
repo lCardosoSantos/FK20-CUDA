@@ -6,7 +6,7 @@
 #include "fp_x12.cuh"
 
 /**
- * @brief Multiplies x by 12 and stores the result into z.
+ * @brief Multiplies the residue mod p x by 12 and stores the result into z.
  * 
  * @param[out] z 
  * @param[in] x 

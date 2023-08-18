@@ -6,10 +6,10 @@
 #include "fr_add.cuh"
 #include "fr_sub.cuh"
 
-// (x,y) := (x+y,x-y)
-
 /**
- * @brief Calculates the sum and the difference of the arguments, storing back into the arguments: (x,y) := (x+y,x-y). Device function.
+ * @brief Computes the sum and the difference of the arguments, storing back into the arguments: (x,y) := (x+y,x-y). Device function.
+ * 
+ * (x,y) := (x+y,x-y)
  * 
  * @param[in,out] x First operand, will store the sum after execution.
  * @param[in,out] y Second operand, will store the difference after execution.

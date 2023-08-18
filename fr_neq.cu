@@ -6,11 +6,11 @@
 #include "fr.cuh"
 
 /**
- * @brief Returns 1 if the operands are not equal. 
+ * @brief Compares two fr_t residues
  * 
  * @param[in] x 
  * @param[in] y 
- * @return bool 
+ * @return bool 1 if the values are not equal, 0 otherwise 
  */
 __device__ bool fr_neq(const fr_t &x, const fr_t &y) {
         return !fr_eq(x, y);
