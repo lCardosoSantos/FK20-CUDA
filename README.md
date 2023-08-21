@@ -7,27 +7,21 @@
 FK20 for GPU
 ================================================================================
 <!--- Introduction to fk20 here-->
-This repository implements the "[Fast amortized KZG proofs](eprint.iacr.org/2023/033.pdf)", described by Dankrad Feist and Dmitry Khovratovich, which is a way of computingn [KZG proofs](https://www.iacr.org/archive/asiacrypt2010/6477178/6477178.pdf) in superlinear time. This implementation leverages modern GPUs to parallelized the execution of (up to) 512 instances of FK20 with the same setup.
+This repository implements the "[Fast amortized KZG proofs](eprint.iacr.org/2023/033.pdf)", described by Dankrad Feist and Dmitry Khovratovich, which is a way of computing [KZG proofs](https://www.iacr.org/archive/asiacrypt2010/6477178/6477178.pdf) in superlinear time. This implementation leverages modern GPUs to parallelize the execution of (up to) 512 instances of FK20 with the same setup.
 
 ## Compilation
-The repository uses gnu-make for compilation, with the following targets:
-
-- `fptest` Compiles all the Fp objects, generating an executable with name `fptest`. This executable tests all the base arithmetic functions on the 381-bit residue used in BSL12-381 ($F_p$). These tests are ran in the GPU. An optional command line parameter is used to set the level of testing:
+distributive properties.
+- `frtest` Compiles a test similar to `fptest`, with the name `frtest`. This executable tests all the base arithmetic functions on the 256-bit residue used in BLS12-321 ($F_r$). These tests are run on the GPU. An optional command line parameter is used to set the level of testing:
   - `1` Tests only the base functions
-  - `2` Tests in `1`, and self consistency tests on the commutative properties.
-  - `3` Test in `2`, and self consistency tests on associative and distributive properties.
-- `frtest` Compiles a test similar to `fptest`, with the name `frtest`. This executable tests all the base arithmetic functions on the 256-bit residue used in BLS12-321 ($F_r$). These tests are ran in the GPU. An optional command line parameter is used to set the level of testing:
-  - `1` Tests only the base functions
-  - `2` Tests in `1`, and self consistency tests on the commutative properties.
-  - `3` Test in `2`, and self consistency tests on associative and distributive properties.
-- `g1test` Compiles a test for curve arithmetic, with name `g1test`. This executable tests all the functions used to manipulates points in the curve defined over $F_p$, named $G_1$. These tests are ran in the GPU, and the executable takes a interger $1 \leq i \leq 512$, which sets the number of CUDA Blocks used in the test for FFT and iFFT functions.
-- `fk20test` Compiles a test for the FK20 functions and integration test. This executable also checks for false-positives. Details on the individual tests are given in section [Testing](#Testing). 
-- `fk20_512test` Similar to `fk20test`, but runs test on many instances of FK20 running in multiple CUDA blocks.
-- `fk20benchmark` Compiles a benchmark function on the subfunctions of FK20. The benchmark runs a spin-up of the GPU first, and then report the median of the measurements. 
+  - `2` Tests in `1`, and self-consistency tests on the commutative properties.
+  - `3` Test in `2`, and self-consistency tests on associative and distributive properties.
+- `g1test` Compiles a test for curve arithmetic, with the name `g1test`. This executable tests all the functions used to manipulate points in the curve defined over $F_p$, named $G_1$. These tests are run in the GPU, and the executable takes an interger $1 \leq i \leq 512$, which sets the number of CUDA Blocks used in the test for FFT and iFFT functions.
+- `fk20test` Compiles a test for the FK20 functions and integration test. This executable also checks for false positives. Details on the individual tests are given in section [Testing](#Testing). 
+- `fk20_512test` is similar to `fk20test`, but runs a test on many instances of FK20 running in multiple CUDA blocks.
+- `fk20benchmark` Compiles a benchmark function on the subfunctions of FK20. The benchmark runs a spin-up of the GPU first and then reports the median of the measurements. 
   - Usage is `./fk20benchmark [-r rows] [-s NSAMPLES] [-h]` there `rows` is the number of FK20 rows and CUDA blocks, and `NSAMPLES` is the number of executions to be measured.
 
 Additionally, `clean` and `shallowclean` are defined for cleaning the repository, with the latter being used to keep KAT objects.
-
 
 ### Prerequisites
 
