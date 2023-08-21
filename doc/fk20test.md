@@ -106,11 +106,12 @@ The macros `CLOCKSTART` and `CLOCKEND` implement a basic execution timer and rep
 
 The `$eq_wrapper` is a type-appropriate comparison function. The types used in FK20 to represent mathematical objects may have different bit values to represent the same object, hence the need to an arithmetic comparator. 
 
-
+<!---
 ## FK20_512 test
-<!--- TODO: n ---> 
+ TODO:
 
 ## FK20 Benchmark
-<!--- TODO: ---> 
+TODO: 
+--->
 
 
