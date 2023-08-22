@@ -19,6 +19,7 @@ $ cd FK20-CUDA
 $ tar -xvzf test.tar.xz #precomputed KAT arrays ~3.5 GB uncompressed
 $ make frtest fptest g1test fk20test fk20_512test fk20benchmark
 ```
+_Note: test.tar.xz is tracked using git lfs_
 
 The make targets are are as follows:
 
@@ -42,6 +43,7 @@ Additionally, `clean` and `shallowclean` are defined for cleaning the repository
 Requisites for compiling and running:
   - CUDA TOOLKIT $\geq$ 11.1 (earlier versions may also work).
   - GNU Make
+  - git-lfs
   - GeFORCE RTX 30xx minimum.
 
 ## Testing
