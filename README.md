@@ -58,7 +58,7 @@ In the self consistency test for $F_r$ and $F_p$, the following properties are c
 
 
 - Comparisons (given any x and y such that x != y):
-  - $eq(x,x) == !neq(x,x)$
+  - $eq(x,x) \neq neq(x,x)$
   - $neq(x,x) = false$
   - $neq(x,y) = true$
   - $eq(x,x) = true$
