@@ -95,7 +95,7 @@ In the self consistency test for $F_r$ and $F_p$, the following properties are c
   
 
 - Modular inverse:
-  - $x = x \cdot inv(x)*x$
+  - $x = x \cdot inv(x) \cdot x$
 
 And for $F_r$, additionally $iFFT^n(FFT^n(x))=x$ is tested.
 
