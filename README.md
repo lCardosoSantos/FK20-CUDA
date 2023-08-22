@@ -85,9 +85,9 @@ In the self consistency test for $F_r$ and $F_p$, the following properties are c
 
 
 - Multiplication:
-  - $x*y = y*x$
-  - $(x*y)*z = x*(y*z)$
-  - $(x*y)*z = x*(y*z)$ (x86_64 instructions)
+  - $x \cdot y = y \cdot x$
+  - $(x \cdot y) \cdot z = x \cdot (y \cdot z)$
+  - $(x \cdot y) \cdot z = x \cdot (y \cdot z)$ (Comparison against native multiplication)
   - $a(b+c) = ab+ac$
   - $(a+b)c = ac+bc$
   - $a(b-c) = ab-ac$
@@ -95,7 +95,7 @@ In the self consistency test for $F_r$ and $F_p$, the following properties are c
   
 
 - Modular inverse:
-  - $x = x*inv(x)*x$
+  - $x = x \cdot inv(x)*x$
 
 And for $F_r$, additionally $iFFT^n(FFT^n(x))=x$ is tested.
 
