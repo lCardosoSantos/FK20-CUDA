@@ -99,9 +99,8 @@ __global__ void FpTestAssociativeMul(testval_t *testval) {
 }
 
 /**
- * @brief Multiplication test, comparing with the native uint64_t multiplication
+ * @brief Multiplication test, using different values for different threads.
  * 
- * (x*y)*z == x*(y*z)
  * 
  * @param testval 
  * @return void 
