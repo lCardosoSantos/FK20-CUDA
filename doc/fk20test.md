@@ -106,11 +106,41 @@ The macros `CLOCKSTART` and `CLOCKEND` implement a basic execution timer and rep
 
 The `$eq_wrapper` is a type-appropriate comparison function. The types used in FK20 to represent mathematical objects may have different bit values to represent the same object, hence the need to an arithmetic comparator. 
 
+## FK20 Benchmark
+### Benchmarking functions
+The benchmark functions follow a common template, varying only the function and variables used:
+
+```C++
+void benchFunction(unsiged rows){
+    cudaError_t err;
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    float milliseconds[NSAMPLES];
+    float median;
+
+    SET_SHAREDMEM($sharedmem, $functionName); //Not all functions need it.
+
+    BENCH_BEFORE;
+        functionName<<<rows, 256>>>($vars);
+    BENCH_AFTER("polynomial -> tc");
+}
+```
+
+There the macros `BENCH_BEFORE` and `BENCH_AFTER` are used to surround the function to be benchmarked. It will execute the function many times, record the runtime using `cudaEventRecord` and report the median, lowest, and highest execution times. Number of samples and rows are stored in globals from the command line args. 
+
+### Auxiliary functions
+
+Here are the auxiliary functions that set up the benchmark. These functions might be changed accordingly to new benchmarks added.
+
+- `setupMemory`: Allocates dynamic unified memory for the inputs used in the benchmarked functions, as well as populate it with valid values.
+- `freeMemory`: Free the memory allocated by `setupMemory`
+- `preBenchTest`: This function serves two purposes: First, it runs a full FK20 computation, and checks it against a KAT. If this test fails, it will be reported, and normal testing will continue. The main objective of this module is to benchmark functions, not testing, but this serves as a canary and warning if something is not working as expected. And the second function is to allow the device to generate its bytecode and load it, with the effect of "spinning up the engines". In practical terms, it helps to remove initialization overheads.
+- `printHeader`: Uses `cudaGetDeviceProperties` to report name and characteristics of the device, as a banner for the benchmarks.
 <!---
 ## FK20_512 test
  TODO:
 
-## FK20 Benchmark
 TODO: 
 --->
 

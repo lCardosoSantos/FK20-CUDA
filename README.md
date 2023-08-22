@@ -10,12 +10,25 @@ FK20 for GPU
 This repository implements the "[Fast amortized KZG proofs](eprint.iacr.org/2023/033.pdf)", described by Dankrad Feist and Dmitry Khovratovich, which is a way of computing [KZG proofs](https://www.iacr.org/archive/asiacrypt2010/6477178/6477178.pdf) in superlinear time. This implementation leverages modern GPUs to parallelize the execution of (up to) 512 instances of FK20 with the same setup.
 
 ## Compilation
-distributive properties.
+
+To download and compile the code and tests, run the following instructions:
+
+```bash
+$ git clone git@github.com:lCardosoSantos/FK20-CUDA.git
+$ cd FK20-CUDA 
+$ tar -xvzf test.tar.xz #precomputed KAT arrays ~3.5 GB uncompressed
+$ make frtest fptest g1test fk20test fk20_512test fk20benchmark
+```
+
+The make directives are defined as:
+
 - `frtest` Compiles a test similar to `fptest`, with the name `frtest`. This executable tests all the base arithmetic functions on the 256-bit residue used in BLS12-321 ($F_r$). These tests are run on the GPU. An optional command line parameter is used to set the level of testing:
+  - `0` Executes only a test based on the fibonacci.
   - `1` Tests only the base functions
   - `2` Tests in `1`, and self-consistency tests on the commutative properties.
   - `3` Test in `2`, and self-consistency tests on associative and distributive properties.
-- `g1test` Compiles a test for curve arithmetic, with the name `g1test`. This executable tests all the functions used to manipulate points in the curve defined over $F_p$, named $G_1$. These tests are run in the GPU, and the executable takes an interger $1 \leq i \leq 512$, which sets the number of CUDA Blocks used in the test for FFT and iFFT functions.
+- `fptest` Compiles a test with the same characterists as `fptest.`
+- `g1test` Compiles a test for curve arithmetic, with the name `g1test`. This executable tests all the functions used to manipulate points in the curve defined over $F_p$, named $G_1$. These tests are run in the GPU, and the executable takes an interger $1 \leq i \leq 512$, which sets the number of CUDA Blocks used in the test for FFT and iFFT functions. If the argument is `0`, fft testing will be skipped.
 - `fk20test` Compiles a test for the FK20 functions and integration test. This executable also checks for false positives. Details on the individual tests are given in section [Testing](#Testing). 
 - `fk20_512test` is similar to `fk20test`, but runs a test on many instances of FK20 running in multiple CUDA blocks.
 - `fk20benchmark` Compiles a benchmark function on the subfunctions of FK20. The benchmark runs a spin-up of the GPU first and then reports the median of the measurements. 
@@ -29,7 +42,7 @@ Additionally, `clean` and `shallowclean` are defined for cleaning the repository
 Requisites for compiling and running:
   - CUDA TOOLKIT $\geq$ 11.1
   - GNU Make
-  - GEFORCE RTX 3090 minimum.
+  - GeFORCE RTX 30xx minimum.
 
 ## Testing
 
@@ -38,6 +51,77 @@ Requisites for compiling and running:
 Testing of the primitives in BLS12-381 is done in two main ways:
 -  **KAT** Known Answer Test: Uses test vectors generated in trusted libraries.
 -  **Self consistency** The primitives are tested against themselves, using known mathematical relationships. For example, it is tested if $iFFT^n(FFT^n(x))=x$, or  $x \circ y = y \circ x$ for an operation with commutative property. The tests are executed against a big number of variables in order to decrease the probability of a false-pass.
+
+In the self consistency test for $F_r$ and $F_p$, the following properties are checked:
+
+
+- Comparisons:
+  - $eq(x,x) != neq(x,x)$
+  - $neq(x,x) = false$
+  - $neq(x,y) = true$
+  - $eq(x,x) = true$
+  - $eq(x,y) = false$
+
+
+- Multiplication by constant
+  - $2(4x) = 8x$
+  - $2(2(2(2(2(2x))))) = 4(4(4x)) = 8(8x)$
+  - $3(4x) = 12(x)$
+  - $3(3(3(2(4(8x))))) = 12(12(12x))$
+
+
+- Addition and subtraction:
+  - $2x + x = 3x$
+  - $x+y = y+x$
+  - $(x+y)+z = x+(y+z)$
+  - $2x = 3x - x$
+
+
+- Squaring:
+  - $(x+n)^2 = x^2 + 2nx + n^2$
+  - $(x+y)^2 = x^2 + 2xy + y^2$
+
+
+- Multiplication:
+  - $x*y = y*x$
+  - $(x*y)*z = x*(y*z)$
+  - $(x*y)*z = x*(y*z)$ (x86_64 instructions)
+  - $a(b+c) = ab+ac$
+  - $(a+b)c = ac+bc$
+  - $a(b-c) = ab-ac$
+  - $(a-b)c = ac-bc$
+  
+
+- Modular inverse:
+  - $x = x*inv(x)*x$
+
+And for $F_r$, additionally $iFFT^n(FFT^n(x))=x$ is tested.
+
+In $G1$, besides KAT, Fibonacci, and FFT tests, the point-doubling function is tested as $p+p==dbl(p)$. 
+
+### Test execution time
+
+The time needed to show the tests is given in the table below. Notice that full testing span multiple hours. Tested on RTX3060
+
+| Test arg | `frtest` | `fptest` | `g1test` |
+|----------|----------|----------|----------|
+| 0        | 0.01s    | 0.5s     | 10.8s    |
+| 1        | 2.4s     | 3.0s     | 22s      |
+| 2        | 14s      | 9.3s     | -        |
+| 3        | 2.6h     | 5.3h     | -        |
+
+For `fk20_512test`:
+
+| Rows | Time  | SMs used |
+|------|-------|----------|
+| 1    | 14 s  | 3.6%     |
+| 7    | 14 s  | 25%      |
+| 14   | 15 s  | 50%      |
+| 21   | 17 s  | 75%      |
+| 28   | 19 s  | 100%     |
+| 512  | 363 s | 18.3x    |
+
+*SM = Streaming Multi processor.
 ### FK20
 
 In FK20, the tests are divided in three groups:
@@ -50,7 +134,7 @@ All the tests in `fk20test` and `fk20_512test` implement a "memory pattern befor
 
 All the tests in `fk20test` and `fk20_512test` also implement a "intention error detection", a false positive mitigation where functions are expected to fail against the KAT.
 
-`fk20_512test` takes an integer between 1 and 512 as command line argument, and runs the tests from `fk20test`, with the argument being the number of rows. A row is defined as a different polynomial committed do the same setup. Each row is executed by one CUDA block with 256 threads. 
+`fk20_512test` takes an integer between 1 and 512 as command line argument, and runs the tests from `fk20test`, with the argument being the number of rows. A row is defined as a different polynomial committed do the same setup. Each row is executed by one CUDA block with 256 threads. Single row and multi-row are in separated tests due to a single row fitting in a single CUDA block, making compilation and testing of `fk20test` more agile.
 
 Additionally, each test displays a reference execution time. A more precise time measurement for each function is given by `fk20benchmark`.
 
@@ -68,11 +152,15 @@ Arithmetic functions are in the form `type_operation`, for example, addition in 
 FK20 functions are named in the form `fk20_input2output` denoting a transformation from `input` to `output`. For example, the function that transforms from a polynomial into the commitment is `fk20_poly2h_fft`.
 
 Test functions are in the format `Type`+`Test`+test name, for example, `FrTestAddSub` is a test for the `addsub` function in $F_r$.
+
+
 <!----------------------------------------------------------------------------->
 # References
 <!--- bibliographic references for fk20-->
 <!--- usefull links-->
-References and useful links
+[Function documentation and graphs](https://lcardososantos.github.io/FK20-CUDAdocs/files.html)
+
+References and useful links:
 
 - [Reference implementation in Python](https://github.com/ethereum/research/tree/master/kzg_data_availability)
 - [FK20 whitepaper](https://eprint.iacr.org/2023/033.pdf)
