@@ -30,6 +30,8 @@ TESTFUN(FrTestCmp);
 TESTFUN(FrTestMulConst);
 TESTFUN(FrTestSub);
 TESTFUN(FrTestAddSub);
+TESTFUN(FrTestSqr);
+TESTFUN(FrTestSqr2);
 TESTFUN(FrTestCopy);
 TESTFUN(FrTestReflexivity);
 TESTFUN(FrTestSymmetry);
@@ -46,7 +48,6 @@ TESTFUN(FrTestAddDistributiveRight);
 TESTFUN(FrTestSubDistributiveLeft);
 TESTFUN(FrTestSubDistributiveRight);
 TESTFUN(FrTestDouble);
-TESTFUN(FrTestSquare);
 
 #endif // FR_TEST_CUH
 

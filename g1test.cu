@@ -72,9 +72,6 @@ int main(int argc, char **argv) {
     if (argc > 1)
         rows = atoi(argv[1]);
 
-    if (rows < 1)
-        rows = 1;
-
     if (rows > 512)
         rows = 512;
 
@@ -84,7 +81,8 @@ int main(int argc, char **argv) {
     TEST(G1TestFibonacci);
     TEST(G1TestDbl);
 
-    G1TestFFT(rows);
+    if (rows > 0)
+        G1TestFFT(rows);
 
     return err;
 }

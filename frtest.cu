@@ -114,6 +114,7 @@ int main(int argc, char **argv) {
         TEST(FrTestCmp);
         TEST(FrTestMulConst);
         TEST(FrTestSub);
+        TEST(FrTestSqr);
         TEST(FrTestFibonacci);
     }
 
@@ -121,6 +122,7 @@ int main(int argc, char **argv) {
         TEST(FrTestCommutativeAdd);
         TEST(FrTestCommutativeMul);
         TEST(FrTestAddSub);
+        TEST(FrTestSqr2);
     }
 
     if (level >= 3) {
