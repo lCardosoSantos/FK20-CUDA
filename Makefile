@@ -10,7 +10,7 @@ G1=g1a g1p g1p_compare g1p_add g1p_dbl g1p_mul g1p_neg g1p_scale g1p_ispoint g1p
 FK20=fk20 fk20_poly2h_fft fk20_poly2toeplitz_coefficients fk20_poly2toeplitz_coefficients_fft fk20_poly2hext_fft fk20_msm fk20_hext_fft2h_fft
 
 FPTEST=test fptest fptest_kat fptest_cmp fptest_mma fptest_inv fptest_add fptest_sub fptest_mul fptest_mulconst fptest_sqr fptest_distributive fptest_fibonacci
-FRTEST=test frtest frtest_kat frtest_cmp frtest_add frtest_mul frtest_sub frtest_addsub frtest_fibonacci frtest_mulconst frtest_sqr frtest_distributive frtest_fft
+FRTEST=test frtest frtest_kat frtest_cmp frtest_add frtest_mul frtest_inv frtest_sub frtest_addsub frtest_fibonacci frtest_mulconst frtest_sqr frtest_distributive frtest_fft
 G1TEST=test g1test g1test_kat g1test_fibonacci g1test_dbl g1test_fft
 FK20TEST=test fk20test fk20test_poly fk20_testvector fk20test_fft fk20test_fft_rand
 FK20TEST_TC=test fk20test_poly2toeplitz_coefficients polynomial toeplitz_coefficients

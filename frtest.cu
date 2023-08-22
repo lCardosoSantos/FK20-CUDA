@@ -115,6 +115,7 @@ int main(int argc, char **argv) {
         TEST(FrTestMulConst);
         TEST(FrTestSub);
         TEST(FrTestSqr);
+        TEST(FrTestInv);
         TEST(FrTestFibonacci);
     }
 
@@ -138,7 +139,6 @@ int main(int argc, char **argv) {
     TEST(FrTestCopy);
     TEST(FrTestNeg);
     TEST(FrTestMul);
-    TEST(FrTestInv);
 
     TEST(FrTestReflexivity);
     TEST(FrTestSymmetry);
