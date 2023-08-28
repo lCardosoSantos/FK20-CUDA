@@ -1,5 +1,5 @@
 CXX=g++
-NVCC=nvcc -rdc=true #--maxrregcount=64 #-Xlinker=--no-relax
+NVCC=nvcc -rdc=true --generate-line-info --std=c++14 #--maxrregcount=64 #-Xlinker=--no-relax
 NVOPTS=--compile
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86 
 COPTS= -O2
@@ -18,6 +18,7 @@ FK20TEST_TCFFT=test fk20test_poly2toeplitz_coefficients_fft polynomial toeplitz_
 FFTTEST=fftTest parseFFTTest
 FK20_512TEST=test fk20_512test xext_fft polynomial toeplitz_coefficients toeplitz_coefficients_fft hext_fft h h_fft
 FK20BENCHMARK=fk20benchmark fk20_testvector
+FK20PROFILE=fk20profile fk20_testvector
 
 FP_OBJS=$(FP:%=%.o)
 FR_OBJS=$(FR:%=%.o)
@@ -39,16 +40,20 @@ FK20TEST_TCFFT_OBJS=$(FK20TEST_TCFFT:%=%.o)
 FFTTEST_OBJS=$(FFTTEST:%=%.o)
 FK20_512TEST_OBJS=$(FK20_512TEST:%=%.o)
 FK20BENCHMARK_OBJS=$(FK20BENCHMARK:%=%.o)
+FK20PROFILE_OBJS=$(FK20PROFILE:%=%.o)
 
 OBJS=$(FP_OBJS) $(FR_OBJS) $(G1_OBJS) $(FK20_OBJS)
 CUBIN=$(FP_CUBIN) $(FR_CUBIN) $(G1_CUBIN) $(FK20_CUBIN)
 TEST_OBJS=$(FPTEST_OBJS) $(FRTEST_OBJS) $(G1TEST_OBJS) $(FK20TEST_OBJS) $(FK20_512TEST_OBJS)
 
-all: fptest frtest g1test fk20test ffttest fk20_512test fk20test_poly2toeplitz_coefficients fk20test_poly2toeplitz_coefficients_fft
+all: fptest frtest g1test fk20test ffttest fk20_512test fk20test_poly2toeplitz_coefficients fk20test_poly2toeplitz_coefficients_fft fk20profile
 
 #add some debug flags. 
 debug: 
 	$(eval NVCC += -g -G --maxrregcount=128 -DDEBUG)
+
+profile:
+	$(eval NVCC += --generate-line-info)
 
 run: fp-run fr-run g1-run fk20-run
 
@@ -157,6 +162,9 @@ fk20_512test: $(FK20_512TEST_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
 fk20benchmark: $(FK20BENCHMARK_OBJS) $(OBJS)
+	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
+
+fk20profile: $(FK20PROFILE_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
 fp%.cubin: fp%.cu fp.cuh
