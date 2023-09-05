@@ -22,6 +22,7 @@ __global__ void fk20_hext_fft2h_fft(g1p_t *h_fft, const g1p_t *hext_fft){
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
+    unsigned secondHalfIndexes = tid;
 
     //Move pointer to block
     hext_fft  += 512*bid;
@@ -34,8 +35,10 @@ __global__ void fk20_hext_fft2h_fft(g1p_t *h_fft, const g1p_t *hext_fft){
     ift();
 
     // STEP2 hext -> h
-    // Zeroing second half
-    g1p_inf(g1p_tmp[256+tid]);
+    // Zeroing second half. IFT did not reorder the array in shared mem on the last step
+    asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(secondHalfIndexes) : "r"(tid << (32-9)));
+    secondHalfIndexes |= 1;
+    g1p_inf(g1p_tmp[secondHalfIndexes]);
 
     // STEP3 h -> h_fft
     // FFT of sharedmem
@@ -154,23 +157,32 @@ __device__ void ift(){
 
     __syncthreads();
 
+    //last move not needed, everything in sharedmem
     // Last move
-    dst = threadIdx.x;
+    //dst = threadIdx.x;
     // src = 9 last bits of dst reversed
-    asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(src) : "r"(dst << (32-9)));
+    //asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(src) : "r"(dst << (32-9)));
 
-    g1p_t m;
+    // if (threadIdx.x == 0){
+    //     unsigned SRC, DST;
+    //     printf(">>> maping at end of ift\n");
+    //     for(int i=0; i<256; i++){
+    //         DST=i;
+    //         asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(SRC) : "r"(DST << (32-9)));
+    //         printf("%3d ift:(%3u -> %3u) ", i, SRC, DST);
 
-    g1p_cpy(m, g1p_tmp[dst]);
-    g1p_cpy(g1p_tmp[dst], g1p_tmp[src]);
-    g1p_cpy(g1p_tmp[src], m); 
+    //         DST|=256;
+    //         SRC|=1;
+    //         printf("(%3u -> %3u) ", SRC, DST);
 
-    dst |= 256;
-    src |= 1;
-
-    g1p_cpy(m, g1p_tmp[dst]);
-    g1p_cpy(g1p_tmp[dst], g1p_tmp[src]);
-    g1p_cpy(g1p_tmp[src], m); 
+    //         SRC = i; 
+    //         asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(DST) : "r"(SRC << (32-9)));
+    //         printf("fft: (%3u -> %3u) ", SRC, DST);
+    //         SRC |= 256;
+    //         DST |= 1; 
+    //         printf("(%3u -> %3u)\n", SRC, DST);
+    //     }
+    // }
 
 
 
@@ -178,13 +190,11 @@ __device__ void ift(){
 
 
 __device__ void fft(){
-    unsigned src, dst;
+    // unsigned src, dst;
     unsigned l, r, w, tid;
     
     tid = threadIdx.x;
-    src = threadIdx.x;
-    // dst = 9 last bits of src reversed
-    asm volatile ("\n\tbrev.b32 %0, %1;" : "=r"(dst) : "r"(src << (32-9)));
+    // src = threadIdx.x;
 
     //// Stage 0
 

@@ -308,10 +308,10 @@ void benchModules(unsigned rows){
 
     SET_SHAREDMEM(g1p_sharedmem, fk20_hext_fft2h_fft)
 
-    // Not used right now, may be useful for future optimizations
-    //  BENCH_BEFORE;
-    //  fk20_hext_fft2h_fft<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_hext_fft);
-    //  BENCH_AFTER("fk20_hext_fft2h_fft");
+    //  Not used right now, may be useful for future optimizations
+    BENCH_BEFORE;
+    fk20_hext_fft2h_fft<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_hext_fft);
+    BENCH_AFTER("fk20_hext_fft2h_fft (ift+zeroHalf+fft)");
 
     BENCH_BEFORE;
     fk20_poly2hext_fft<<<rows, 256, fr_sharedmem>>>(b_g1p_tmp, b_polynomial, (const g1p_t *)b_xext_fft);
