@@ -41,8 +41,8 @@ __device__ void fp_print(const char *s, const fp_t &x) {
     fp_cpy(t, x);
     fp_reduce6(t);
     printf("%s", s);
-//  printf("#x%016lx%016lx%016lx%016lx%016lx%016lx\n",  // clisp
-    printf("%016lX%016lX%016lX%016lX%016lX%016lX\n",    // dc
+    printf("#x%016lx%016lx%016lx%016lx%016lx%016lx\n",  // clisp
+//  printf("%016lX%016lX%016lX%016lX%016lX%016lX\n",    // dc
 //  printf("0x%016lx%016lx%016lx%016lx%016lx%016lx\n",  // python
     t[5], t[4], t[3], t[2], t[1], t[0]);
 }

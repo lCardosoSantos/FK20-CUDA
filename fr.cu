@@ -43,8 +43,8 @@ __device__ void fr_print(const char *s, const fr_t &x) {
     fr_cpy(t, x);
     fr_reduce4(t);
     printf("%s", s);
-    printf("%016lX%016lX%016lX%016lX\n",    // dc
-//  printf("#x%016lx%016lx%016lx%016lx\n",  // clisp compatible format
+    printf("#x%016lx%016lx%016lx%016lx\n",  // clisp compatible format
+//  printf("%016lX%016lX%016lX%016lX\n",    // dc
 //  printf("0x%016lx%016lx%016lx%016lx\n",  // python compatible format
     t[3], t[2], t[1], t[0]);
 }

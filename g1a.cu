@@ -75,9 +75,9 @@ __device__ __host__ void g1a_cpy(g1a_t &a, const g1a_t &b) {
  * @return void 
  */
 __device__ __host__ void g1a_print(const char *s, const g1a_t &a) {
-//  printf("%s #x%016lx%016lx%016lx%016lx%016lx%016lx #x%016lx%016lx%016lx%016lx%016lx%016lx\n", s, // clisp
-    printf("%s %016lX%016lX%016lX%016lX%016lX%016lX %016lX%016lX%016lX%016lX%016lX%016lX\n", s, // dc
-//  printf("%s 0x%016lx%016lx%016lx%016lx%016lx%016lx 0x%016lx%016lx%016lx%016lx%016lx%016lx\n", s, // python
+    printf("%s#x%016lx%016lx%016lx%016lx%016lx%016lx #x%016lx%016lx%016lx%016lx%016lx%016lx\n", s, // clisp
+//  printf("%s%016lX%016lX%016lX%016lX%016lX%016lX %016lX%016lX%016lX%016lX%016lX%016lX\n", s, // dc
+//  printf("%s0x%016lx%016lx%016lx%016lx%016lx%016lx 0x%016lx%016lx%016lx%016lx%016lx%016lx\n", s, // python
     a.x[5], a.x[4], a.x[3], a.x[2], a.x[1], a.x[0],
     a.y[5], a.y[4], a.y[3], a.y[2], a.y[1], a.y[0]);
 }
