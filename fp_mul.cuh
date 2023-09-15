@@ -63,7 +63,7 @@
     "\n\tmad.lo.u64.cc  "#Z"5, "#X"5, "#Y"0, "#Z"5; madc.hi.u64.cc "#Z"6, "#X"5, "#Y"0, "#Z"6;" \
     "\n\tmadc.lo.u64.cc "#Z"7, "#X"5, "#Y"2, "#Z"7; madc.hi.u64.cc "#Z"8, "#X"5, "#Y"2, "#Z"8;" \
     "\n\tmadc.lo.u64.cc "#Z"9, "#X"5, "#Y"4, "#Z"9; madc.hi.u64.cc "#Z"a, "#X"5, "#Y"4, "#Z"a;" \
-    "\n\taddc.u64       "#Z"b,     0, "#Z"b;"
+    "\n\taddc.u64       "#Z"b,     0, "#Z"b;\n"
 
 #endif
 // vim: ts=4 et sw=4 si
