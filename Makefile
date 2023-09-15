@@ -1,5 +1,5 @@
 CXX=g++
-NVCC=nvcc -rdc=true --generate-line-info --std=c++14 #--maxrregcount=64 #-Xlinker=--no-relax
+NVCC=nvcc -rdc=true --generate-line-info --std=c++14 --maxrregcount=128 #-Xlinker=--no-relax
 NVOPTS=--compile
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86 
 COPTS= -O2
