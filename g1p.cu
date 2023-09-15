@@ -52,9 +52,11 @@ __device__ void g1p_fromG1a(g1p_t &p, const g1a_t &a) {
     if (fp_iszero(a.x) && fp_iszero(a.y)) {
         g1p_inf(p);
     }
-    fp_fromUint64(p.x, a.x);
-    fp_fromUint64(p.y, a.y);
-    fp_one(p.z);
+    else {
+        fp_fromUint64(p.x, a.x);
+        fp_fromUint64(p.y, a.y);
+        fp_one(p.z);
+    }
 }
 
 /**
