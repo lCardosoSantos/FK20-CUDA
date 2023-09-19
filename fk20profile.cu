@@ -83,19 +83,14 @@ int main(int argc, char** argv){
     SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
+    SET_SHAREDMEM(g1p_sharedmem, fk20_hext_fft2h_fft);
 
+    fk20_hext_fft2h_fft<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
     fk20_poly2toeplitz_coefficients<<<rows, 256>>>(b_fr_tmp, b_polynomial);
-    CUDASYNC("1");
     fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);
-    CUDASYNC("2");
-        cudaProfilerStart();
-        fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
-        cudaProfilerStop();
-    CUDASYNC("3");
+    fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
     g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
-    CUDASYNC("4");
     fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
-    CUDASYNC("5");
     g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
     CUDASYNC("6");
 
