@@ -331,7 +331,7 @@ void benchModules(unsigned rows){
         fk20_msm_comb<<<512, 256>>>((g1p_t (*)[512])(b_g1p_tmp), \
                                     (const fr_t (*)[16][512])(b_toeplitz_coefficients_fft), \
                                     (g1a_t (*)[512][256])(xext_lut));
-        BENCH_AFTER("fk20_msm_makelut");
+        BENCH_AFTER("fk20_msm_comb");
     } else {
         printf("comb skipped (rows != 512)\n");
     }
