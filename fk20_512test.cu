@@ -192,8 +192,10 @@ void fullTest_512(unsigned rows){
     CMPCHECK(rows*512);
     PRINTPASS(pass);
 
+    if(rows != 512){ 
+        printf("     WARNING: msm_comb runs with 512 rows only.\n");
+    }
     // Generate lookup tables for 8-way comb
-
     printf("Generating lookup tables for MSM with comb multiplication\n"); fflush(stdout);
 
     CLOCKSTART;

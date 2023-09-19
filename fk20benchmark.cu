@@ -51,6 +51,8 @@ g1p_t *b_h_fft = NULL; //min[512]; max [512*512];
 // Result pointers
 fr_t  *b_fr_tmp;
 g1p_t *b_g1p_tmp;
+g1a_t *xext_lut;
+
 __managed__ uint8_t cmp[16*512]; // Comparison array written by GPU
 
 /******************************************************************************/
@@ -308,7 +310,6 @@ void benchModules(unsigned rows){
 
     SET_SHAREDMEM(g1p_sharedmem, fk20_hext_fft2h_fft)
 
-    // Not used right now, may be useful for future optimizations
     BENCH_BEFORE;
     fk20_hext_fft2h_fft<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_hext_fft);
     BENCH_AFTER("fk20_hext_fft2h_fft");
@@ -321,7 +322,19 @@ void benchModules(unsigned rows){
     fk20_poly2h_fft(b_g1p_tmp, b_polynomial, (const g1p_t *)xext_fft, rows);
     BENCH_AFTER("fk20_poly2h_fft");
 
+    if(rows == 512){
+        BENCH_BEFORE;
+        fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>((g1a_t (*)[512][256])(xext_lut), xext_fft);
+        BENCH_AFTER("fk20_msm_makelut");
 
+        BENCH_BEFORE;
+        fk20_msm_comb<<<512, 256>>>((g1p_t (*)[512])(b_g1p_tmp), \
+                                    (const fr_t (*)[16][512])(b_toeplitz_coefficients_fft), \
+                                    (g1a_t (*)[512][256])(xext_lut));
+        BENCH_AFTER("fk20_msm_makelut");
+    } else {
+        printf("comb skipped (rows != 512)\n");
+    }
 }
 
 /**
@@ -344,8 +357,8 @@ void setupMemory(unsigned rows){
           MALLOCSYNC("id");
     // err = cudaMallocManaged(&b_toeplitz_coefficients, rows*16*512*sizeof(fr_t));
     //       MALLOCSYNC("id");
-    // err = cudaMallocManaged(&b_toeplitz_coefficients_fft, rows*16*512*sizeof(fr_t));
-    //       MALLOCSYNC("id");
+    err = cudaMallocManaged(&b_toeplitz_coefficients_fft, rows*16*512*sizeof(fr_t));
+          MALLOCSYNC("id");
     err = cudaMallocManaged(&b_hext_fft, rows*512*sizeof(g1p_t));
           MALLOCSYNC("b_hext_fft");
     // err = cudaMallocManaged(&b_h, rows*512*sizeof(g1p_t));
@@ -357,12 +370,16 @@ void setupMemory(unsigned rows){
     err = cudaMallocManaged(&b_fr_tmp, rows*16*512*sizeof(fr_t));
           MALLOCSYNC("b_fr_tmp");
 
+    if (rows == 512){
+        err = cudaMallocManaged(&xext_lut, rows*512*256*sizeof(g1a_t));
+        MALLOCSYNC("xext_lut");
+    }
 
     // Copy data
     COPYMANY(b_polynomial, polynomial, 4096, rows, fr_t);
     COPYMANY(b_xext_fft, xext_fft, 16*512, 1, g1p_t);
     // COPYMANY(b_toeplitz_coefficients, toeplitz_coefficients, 16*512, rows, fr_t);
-    // COPYMANY(b_toeplitz_coefficients_fft, toeplitz_coefficients_fft, 16*512, rows, fr_t);
+    COPYMANY(b_toeplitz_coefficients_fft, toeplitz_coefficients_fft, 16*512, rows, fr_t);
     COPYMANY(b_hext_fft, hext_fft, 512, rows, g1p_t);
     // COPYMANY(b_h, h, 512, rows, g1p_t);
     COPYMANY(b_h_fft, h_fft, 512, rows, g1p_t);
