@@ -46,7 +46,7 @@ OBJS=$(FP_OBJS) $(FR_OBJS) $(G1_OBJS) $(FK20_OBJS)
 CUBIN=$(FP_CUBIN) $(FR_CUBIN) $(G1_CUBIN) $(FK20_CUBIN)
 TEST_OBJS=$(FPTEST_OBJS) $(FRTEST_OBJS) $(G1TEST_OBJS) $(FK20TEST_OBJS) $(FK20_512TEST_OBJS)
 
-all: fptest frtest g1test fk20test ffttest fk20_512test fk20test_poly2toeplitz_coefficients fk20test_poly2toeplitz_coefficients_fft fk20profile
+all: fptest frtest g1test fk20test ffttest fk20_512test fk20test_poly2toeplitz_coefficients fk20test_poly2toeplitz_coefficients_fft fk20profile fk20benchmark
 
 #add some debug flags. 
 debug: 
