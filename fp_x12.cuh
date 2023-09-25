@@ -6,6 +6,8 @@
 /**
  * @brief PTX macro for multiplication by 12. Stores in Z.
  * 
+ * Overwrites t0..t5 and z6.
+ * Z and X may be the same.
  */
 #define FP_X12(Z, X) \
     /* t = x + x */ \

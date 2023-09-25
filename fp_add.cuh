@@ -6,7 +6,7 @@
 
 /**
  * @brief PTX macro for addition of two residues modulo p. Z←X+Y
- * 
+ * Z, Y and X may be the same.
  */
 #define FP_ADD(Z, X, Y) \
     /* z = x + y */ \

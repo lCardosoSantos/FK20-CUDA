@@ -1,0 +1,47 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
+#ifndef FP_SUB
+
+/**
+ * @brief PTX macro for calculating de difference of two residues modulo p, 
+ * Z = X-Y
+ * 
+ */
+#define FP_SUB(Z, X, Y) \
+    /* z = x - y */ \
+ \
+    sub.u64.cc  Z##0, X##0, Y##0; \
+    subc.u64.cc Z##1, X##1, Y##1; \
+    subc.u64.cc Z##2, X##2, Y##2; \
+    subc.u64.cc Z##3, X##3, Y##3; \
+    subc.u64.cc Z##4, X##4, Y##4; \
+    subc.u64.cc Z##5, X##5, Y##5; \
+    subc.u32      z6,    0,    0; \
+ \
+    /* gt = (z>>320) > (m>>320) */ \
+    /* nz = (z>>384) > 0 */ \
+ \
+    setp.gt.u64 gt, z5, 0x1a0111ea397fe69aU; \
+    setp.ne.u32 nz, z6, 0; \
+ \
+    /* If !gt then add m */ \
+ \
+    @!gt add.u64.cc  Z##0, Z##0, 0xb9feffffffffaaabU; \
+    @!gt addc.u64.cc Z##1, Z##1, 0x1eabfffeb153ffffU; \
+    @!gt addc.u64.cc Z##2, Z##2, 0x6730d2a0f6b0f624U; \
+    @!gt addc.u64.cc Z##3, Z##3, 0x64774b84f38512bfU; \
+    @!gt addc.u64.cc Z##4, Z##4, 0x4b1ba7b6434bacd7U; \
+    @!gt addc.u64.cc Z##5, Z##5, 0x1a0111ea397fe69aU; \
+ \
+    /* If nz then add mmu0 (= 9m) */ \
+ \
+    @nz add.u64.cc  Z##0, Z##0, 0x89f6fffffffd0003U; \
+    @nz addc.u64.cc Z##1, Z##1, 0x140bfff43bf3fffdU; \
+    @nz addc.u64.cc Z##2, Z##2, 0xa0b767a8ac38a745U; \
+    @nz addc.u64.cc Z##3, Z##3, 0x8831a7ac8fada8baU; \
+    @nz addc.u64.cc Z##4, Z##4, 0xa3f8e5685da91392U; \
+    @nz addc.u64.cc Z##5, Z##5, 0xea09a13c057f1b6cU
+
+#endif

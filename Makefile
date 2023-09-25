@@ -6,7 +6,7 @@ COPTS= -O2
 
 FP=fp fp_cpy fp_reduce6 fp_eq fp_neq fp_neg fp_x2 fp_x3 fp_x4 fp_x8 fp_x12 fp_add fp_sub fp_sqr fp_mul fp_inv fp_isone fp_iszero fp_nonzero fp_mma
 FR=fr fr_cpy fr_reduce4 fr_eq fr_neq fr_neg fr_x2 fr_x3 fr_x4 fr_x8 fr_x12 fr_add fr_sub fr_sqr fr_mul fr_inv fr_isone fr_iszero fr_nonzero fr_roots fr_fft fr_addsub
-G1=g1a g1p g1p_compare g1p_add g1p_dbl g1p_mul g1p_neg g1p_scale g1p_ispoint g1p_sub g1p_addsub g1p_fft
+G1=g1a g1p g1p_compare g1p_add g1p_dbl g1p_mul g1p_neg g1p_scale g1p_ispoint g1p_sub g1p_addsub g1p_fft g1p_ptx
 FK20=fk20 fk20_poly2h_fft fk20_poly2toeplitz_coefficients fk20_poly2toeplitz_coefficients_fft fk20_poly2hext_fft fk20_msm fk20_hext_fft2h_fft
 
 FPTEST=test fptest fptest_kat fptest_cmp fptest_mma fptest_inv fptest_add fptest_sub fptest_mul fptest_mulconst fptest_sqr fptest_distributive fptest_fibonacci

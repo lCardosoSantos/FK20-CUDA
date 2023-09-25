@@ -1,0 +1,145 @@
+/*
+ * bls12_381: Arithmetic for BLS12-381
+ * Copyright 2022-2023 Dag Arne Osvik
+ * Copyright 2022-2023 Luan Cardoso dos Santos
+ */
+
+.version 8.1
+.target sm_80
+.address_size 64
+
+	// .globl	_Z11g1p_dbl_ptxP5g1p_t
+
+#include "fp_x2.ptxh"
+#include "fp_x3.ptxh"
+#include "fp_x8.ptxh"
+#include "fp_x12.ptxh"
+#include "fp_add.ptxh"
+#include "fp_sub.ptxh"
+#include "fp_sqr.ptxh"
+#include "fp_mul.ptxh"
+#include "fp_reduce12.ptxh"
+
+#define FP_MOV(Z, X) \
+	mov.b64	Z##0, X##0; \
+	mov.b64	Z##1, X##1; \
+	mov.b64	Z##2, X##2; \
+	mov.b64	Z##3, X##3; \
+	mov.b64	Z##4, X##4; \
+	mov.b64	Z##5, X##5
+
+.visible .func _Z11g1p_dbl_ptxP5g1p_t(
+	.param .b64 _Z11g1p_dbl_ptxP5g1p_t_param_0
+)
+{
+	// Pointer to input point
+	.reg .b64	p;
+
+	// Temporaries for reduction
+	.reg .u64	q<8>, r<7>, t<10>, ta, tb;
+
+	// g1p_dbl temporaries
+	.reg .u64	v<6>, w<6>, x<6>, y<6>, z<6>;
+
+	// Addition overflow register
+	.reg .u32	z6;
+
+	// Predicates: greater-than and non-zero
+	.reg .pred	gt, nz;
+
+
+	ld.param.u64 	p, [_Z11g1p_dbl_ptxP5g1p_t_param_0];
+
+	ld.u64	x0, [p+0x00];
+	ld.u64	x1, [p+0x08];
+	ld.u64	x2, [p+0x10];
+	ld.u64	x3, [p+0x18];
+	ld.u64	x4, [p+0x20];
+	ld.u64	x5, [p+0x28];
+
+	ld.u64	y0, [p+0x30];
+	ld.u64	y1, [p+0x38];
+	ld.u64	y2, [p+0x40];
+	ld.u64	y3, [p+0x48];
+	ld.u64	y4, [p+0x50];
+	ld.u64	y5, [p+0x58];
+
+	ld.u64	z0, [p+0x60];
+	ld.u64	z1, [p+0x68];
+	ld.u64	z2, [p+0x70];
+	ld.u64	z3, [p+0x78];
+	ld.u64	z4, [p+0x80];
+	ld.u64	z5, [p+0x88];
+
+	// fp_mul(x, x, y);
+	FP_MUL(t, x, y); FP_REDUCE12(t); FP_MOV(x, t);
+
+	// fp_sqr(v, z);
+	FP_SQR(t, z); FP_REDUCE12(t); FP_MOV(v, t);
+
+	// fp_x12(v, v);
+	FP_X12(v, v);
+
+	// fp_mul(z, z, y);
+	FP_MUL(t, z, y); FP_REDUCE12(t); FP_MOV(z, t);
+
+	// fp_sqr(y, y);
+	FP_SQR(t, y); FP_REDUCE12(t); FP_MOV(y, t);
+
+	// fp_x3(w, v);
+	FP_X3(w, v);
+
+	// fp_sub(w, y, w);
+	FP_SUB(w, y, w);
+
+	// fp_mul(x, x, w);
+	FP_MUL(t, x, w); FP_REDUCE12(t); FP_MOV(x, t);
+
+	// fp_add(y, y, v);
+	FP_ADD(y, y, v);
+
+	// fp_mul(w, w, y);
+	FP_MUL(t, w, y); FP_REDUCE12(t); FP_MOV(w, t);
+
+	// fp_sub(y, y, v);
+	FP_SUB(y, y, v);
+
+	// fp_x8(y, y);
+	FP_X8(y, y);
+
+	// fp_x2(x, x);
+	FP_X2(x, x);
+
+	// fp_mul(z, z, y);
+	FP_MUL(t, z, y); FP_REDUCE12(t); FP_MOV(z, t);
+
+	// fp_mul(y, y, v);
+	FP_MUL(t, y, v); FP_REDUCE12(t); FP_MOV(y, t);
+
+	// fp_add(y, y, w);
+	FP_ADD(y, y, w);
+
+	st.u64	[p+0x00], x0;
+	st.u64	[p+0x08], x1;
+	st.u64	[p+0x10], x2;
+	st.u64	[p+0x18], x3;
+	st.u64	[p+0x20], x4;
+	st.u64	[p+0x28], x5;
+
+	st.u64	[p+0x30], y0;
+	st.u64	[p+0x38], y1;
+	st.u64	[p+0x40], y2;
+	st.u64	[p+0x48], y3;
+	st.u64	[p+0x50], y4;
+	st.u64	[p+0x58], y5;
+
+	st.u64	[p+0x60], z0;
+	st.u64	[p+0x68], z1;
+	st.u64	[p+0x70], z2;
+	st.u64	[p+0x78], z3;
+	st.u64	[p+0x80], z4;
+	st.u64	[p+0x88], z5;
+
+	ret;
+}
+

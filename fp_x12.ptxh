@@ -1,0 +1,105 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
+#ifndef FP_X12
+/**
+ * @brief PTX macro for multiplication by 12. Stores in Z.
+ * 
+ */
+#define FP_X12(Z, X) \
+    /* t = x + x */ \
+ \
+    add.u64.cc  t0, X##0, X##0; \
+    addc.u64.cc t1, X##1, X##1; \
+    addc.u64.cc t2, X##2, X##2; \
+    addc.u64.cc t3, X##3, X##3; \
+    addc.u64.cc t4, X##4, X##4; \
+    addc.u64.cc t5, X##5, X##5; \
+    addc.u32    z6,    0,    0; \
+ \
+    /* z = x + t */ \
+ \
+    add.u64.cc  Z##0, X##0, t0; \
+    addc.u64.cc Z##1, X##1, t1; \
+    addc.u64.cc Z##2, X##2, t2; \
+    addc.u64.cc Z##3, X##3, t3; \
+    addc.u64.cc Z##4, X##4, t4; \
+    addc.u64.cc Z##5, X##5, t5; \
+    addc.u32      z6,    0, z6; \
+ \
+    /* z = z + z */ \
+ \
+    add.u64.cc  Z##0, Z##0, Z##0; \
+    addc.u64.cc Z##1, Z##1, Z##1; \
+    addc.u64.cc Z##2, Z##2, Z##2; \
+    addc.u64.cc Z##3, Z##3, Z##3; \
+    addc.u64.cc Z##4, Z##4, Z##4; \
+    addc.u64.cc Z##5, Z##5, Z##5; \
+    addc.u32      z6,   z6,   z6; \
+ \
+    /* z = z + z */ \
+ \
+    add.u64.cc  Z##0, Z##0, Z##0; \
+    addc.u64.cc Z##1, Z##1, Z##1; \
+    addc.u64.cc Z##2, Z##2, Z##2; \
+    addc.u64.cc Z##3, Z##3, Z##3; \
+    addc.u64.cc Z##4, Z##4, Z##4; \
+    addc.u64.cc Z##5, Z##5, Z##5; \
+    addc.u32      z6,   z6,   z6; \
+ \
+    /* if z >= 2^387 then z -= 78m */ \
+ \
+    setp.gt.u32 gt, z6, 7; \
+    @gt sub.u64.cc  Z##0, Z##0, 0xABB1FFFFFFE6001AU; \
+    @gt subc.u64.cc Z##1, Z##1, 0x5867FF9A0797FFEAU; \
+    @gt subc.u64.cc Z##2, Z##2, 0x70E02D0B29EAFF01U; \
+    @gt subc.u64.cc Z##3, Z##3, 0x9C590282328BB651U; \
+    @gt subc.u64.cc Z##4, Z##4, 0xE26D1988810EA9A0U; \
+    @gt subc.u64.cc Z##5, Z##5, 0xEC53755D84F84302U; \
+    @gt subc.u32      z6,   z6, 7; \
+ \
+    /* if z >= 2^386 then z -= 39m */ \
+ \
+    setp.gt.u32 gt, z6, 3; \
+    @gt sub.u64.cc  Z##0, Z##0, 0x55D8FFFFFFF3000DU; \
+    @gt subc.u64.cc Z##1, Z##1, 0xAC33FFCD03CBFFF5U; \
+    @gt subc.u64.cc Z##2, Z##2, 0xB870168594F57F80U; \
+    @gt subc.u64.cc Z##3, Z##3, 0x4E2C81411945DB28U; \
+    @gt subc.u64.cc Z##4, Z##4, 0x71368CC4408754D0U; \
+    @gt subc.u64.cc Z##5, Z##5, 0xF629BAAEC27C2181U; \
+    @gt subc.u32      z6,   z6, 3; \
+ \
+    /* if z >= 2^385 then z -= 19m */ \
+ \
+    setp.gt.u32 gt, z6, 1; \
+    @gt sub.u64.cc  Z##0, Z##0, 0xCDECFFFFFFF9AAB1U; \
+    @gt subc.u64.cc Z##1, Z##1, 0x46C3FFE7293BFFFAU; \
+    @gt subc.u64.cc Z##2, Z##2, 0xA89FA1F24F2244AEU; \
+    @gt subc.u64.cc Z##3, Z##3, 0x74DA9ADE12E06434U; \
+    @gt subc.u64.cc Z##4, Z##4, 0x930D7286FE9DD3FCU; \
+    @gt subc.u64.cc Z##5, Z##5, 0xEE145462447E1D73U; \
+    @gt subc.u32      z6,   z6, 1; \
+ \
+    /* if z >= 2^384 then z -= 9m */ \
+ \
+    setp.gt.u32 gt, z6, 0; \
+    @gt sub.u64.cc  Z##0, Z##0, 0x89F6FFFFFFFD0003U; \
+    @gt subc.u64.cc Z##1, Z##1, 0x140BFFF43BF3FFFDU; \
+    @gt subc.u64.cc Z##2, Z##2, 0xA0B767A8AC38A745U; \
+    @gt subc.u64.cc Z##3, Z##3, 0x8831A7AC8FADA8BAU; \
+    @gt subc.u64.cc Z##4, Z##4, 0xA3F8E5685DA91392U; \
+    @gt subc.u64.cc Z##5, Z##5, 0xEA09A13C057F1B6CU; \
+    @gt subc.u32      z6,   z6, 0; \
+ \
+    /* if z >= 2^384 then z -= 9m */ \
+ \
+    setp.gt.u32 gt, z6, 0; \
+    @gt sub.u64.cc  Z##0, Z##0, 0x89F6FFFFFFFD0003U; \
+    @gt subc.u64.cc Z##1, Z##1, 0x140BFFF43BF3FFFDU; \
+    @gt subc.u64.cc Z##2, Z##2, 0xA0B767A8AC38A745U; \
+    @gt subc.u64.cc Z##3, Z##3, 0x8831A7AC8FADA8BAU; \
+    @gt subc.u64.cc Z##4, Z##4, 0xA3F8E5685DA91392U; \
+    @gt subc.u64.cc Z##5, Z##5, 0xEA09A13C057F1B6CU
+
+#endif
