@@ -14,6 +14,8 @@
 #include "fp_mul.cuh"
 #include "fp_reduce12.cuh"
 
+extern __device__ void g1p_dbl_ptx(g1p_t *p);
+
 /**
  * @brief G1 point doubling, with write back: p=2*p
  * 
@@ -30,6 +32,9 @@ __device__ void g1p_dbl(g1p_t &p) {
         fp_zero(p.y);
         fp_zero(p.z);
 
+        return;
+    } else {
+        g1p_dbl_ptx(&p);
         return;
     }
 
@@ -225,6 +230,56 @@ __device__ void g1p_dbl(g1p_t &p) {
     fp_cpy(p.y, y);
     fp_cpy(p.z, z);
 #endif
+}
+
+
+/**
+ * @brief G1 point doubling, with write back: p=2*p
+ * previous implementation, without unrolling of the PTX to in-register.
+ * 
+ * @param[in, out] p 
+ * @return void 
+ */
+__device__ void g1p_dbl_noPTX(g1p_t &p) {
+
+    if (!g1p_isPoint(p)) {
+        g1p_print("ERROR in g1p_dbl(): Invalid point ", p);
+
+        // return invalid point as result
+        fp_zero(p.x);
+        fp_zero(p.y);
+        fp_zero(p.z);
+
+        return;
+    } 
+
+    fp_t x, y, z, v, w;
+
+    fp_cpy(x, p.x);
+    fp_cpy(y, p.y);
+    fp_cpy(z, p.z);
+
+    fp_mul(x, x, y);
+    fp_sqr(v, z);
+    fp_x12(v, v);
+    fp_mul(z, z, y);
+    fp_sqr(y, y);
+    fp_x3(w, v);
+    fp_sub(w, y, w);
+    fp_mul(x, x, w);
+    fp_add(y, y, v);
+    fp_mul(w, w, y);
+    fp_sub(y, y, v);
+    fp_x8(y, y);
+    fp_x2(x, x);
+    fp_mul(z, z, y);
+    fp_mul(y, y, v);
+    fp_add(y, y, w);
+
+    fp_cpy(p.x, x);
+    fp_cpy(p.y, y);
+    fp_cpy(p.z, z);
+
 }
 
 // vim: ts=4 et sw=4 si

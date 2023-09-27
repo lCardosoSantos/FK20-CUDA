@@ -1,4 +1,5 @@
 CXX=g++
+CPP=cpp
 NVCC=nvcc -rdc=true --generate-line-info --std=c++14 --maxrregcount=128 #-Xlinker=--no-relax
 NVOPTS=--compile
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86 
@@ -9,7 +10,7 @@ FR=fr fr_cpy fr_reduce4 fr_eq fr_neq fr_neg fr_x2 fr_x3 fr_x4 fr_x8 fr_x12 fr_ad
 G1=g1a g1p g1p_compare g1p_add g1p_dbl g1p_mul g1p_neg g1p_scale g1p_ispoint g1p_sub g1p_addsub g1p_fft g1p_ptx
 FK20=fk20 fk20_poly2h_fft fk20_poly2toeplitz_coefficients fk20_poly2toeplitz_coefficients_fft fk20_poly2hext_fft fk20_msm fk20_hext_fft2h_fft
 
-FPTEST=test fptest fptest_kat fptest_cmp fptest_mma fptest_inv fptest_add fptest_sub fptest_mul fptest_mulconst fptest_sqr fptest_distributive fptest_fibonacci
+FPTEST=test fptest fptest_kat fptest_cmp fptest_mma fptest_inv fptest_add fptest_sub fptest_mul fptest_mulconst fptest_sqr fptest_distributive fptest_fibonacci fp_ptx
 FRTEST=test frtest frtest_kat frtest_cmp frtest_add frtest_mul frtest_inv frtest_sub frtest_addsub frtest_fibonacci frtest_mulconst frtest_sqr frtest_distributive frtest_fft
 G1TEST=test g1test g1test_kat g1test_fibonacci g1test_dbl g1test_fft
 FK20TEST=test fk20test fk20test_poly fk20_testvector fk20test_fft fk20test_fft_rand
@@ -85,6 +86,12 @@ clobber: clean
 %.o: %.cu
 	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $<
 
+%_ptx.ptx: %_ptx.ptxm
+	$(CPP) $< $@
+
+%_ptx.o: %_ptx.ptx
+	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $<
+	
 %: %.o
 	$(NVCC) $(NVARCH) -o $@ $^ --resource-usage
 

@@ -126,30 +126,48 @@ int main(int argc, char **argv) {
     TEST(FpTestFibonacci);
 
     if (level >= 1) {
+        printf("=== Tests level 1\n");
         TEST(FpTestCmp);
         TEST(FpTestMulConst);
+        TEST(FpTestMulConstPTX);
         TEST(FpTestAdd);
+        TEST(FpTestAddPTX);
         TEST(FpTestSub);
+        TEST(FpTestSubPTX);
         TEST(FpTestSqr);
+        TEST(FpTestSqrPTX);
         TEST(FpTestMul);
+        TEST(FpTestMulPTX);
         TEST(FpTestInv);
     }
 
     if (level >= 2) {
+        printf("=== Tests level 2\n");
         TEST(FpTestSqr2);
+        TEST(FpTestSqr2PTX);
         TEST(FpTestCommutativeAdd);
+        TEST(FpTestCommutativeAddPTX);
         TEST(FpTestCommutativeMul);
+        TEST(FpTestCommutativeMulPTX);
     }
 
     if (level >= 3) {
+        printf("=== Tests level 3\n");
         TEST(FpTestAssociativeMul);
+        TEST(FpTestAssociativeMulPTX);
         TEST(FpTestMMA);
         TEST(FpTestAssociativeAdd);
+        TEST(FpTestAssociativeAddPTX);
         TEST(FpTestAddDistributiveLeft);
+        TEST(FpTestAddDistributiveLeftPTX);
         TEST(FpTestAddDistributiveRight);
+        TEST(FpTestAddDistributiveRightPTX);
         TEST(FpTestSubDistributiveLeft);
+        TEST(FpTestSubDistributiveLeftPTX);
         TEST(FpTestSubDistributiveRight);
+        TEST(FpTestSubDistributiveRightPTX);
     }
+
 
     /*
     TEST(FpTestCopy);

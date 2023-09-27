@@ -38,6 +38,9 @@ TESTFUN(G1TestDistributiveRight);
 TESTFUN(G1TestDouble);
 TESTFUN(G1TestSquare);
 
+//not optimized versions.
+TESTFUN(G1TestDbl_noPTX);
+
 void G1TestFFT(unsigned rows);
 
 #endif // G1_TEST_CUH

@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
     TEST(G1TestKAT);
     TEST(G1TestFibonacci);
     TEST(G1TestDbl);
-
+    TEST(G1TestDbl_noPTX);
     if (rows > 0)
         G1TestFFT(rows);
 

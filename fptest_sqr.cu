@@ -4,6 +4,7 @@
 
 #include "fp.cuh"
 #include "fptest.cuh"
+#include "fp_ptx.cuh"
 
 /**
  * @brief Test for squaring on Fp. Checks for self consistency:
@@ -153,6 +154,180 @@ __global__ void FpTestSqr2(testval_t *testval) {
             // l = (x+y)^2
             fp_add(l, x, y);
             fp_sqr(l, l);
+
+            // r = x^2 + 2xy + y^2
+            fp_add(r, x2, y);   // 2x+y
+            fp_mul(r, r, y);    // 2xy+y^2
+            fp_add(r, xsqr, r);
+
+            if (fp_neq(l, r)) {
+                pass = false;
+
+                printf("%d: FAILED\n", i);
+                fp_print("x           : ",  x);
+                fp_print("y           : ",  y);
+                fp_print("(x+y)^2     : ",  l);
+                fp_print("x^2+2xy+y^2 : ",  r);
+                break;
+            }
+            ++count;
+        }
+    }
+
+    printf("%ld tests\n", count);
+
+    PRINTPASS(pass);
+}
+
+
+/**
+ * @brief Test for squaring on Fp using PTX macros. Checks for self consistency:
+ * 
+ * (x+n)^2 == x^2 + 2nx + n^2
+ * 
+ * @param testval 
+ * @return void 
+ */
+__global__ void FpTestSqrPTX(testval_t *testval) {
+
+    printf("=== RUN   %s\n", __func__);
+
+    bool    pass    = true;
+    size_t  count   = 0;
+
+    const fp_t
+        _1  = {  1, 0, 0, 0, 0, 0 },
+        _2  = {  2, 0, 0, 0, 0, 0 },
+        _4  = {  4, 0, 0, 0, 0, 0 },
+        _6  = {  6, 0, 0, 0, 0, 0 },
+        _16 = { 16, 0, 0, 0, 0, 0 },
+        _36 = { 36, 0, 0, 0, 0, 0 };
+
+    fp_t x, xsqr, x2, x4, x8, x12, l, r;
+
+    // (x+n)^2 == x^2 + 2nx + n^2
+
+    for (int i=0; pass && i<TESTVALS; i++) {
+
+        fp_cpy(x, testval[i]);
+
+        fp_sqr_ptx(xsqr, x);
+        fp_x2(x2, x);   // n = 1
+        fp_x4(x4, x);   // n = 2
+        fp_x8(x8, x);   // n = 4
+        fp_x12(x12, x); // n = 6
+
+        // l = (x+1)^2
+        fp_add(l, x, _1);
+        fp_sqr_ptx(l, l);
+
+        // r = x^2 + 2x + 1
+        fp_add(r, xsqr, x2);
+        fp_add(r, r, _1);
+
+        if (fp_neq(l, r)) {
+            pass = false;
+
+            printf("%d: FAILED\n", i);
+            fp_print("x        : ",  x);
+            fp_print("(x+1)^2  : ",  l);
+            fp_print("x^2+2x+1 : ",  r);
+            break;
+        }
+        ++count;
+
+        // l = (x+2)^2
+        fp_add(l, x, _2);
+        fp_sqr_ptx(l, l);
+
+        // r = x^2 + 4x + 4
+        fp_add(r, xsqr, x4);
+        fp_add(r, r, _4);
+
+        if (fp_neq(l, r)) {
+            pass = false;
+
+            printf("%d: FAILED\n", i);
+            fp_print("x        : ",  x);
+            fp_print("(x+2)^2  : ",  l);
+            fp_print("x^2+4x+4 : ",  r);
+            break;
+        }
+        ++count;
+
+        // l = (x+4)^2
+        fp_add(l, x, _4);
+        fp_sqr_ptx(l, l);
+
+        // r = x^2 + 8x + 16
+        fp_add(r, xsqr, x8);
+        fp_add(r, r, _16);
+
+        if (fp_neq(l, r)) {
+            pass = false;
+
+            printf("%d: FAILED\n", i);
+            fp_print("x         : ",  x);
+            fp_print("(x+4)^2   : ",  l);
+            fp_print("x^2+8x+16 : ",  r);
+            break;
+        }
+        ++count;
+
+        // l = (x+6)^2
+        fp_add(l, x, _6);
+        fp_sqr_ptx(l, l);
+
+        // r = x^2 + 12x + 36
+        fp_add(r, xsqr, x12);
+        fp_add(r, r, _36);
+
+        if (fp_neq(l, r)) {
+            pass = false;
+
+            printf("%d: FAILED\n", i);
+            fp_print("x          : ",  x);
+            fp_print("(x+6)^2    : ",  l);
+            fp_print("x^2+12x+36 : ",  r);
+            break;
+        }
+        ++count;
+    }
+
+    printf("%ld tests\n", count);
+
+    PRINTPASS(pass);
+}
+
+/**
+ * @brief Test for squaring on Fp using PTX macros. Checks for self consistency:
+ * 
+ * (x+y)^2 == x^2 + 2xy + y^2
+ * 
+ * @param testval 
+ * @return void 
+ */
+__global__ void FpTestSqr2PTX(testval_t *testval) {
+
+    printf("=== RUN   %s\n", __func__);
+
+    bool    pass    = true;
+    size_t  count   = 0;
+
+    fp_t x, xsqr, x2, y, l, r;
+
+    // (x+y)^2 == x^2 + 2xy + y^2
+
+    for (int i=0; pass && i<TESTVALS; i++) {
+        fp_cpy(x, testval[i]);
+        fp_sqr_ptx(xsqr, x);
+        fp_x2(x2, x);
+
+        for (int j=i; pass && j<TESTVALS; j++) {
+
+            // l = (x+y)^2
+            fp_add(l, x, y);
+            fp_sqr_ptx(l, l);
 
             // r = x^2 + 2xy + y^2
             fp_add(r, x2, y);   // 2x+y

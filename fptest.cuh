@@ -30,27 +30,42 @@ TESTFUN(FpTestFibonacci);
 
 TESTFUN(FpTestCmp);
 TESTFUN(FpTestMulConst);
+TESTFUN(FpTestMulConstPTX);
 TESTFUN(FpTestAdd);
+TESTFUN(FpTestAddPTX);
 TESTFUN(FpTestSub);
+TESTFUN(FpTestSubPTX);
 TESTFUN(FpTestSqr);
+TESTFUN(FpTestSqrPTX);
 TESTFUN(FpTestMul);
+TESTFUN(FpTestMulPTX);
 TESTFUN(FpTestInv);
 TESTFUN(FpTestMMA);
 
 // Quadratic
 
 TESTFUN(FpTestSqr2);
+TESTFUN(FpTestSqr2PTX);
 TESTFUN(FpTestCommutativeAdd);
+TESTFUN(FpTestCommutativeAddPTX);
 TESTFUN(FpTestCommutativeMul);
+TESTFUN(FpTestCommutativeMulPTX);
 
 // Cubic
 
 TESTFUN(FpTestAssociativeAdd);
+TESTFUN(FpTestAssociativeAddPTX);
 TESTFUN(FpTestAssociativeMul);
+TESTFUN(FpTestAssociativeMulPTX);
 TESTFUN(FpTestAddDistributiveLeft);
+TESTFUN(FpTestAddDistributiveLeftPTX);
 TESTFUN(FpTestAddDistributiveRight);
+TESTFUN(FpTestAddDistributiveRightPTX);
 TESTFUN(FpTestSubDistributiveLeft);
+TESTFUN(FpTestSubDistributiveLeftPTX);
 TESTFUN(FpTestSubDistributiveRight);
+TESTFUN(FpTestSubDistributiveRightPTX);
+
 
 // Not implemented
 

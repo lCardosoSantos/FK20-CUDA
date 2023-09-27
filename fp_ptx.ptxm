@@ -1,0 +1,527 @@
+/*
+ * bls12_381: Arithmetic for BLS12-381
+ * Copyright 2022-2023 Dag Arne Osvik
+ * Copyright 2022-2023 Luan Cardoso dos Santos
+ */
+
+/*
+* this file have function wrappers for the macros defined in fp*.ptxh, and is used by
+* the test functions.
+*/
+.version 8.1
+.target sm_80
+.address_size 64
+
+#include "fp_add.ptxh"
+#include "fp_sub.ptxh"
+#include "fp_mul.ptxh"
+#include "fp_reduce12.ptxh"
+#include "fp_sqr.ptxh"
+#include "fp_x12.ptxh"
+#include "fp_x2.ptxh"
+#include "fp_x4.ptxh"
+#include "fp_x3.ptxh"
+#include "fp_x8.ptxh"
+
+
+	// .globl	_Z10fp_add_ptxRA6_mRA6_KmS3_
+
+.visible .func _Z10fp_add_ptxRA6_mRA6_KmS3_(
+	.param .b64 _Z10fp_add_ptxRA6_mRA6_KmS3__param_0,
+	.param .b64 _Z10fp_add_ptxRA6_mRA6_KmS3__param_1,
+	.param .b64 _Z10fp_add_ptxRA6_mRA6_KmS3__param_2
+)
+{
+	.reg .b64 	%rd<22>;
+
+
+	ld.param.u64 	%rd19, [_Z10fp_add_ptxRA6_mRA6_KmS3__param_0];
+	ld.param.u64 	%rd20, [_Z10fp_add_ptxRA6_mRA6_KmS3__param_1];
+	ld.param.u64 	%rd21, [_Z10fp_add_ptxRA6_mRA6_KmS3__param_2];
+	ld.u64 	%rd7, [%rd20];
+	ld.u64 	%rd13, [%rd21];
+	ld.u64 	%rd8, [%rd20+8];
+	ld.u64 	%rd14, [%rd21+8];
+	ld.u64 	%rd9, [%rd20+16];
+	ld.u64 	%rd15, [%rd21+16];
+	ld.u64 	%rd10, [%rd20+24];
+	ld.u64 	%rd16, [%rd21+24];
+	ld.u64 	%rd11, [%rd20+32];
+	ld.u64 	%rd17, [%rd21+32];
+	ld.u64 	%rd12, [%rd20+40];
+	ld.u64 	%rd18, [%rd21+40];
+	// begin inline asm
+	
+	{
+	.reg .u64 z<6>, x<6>, y<6>;
+	.reg .u32 z6;
+	.reg .pred gt, nz;
+	mov.u64 x0,  %rd7;
+	mov.u64 x1,  %rd8;
+	mov.u64 x2,  %rd9;
+	mov.u64 x3,  %rd10;
+	mov.u64 x4, %rd11;
+	mov.u64 x5, %rd12;
+	mov.u64 y0, %rd13;
+	mov.u64 y1, %rd14;
+	mov.u64 y2, %rd15;
+	mov.u64 y3, %rd16;
+	mov.u64 y4, %rd17;
+	mov.u64 y5, %rd18;
+
+    FP_ADD(z, x, y);
+
+	mov.u64 %rd1,  z0;
+	mov.u64 %rd2,  z1;
+	mov.u64 %rd3,  z2;
+	mov.u64 %rd4,  z3;
+	mov.u64 %rd5,  z4;
+	mov.u64 %rd6,  z5;
+	}
+	// end inline asm
+	st.u64 	[%rd19], %rd1;
+	st.u64 	[%rd19+8], %rd2;
+	st.u64 	[%rd19+16], %rd3;
+	st.u64 	[%rd19+24], %rd4;
+	st.u64 	[%rd19+32], %rd5;
+	st.u64 	[%rd19+40], %rd6;
+	ret;
+
+}
+
+
+	// .globl	_Z10fp_sub_ptxRA6_mRA6_KmS3_
+.visible .func _Z10fp_sub_ptxRA6_mRA6_KmS3_(
+	.param .b64 _Z6fp_subRA6_mRA6_KmS3__param_0,
+	.param .b64 _Z6fp_subRA6_mRA6_KmS3__param_1,
+	.param .b64 _Z6fp_subRA6_mRA6_KmS3__param_2
+)
+{
+	.reg .b64 	%rd<22>;
+
+
+	ld.param.u64 	%rd19, [_Z6fp_subRA6_mRA6_KmS3__param_0];
+	ld.param.u64 	%rd20, [_Z6fp_subRA6_mRA6_KmS3__param_1];
+	ld.param.u64 	%rd21, [_Z6fp_subRA6_mRA6_KmS3__param_2];
+	ld.u64 	%rd7, [%rd20];
+	ld.u64 	%rd13, [%rd21];
+	ld.u64 	%rd8, [%rd20+8];
+	ld.u64 	%rd14, [%rd21+8];
+	ld.u64 	%rd9, [%rd20+16];
+	ld.u64 	%rd15, [%rd21+16];
+	ld.u64 	%rd10, [%rd20+24];
+	ld.u64 	%rd16, [%rd21+24];
+	ld.u64 	%rd11, [%rd20+32];
+	ld.u64 	%rd17, [%rd21+32];
+	ld.u64 	%rd12, [%rd20+40];
+	ld.u64 	%rd18, [%rd21+40];
+	// begin inline asm
+	
+	{
+	.reg .u64 z<6>, x<6>, y<6>;
+	.reg .u32 z6;
+	.reg .pred gt, nz;
+	mov.u64 x0,  %rd7;
+	mov.u64 x1,  %rd8;
+	mov.u64 x2,  %rd9;
+	mov.u64 x3,  %rd10;
+	mov.u64 x4, %rd11;
+	mov.u64 x5, %rd12;
+	mov.u64 y0, %rd13;
+	mov.u64 y1, %rd14;
+	mov.u64 y2, %rd15;
+	mov.u64 y3, %rd16;
+	mov.u64 y4, %rd17;
+	mov.u64 y5, %rd18;
+
+	FP_SUB(z, x, y);
+
+	mov.u64 %rd1,  z0;
+	mov.u64 %rd2,  z1;
+	mov.u64 %rd3,  z2;
+	mov.u64 %rd4,  z3;
+	mov.u64 %rd5,  z4;
+	mov.u64 %rd6,  z5;
+	}
+	// end inline asm
+	st.u64 	[%rd19], %rd1;
+	st.u64 	[%rd19+8], %rd2;
+	st.u64 	[%rd19+16], %rd3;
+	st.u64 	[%rd19+24], %rd4;
+	st.u64 	[%rd19+32], %rd5;
+	st.u64 	[%rd19+40], %rd6;
+	ret;
+
+}
+
+	// .globl	_Z10fp_mul_ptxRA6_mRA6_KmS3_
+
+.visible .func _Z10fp_mul_ptxRA6_mRA6_KmS3_(
+	.param .b64 _Z10fp_mul_ptxRA6_mRA6_KmS3__param_0,
+	.param .b64 _Z10fp_mul_ptxRA6_mRA6_KmS3__param_1,
+	.param .b64 _Z10fp_mul_ptxRA6_mRA6_KmS3__param_2
+)
+{
+	.reg .b64 	%rd<22>;
+
+
+	ld.param.u64 	%rd19, [_Z10fp_mul_ptxRA6_mRA6_KmS3__param_0];
+	ld.param.u64 	%rd20, [_Z10fp_mul_ptxRA6_mRA6_KmS3__param_1];
+	ld.param.u64 	%rd21, [_Z10fp_mul_ptxRA6_mRA6_KmS3__param_2];
+	ld.u64 	%rd7, [%rd20];
+	ld.u64 	%rd8, [%rd20+8];
+	ld.u64 	%rd9, [%rd20+16];
+	ld.u64 	%rd10, [%rd20+24];
+	ld.u64 	%rd11, [%rd20+32];
+	ld.u64 	%rd12, [%rd20+40];
+	ld.u64 	%rd13, [%rd21];
+	ld.u64 	%rd14, [%rd21+8];
+	ld.u64 	%rd15, [%rd21+16];
+	ld.u64 	%rd16, [%rd21+24];
+	ld.u64 	%rd17, [%rd21+32];
+	ld.u64 	%rd18, [%rd21+40];
+	// begin inline asm
+	
+	{
+	.reg .u64 x<6>, y<6>;
+	.reg .u64 u<10>, ua, ub;
+	.reg .u64 q<8>;
+	.reg .u64 r<7>;
+	mov.u64 x0,  %rd7;
+	mov.u64 x1,  %rd8;
+	mov.u64 x2,  %rd9;
+	mov.u64 x3,  %rd10;
+	mov.u64 x4, %rd11;
+	mov.u64 x5, %rd12;
+	mov.u64 y0, %rd13;
+	mov.u64 y1, %rd14;
+	mov.u64 y2, %rd15;
+	mov.u64 y3, %rd16;
+	mov.u64 y4, %rd17;
+	mov.u64 y5, %rd18;
+
+    FP_MUL(u, x, y);
+    FP_REDUCE12(u);
+
+	mov.u64 %rd1,  u0;
+	mov.u64 %rd2,  u1;
+	mov.u64 %rd3,  u2;
+	mov.u64 %rd4,  u3;
+	mov.u64 %rd5,  u4;
+	mov.u64 %rd6,  u5;
+	}
+	// end inline asm
+	st.u64 	[%rd19], %rd1;
+	st.u64 	[%rd19+8], %rd2;
+	st.u64 	[%rd19+16], %rd3;
+	st.u64 	[%rd19+24], %rd4;
+	st.u64 	[%rd19+32], %rd5;
+	st.u64 	[%rd19+40], %rd6;
+	ret;
+
+}
+
+
+	// .globl	_Z10fp_sqr_ptxRA6_mRA6_Km
+
+.visible .func _Z10fp_sqr_ptxRA6_mRA6_Km(
+	.param .b64 _Z10fp_sqr_ptxRA6_mRA6_Km_param_0,
+	.param .b64 _Z10fp_sqr_ptxRA6_mRA6_Km_param_1
+)
+{
+	.reg .b64 	%rd<15>;
+
+
+	ld.param.u64 	%rd13, [_Z10fp_sqr_ptxRA6_mRA6_Km_param_0];
+	ld.param.u64 	%rd14, [_Z10fp_sqr_ptxRA6_mRA6_Km_param_1];
+	ld.u64 	%rd7, [%rd14];
+	ld.u64 	%rd8, [%rd14+8];
+	ld.u64 	%rd9, [%rd14+16];
+	ld.u64 	%rd10, [%rd14+24];
+	ld.u64 	%rd11, [%rd14+32];
+	ld.u64 	%rd12, [%rd14+40];
+	// begin inline asm
+	
+	{
+	.reg .u64 z<6>, x<6>;
+	.reg .u64 u<10>, ua, ub;
+	.reg .u64 q<8>;
+	.reg .u64 r<7>;
+	mov.u64 x0,  %rd7;
+	mov.u64 x1,  %rd8;
+	mov.u64 x2,  %rd9;
+	mov.u64 x3,  %rd10;
+	mov.u64 x4, %rd11;
+	mov.u64 x5, %rd12;
+	
+    FP_SQR(u, x);
+    FP_REDUCE12(u);
+
+	mov.u64 %rd1,  u0;
+	mov.u64 %rd2,  u1;
+	mov.u64 %rd3,  u2;
+	mov.u64 %rd4,  u3;
+	mov.u64 %rd5,  u4;
+	mov.u64 %rd6,  u5;
+	}
+	// end inline asm
+	st.u64 	[%rd13], %rd1;
+	st.u64 	[%rd13+8], %rd2;
+	st.u64 	[%rd13+16], %rd3;
+	st.u64 	[%rd13+24], %rd4;
+	st.u64 	[%rd13+32], %rd5;
+	st.u64 	[%rd13+40], %rd6;
+	ret;
+
+}
+
+
+	// .globl	_Z9fp_x2_ptxRA6_mRA6_Km
+.visible .func _Z9fp_x2_ptxRA6_mRA6_Km(
+	.param .b64 _Z9fp_x2_ptxRA6_mRA6_Km_param_0,
+	.param .b64 _Z9fp_x2_ptxRA6_mRA6_Km_param_1
+)
+{
+	.reg .b64 	%rd<15>;
+
+
+	ld.param.u64 	%rd13, [_Z9fp_x2_ptxRA6_mRA6_Km_param_0];
+	ld.param.u64 	%rd14, [_Z9fp_x2_ptxRA6_mRA6_Km_param_1];
+	ld.u64 	%rd7, [%rd14];
+	ld.u64 	%rd8, [%rd14+8];
+	ld.u64 	%rd9, [%rd14+16];
+	ld.u64 	%rd10, [%rd14+24];
+	ld.u64 	%rd11, [%rd14+32];
+	ld.u64 	%rd12, [%rd14+40];
+	// begin inline asm
+	
+	{
+	.reg .u64 x<6>, z<6>;
+	.reg .u32 z6;
+	.reg .pred gt, nz;
+	mov.u64 x0,  %rd7;
+	mov.u64 x1,  %rd8;
+	mov.u64 x2,  %rd9;
+	mov.u64 x3,  %rd10;
+	mov.u64 x4, %rd11;
+	mov.u64 x5, %rd12;
+	
+    FP_X2(z, x);
+
+	mov.u64 %rd1,  z0;
+	mov.u64 %rd2,  z1;
+	mov.u64 %rd3,  z2;
+	mov.u64 %rd4,  z3;
+	mov.u64 %rd5,  z4;
+	mov.u64 %rd6,  z5;
+	}
+	// end inline asm
+	st.u64 	[%rd13], %rd1;
+	st.u64 	[%rd13+8], %rd2;
+	st.u64 	[%rd13+16], %rd3;
+	st.u64 	[%rd13+24], %rd4;
+	st.u64 	[%rd13+32], %rd5;
+	st.u64 	[%rd13+40], %rd6;
+	ret;
+
+}
+
+	// .globl	_Z9fp_x3_ptxRA6_mRA6_Km
+
+.visible .func _Z9fp_x3_ptxRA6_mRA6_Km(
+	.param .b64 _Z9fp_x3_ptxRA6_mRA6_Km_param_0,
+	.param .b64 _Z9fp_x3_ptxRA6_mRA6_Km_param_1
+)
+{
+	.reg .b64 	%rd<15>;
+
+
+	ld.param.u64 	%rd13, [_Z9fp_x3_ptxRA6_mRA6_Km_param_0];
+	ld.param.u64 	%rd14, [_Z9fp_x3_ptxRA6_mRA6_Km_param_1];
+	ld.u64 	%rd7, [%rd14];
+	ld.u64 	%rd8, [%rd14+8];
+	ld.u64 	%rd9, [%rd14+16];
+	ld.u64 	%rd10, [%rd14+24];
+	ld.u64 	%rd11, [%rd14+32];
+	ld.u64 	%rd12, [%rd14+40];
+	// begin inline asm
+	
+	{
+	.reg .u64 t<6>, x<6>, z<6>;
+	.reg .u32 z6;
+	.reg .pred gt;
+	mov.u64 x0,  %rd7;
+	mov.u64 x1,  %rd8;
+	mov.u64 x2,  %rd9;
+	mov.u64 x3,  %rd10;
+	mov.u64 x4, %rd11;
+	mov.u64 x5, %rd12;
+	
+    FP_X3(z, x);
+
+	mov.u64 %rd1,  z0;
+	mov.u64 %rd2,  z1;
+	mov.u64 %rd3,  z2;
+	mov.u64 %rd4,  z3;
+	mov.u64 %rd5,  z4;
+	mov.u64 %rd6,  z5;
+	}
+	// end inline asm
+	st.u64 	[%rd13], %rd1;
+	st.u64 	[%rd13+8], %rd2;
+	st.u64 	[%rd13+16], %rd3;
+	st.u64 	[%rd13+24], %rd4;
+	st.u64 	[%rd13+32], %rd5;
+	st.u64 	[%rd13+40], %rd6;
+	ret;
+
+}
+	// .globl	_Z9fp_x4_ptxRA6_mRA6_Km
+.visible .func _Z9fp_x4_ptxRA6_mRA6_Km(
+	.param .b64 _Z9fp_x4_ptxRA6_mRA6_Km_param_0,
+	.param .b64 _Z9fp_x4_ptxRA6_mRA6_Km_param_1
+)
+{
+	.reg .b64 	%rd<15>;
+
+
+	ld.param.u64 	%rd13, [_Z9fp_x4_ptxRA6_mRA6_Km_param_0];
+	ld.param.u64 	%rd14, [_Z9fp_x4_ptxRA6_mRA6_Km_param_1];
+	ld.u64 	%rd7, [%rd14];
+	ld.u64 	%rd8, [%rd14+8];
+	ld.u64 	%rd9, [%rd14+16];
+	ld.u64 	%rd10, [%rd14+24];
+	ld.u64 	%rd11, [%rd14+32];
+	ld.u64 	%rd12, [%rd14+40];
+	// begin inline asm
+	
+	{
+	.reg .u64 t<6>, x<6>, z<6>;
+	.reg .u32 z6;
+	.reg .pred gt;
+	mov.u64 x0,  %rd7;
+	mov.u64 x1,  %rd8;
+	mov.u64 x2,  %rd9;
+	mov.u64 x3,  %rd10;
+	mov.u64 x4, %rd11;
+	mov.u64 x5, %rd12;
+	
+    FP_X4(z, x);
+
+	mov.u64 %rd1,  z0;
+	mov.u64 %rd2,  z1;
+	mov.u64 %rd3,  z2;
+	mov.u64 %rd4,  z3;
+	mov.u64 %rd5,  z4;
+	mov.u64 %rd6,  z5;
+	}
+	// end inline asm
+	st.u64 	[%rd13], %rd1;
+	st.u64 	[%rd13+8], %rd2;
+	st.u64 	[%rd13+16], %rd3;
+	st.u64 	[%rd13+24], %rd4;
+	st.u64 	[%rd13+32], %rd5;
+	st.u64 	[%rd13+40], %rd6;
+	ret;
+
+}
+
+	// .globl	_Z9fp_x8_ptxRA6_mRA6_Km
+.visible .func _Z9fp_x8_ptxRA6_mRA6_Km(
+	.param .b64 _Z9fp_x8_ptxRA6_mRA6_Km_param_0,
+	.param .b64 _Z9fp_x8_ptxRA6_mRA6_Km_param_1
+)
+{
+	.reg .b64 	%rd<15>;
+
+
+	ld.param.u64 	%rd13, [_Z9fp_x8_ptxRA6_mRA6_Km_param_0];
+	ld.param.u64 	%rd14, [_Z9fp_x8_ptxRA6_mRA6_Km_param_1];
+	ld.u64 	%rd7, [%rd14];
+	ld.u64 	%rd8, [%rd14+8];
+	ld.u64 	%rd9, [%rd14+16];
+	ld.u64 	%rd10, [%rd14+24];
+	ld.u64 	%rd11, [%rd14+32];
+	ld.u64 	%rd12, [%rd14+40];
+	// begin inline asm
+	
+	{
+	.reg .u64 x<6>, z<6>;
+	.reg .u32 z6;
+	.reg .pred gt;
+	mov.u64 x0,  %rd7;
+	mov.u64 x1,  %rd8;
+	mov.u64 x2,  %rd9;
+	mov.u64 x3,  %rd10;
+	mov.u64 x4, %rd11;
+	mov.u64 x5, %rd12;
+	
+    FP_X8(z, x);
+
+	mov.u64 %rd1,  z0;
+	mov.u64 %rd2,  z1;
+	mov.u64 %rd3,  z2;
+	mov.u64 %rd4,  z3;
+	mov.u64 %rd5,  z4;
+	mov.u64 %rd6,  z5;
+	}
+	// end inline asm
+	st.u64 	[%rd13], %rd1;
+	st.u64 	[%rd13+8], %rd2;
+	st.u64 	[%rd13+16], %rd3;
+	st.u64 	[%rd13+24], %rd4;
+	st.u64 	[%rd13+32], %rd5;
+	st.u64 	[%rd13+40], %rd6;
+	ret;
+
+}
+
+	// .globl	_Z10fp_x12_ptxRA6_mRA6_Km
+.visible .func _Z10fp_x12_ptxRA6_mRA6_Km(
+	.param .b64 _Z10fp_x12_ptxRA6_mRA6_Km_param_0,
+	.param .b64 _Z10fp_x12_ptxRA6_mRA6_Km_param_1
+)
+{
+	.reg .b64 	%rd<15>;
+
+
+	ld.param.u64 	%rd13, [_Z10fp_x12_ptxRA6_mRA6_Km_param_0];
+	ld.param.u64 	%rd14, [_Z10fp_x12_ptxRA6_mRA6_Km_param_1];
+	ld.u64 	%rd7, [%rd14];
+	ld.u64 	%rd8, [%rd14+8];
+	ld.u64 	%rd9, [%rd14+16];
+	ld.u64 	%rd10, [%rd14+24];
+	ld.u64 	%rd11, [%rd14+32];
+	ld.u64 	%rd12, [%rd14+40];
+	// begin inline asm
+	
+	{
+	.reg .u64 t<6>, x<6>, z<6>;
+	.reg .u32 z6;
+	.reg .pred gt;
+	mov.u64 x0,  %rd7;
+	mov.u64 x1,  %rd8;
+	mov.u64 x2,  %rd9;
+	mov.u64 x3,  %rd10;
+	mov.u64 x4, %rd11;
+	mov.u64 x5, %rd12;
+	
+    FP_X12(z, x);
+
+	mov.u64 %rd1,  z0;
+	mov.u64 %rd2,  z1;
+	mov.u64 %rd3,  z2;
+	mov.u64 %rd4,  z3;
+	mov.u64 %rd5,  z4;
+	mov.u64 %rd6,  z5;
+	}
+	// end inline asm
+	st.u64 	[%rd13], %rd1;
+	st.u64 	[%rd13+8], %rd2;
+	st.u64 	[%rd13+16], %rd3;
+	st.u64 	[%rd13+24], %rd4;
+	st.u64 	[%rd13+32], %rd5;
+	st.u64 	[%rd13+40], %rd6;
+	ret;
+
+}
