@@ -17,11 +17,11 @@
 #include "fp_mul.ptxh"
 #include "fp_reduce12.ptxh"
 #include "fp_sqr.ptxh"
-#include "fp_x12.ptxh"
 #include "fp_x2.ptxh"
 #include "fp_x4.ptxh"
 #include "fp_x3.ptxh"
 #include "fp_x8.ptxh"
+#include "fp_x12.ptxh"
 
 
 	// .globl	_Z10fp_add_ptxRA6_mRA6_KmS3_
@@ -89,7 +89,6 @@
 
 }
 
-
 	// .globl	_Z10fp_sub_ptxRA6_mRA6_KmS3_
 .visible .func _Z10fp_sub_ptxRA6_mRA6_KmS3_(
 	.param .b64 _Z6fp_subRA6_mRA6_KmS3__param_0,
@@ -155,7 +154,6 @@
 }
 
 	// .globl	_Z10fp_mul_ptxRA6_mRA6_KmS3_
-
 .visible .func _Z10fp_mul_ptxRA6_mRA6_KmS3_(
 	.param .b64 _Z10fp_mul_ptxRA6_mRA6_KmS3__param_0,
 	.param .b64 _Z10fp_mul_ptxRA6_mRA6_KmS3__param_1,
@@ -221,9 +219,7 @@
 
 }
 
-
 	// .globl	_Z10fp_sqr_ptxRA6_mRA6_Km
-
 .visible .func _Z10fp_sqr_ptxRA6_mRA6_Km(
 	.param .b64 _Z10fp_sqr_ptxRA6_mRA6_Km_param_0,
 	.param .b64 _Z10fp_sqr_ptxRA6_mRA6_Km_param_1
@@ -274,7 +270,6 @@
 	ret;
 
 }
-
 
 	// .globl	_Z9fp_x2_ptxRA6_mRA6_Km
 .visible .func _Z9fp_x2_ptxRA6_mRA6_Km(
@@ -327,7 +322,6 @@
 }
 
 	// .globl	_Z9fp_x3_ptxRA6_mRA6_Km
-
 .visible .func _Z9fp_x3_ptxRA6_mRA6_Km(
 	.param .b64 _Z9fp_x3_ptxRA6_mRA6_Km_param_0,
 	.param .b64 _Z9fp_x3_ptxRA6_mRA6_Km_param_1
@@ -376,6 +370,7 @@
 	ret;
 
 }
+
 	// .globl	_Z9fp_x4_ptxRA6_mRA6_Km
 .visible .func _Z9fp_x4_ptxRA6_mRA6_Km(
 	.param .b64 _Z9fp_x4_ptxRA6_mRA6_Km_param_0,

@@ -124,6 +124,8 @@ int main(int argc, char **argv) {
     }
 
     TEST(FpTestFibonacci);
+    TEST(FpTestFibonacciPTX);
+    TEST(FpTestEqPTXInline);
 
     if (level >= 1) {
         printf("=== Tests level 1\n");

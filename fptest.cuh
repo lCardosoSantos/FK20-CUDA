@@ -25,6 +25,8 @@ typedef fp_t testval_t;
 
 TESTFUN(FpTestKAT);
 TESTFUN(FpTestFibonacci);
+TESTFUN(FpTestFibonacciPTX);
+TESTFUN(FpTestEqPTXInline);
 
 // Linear
 
