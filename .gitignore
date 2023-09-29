@@ -155,6 +155,10 @@ dmypy.json
 
 # Object files
 *.o
+*.cubin
+
+# Generated PTX files
+*.ptx
 
 # Test executables and directory
 *test

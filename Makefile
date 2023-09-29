@@ -1,6 +1,6 @@
 CXX=g++
 CPP=cpp
-NVCC=nvcc -rdc=true --generate-line-info --std=c++14 --maxrregcount=128 #-Xlinker=--no-relax
+NVCC=nvcc -rdc=true --generate-line-info --std=c++14 #--maxrregcount=128 -Xlinker=--no-relax
 NVOPTS=--compile
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86 
 COPTS= -O2
@@ -83,17 +83,24 @@ shallowclean:
 clobber: clean
 	-rm -f fptest frtest g1test fk20test fk20_512test fk20test_poly2toeplitz_coefficients fk20test_poly2toeplitz_coefficients_fft
 
+%.ptx: %.ptxm
+	$(CPP) $< .$@.ptx-tmp
+	sed s/newline/\\n\\t/g .$@.ptx-tmp > $@
+	rm -f .$@.ptx-tmp
+
+%.cubin: %.ptx
+	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $< -cubin
+
+%.o: %.ptx
+	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $<
+
 %.o: %.cu
 	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $<
 
-%_ptx.ptx: %_ptx.ptxm
-	$(CPP) $< $@
-
-%_ptx.o: %_ptx.ptx
-	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $<
-	
 %: %.o
 	$(NVCC) $(NVARCH) -o $@ $^ --resource-usage
+
+g1p_ptx.ptx: g1p_ptx.ptxm fp_x2.ptxh fp_x3.ptxh fp_x8.ptxh fp_x12.ptxh fp_add.ptxh fp_sub.ptxh fp_sqr.ptxh fp_mul.ptxh fp_reduce12.ptxh
 
 fp_add.o: fp_add.cu fp_add.cuh
 
@@ -141,6 +148,9 @@ ffttest.o: fftTest.cu fk20.cuh g1.cuh fp.cuh fr.cuh parseFFTTest.c
 fptest: $(FPTEST_OBJS) $(FP_OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
+fptest_ptx: fptest_ptx.cu $(FP_OBJS) fp_ptx.o # fp_x2.ptx fp_x3.ptx fp_x4.ptx fp_x8.ptx fp_x12.ptx fp_add.ptx fp_sub.ptx fp_sqr.ptx fp_mul.ptx fp_reduce12.ptx
+	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
+
 frtest: $(FRTEST_OBJS) $(FR_OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
@@ -175,13 +185,13 @@ fk20profile: $(FK20PROFILE_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
 fp%.cubin: fp%.cu fp.cuh
-	$(NVCC) $(NVOPTS) --gpu-architecture=sm_86 -o $@ -c $< -cubin
+	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $< -cubin
 
 fr%.cubin: fr%.cu fr.cuh
-	$(NVCC) $(NVOPTS) --gpu-architecture=sm_86 -o $@ -c $< -cubin
+	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $< -cubin
 
 g1%.cubin: g1%.cu g1.cuh fp.cuh fr.cuh
-	$(NVCC) $(NVOPTS) --gpu-architecture=sm_86 -o $@ -c $< -cubin
+	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $< -cubin
 
 ##############################
 #

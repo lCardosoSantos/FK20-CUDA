@@ -5,60 +5,62 @@
 #ifndef FP_X3
 
 /**
- * @brief PTX macro for multiplication by 3. Stores in Z.
+ * @brief PTX macro for multiplication by 3. Z←3*X
+ * Z and X may be the same. Modifies T.
+ * 
  * For inclusion directly into ptx code by the C preprocessor.
  */
-#define FP_X3(Z, X) \
-    /* t = x + x */ \
- \
-    add.u64.cc  t0, X##0, X##0; \
-    addc.u64.cc t1, X##1, X##1; \
-    addc.u64.cc t2, X##2, X##2; \
-    addc.u64.cc t3, X##3, X##3; \
-    addc.u64.cc t4, X##4, X##4; \
-    addc.u64.cc t5, X##5, X##5; \
-    addc.u32    z6,    0,    0; \
- \
-    /* z = x + t */ \
- \
-    add.u64.cc  Z##0, X##0, t0; \
-    addc.u64.cc Z##1, X##1, t1; \
-    addc.u64.cc Z##2, X##2, t2; \
-    addc.u64.cc Z##3, X##3, t3; \
-    addc.u64.cc Z##4, X##4, t4; \
-    addc.u64.cc Z##5, X##5, t5; \
-    addc.u32      z6,   z6,  0; \
- \
-    /* if z >= 2^385 then z -= 19m */ \
- \
-    setp.gt.u32 gt, z6, 1; \
-    @gt sub.u64.cc  Z##0, Z##0, 0xCDECFFFFFFF9AAB1U; \
-    @gt subc.u64.cc Z##1, Z##1, 0x46C3FFE7293BFFFAU; \
-    @gt subc.u64.cc Z##2, Z##2, 0xA89FA1F24F2244AEU; \
-    @gt subc.u64.cc Z##3, Z##3, 0x74DA9ADE12E06434U; \
-    @gt subc.u64.cc Z##4, Z##4, 0x930D7286FE9DD3FCU; \
-    @gt subc.u64.cc Z##5, Z##5, 0xEE145462447E1D73U; \
-    @gt subc.u32      z6,   z6, 1; \
- \
-    /* if z >= 2^384 then z -= 9m */ \
- \
-    setp.gt.u32 gt, z6, 0; \
-    @gt sub.u64.cc  Z##0, Z##0, 0x89F6FFFFFFFD0003U; \
-    @gt subc.u64.cc Z##1, Z##1, 0x140BFFF43BF3FFFDU; \
-    @gt subc.u64.cc Z##2, Z##2, 0xA0B767A8AC38A745U; \
-    @gt subc.u64.cc Z##3, Z##3, 0x8831A7AC8FADA8BAU; \
-    @gt subc.u64.cc Z##4, Z##4, 0xA3F8E5685DA91392U; \
-    @gt subc.u64.cc Z##5, Z##5, 0xEA09A13C057F1B6CU; \
-    @gt subc.u32      z6,   z6, 0; \
- \
-    /* if z >= 2^384 then z -= 9m */ \
- \
-    setp.gt.u32 gt, z6, 0; \
-    @gt sub.u64.cc  Z##0, Z##0, 0x89F6FFFFFFFD0003U; \
-    @gt subc.u64.cc Z##1, Z##1, 0x140BFFF43BF3FFFDU; \
-    @gt subc.u64.cc Z##2, Z##2, 0xA0B767A8AC38A745U; \
-    @gt subc.u64.cc Z##3, Z##3, 0x8831A7AC8FADA8BAU; \
-    @gt subc.u64.cc Z##4, Z##4, 0xA3F8E5685DA91392U; \
+#define FP_X3(Z, X, T) \
+    /* t = x + x */ newline\
+\
+    add.u64.cc  T##0, X##0, X##0; newline\
+    addc.u64.cc T##1, X##1, X##1; newline\
+    addc.u64.cc T##2, X##2, X##2; newline\
+    addc.u64.cc T##3, X##3, X##3; newline\
+    addc.u64.cc T##4, X##4, X##4; newline\
+    addc.u64.cc T##5, X##5, X##5; newline\
+    addc.u64    T##6,    0,    0; newline\
+\
+    /* z = x + t */ newline\
+\
+    add.u64.cc  Z##0, X##0, T##0; newline\
+    addc.u64.cc Z##1, X##1, T##1; newline\
+    addc.u64.cc Z##2, X##2, T##2; newline\
+    addc.u64.cc Z##3, X##3, T##3; newline\
+    addc.u64.cc Z##4, X##4, T##4; newline\
+    addc.u64.cc Z##5, X##5, T##5; newline\
+    addc.u64    T##6, T##6,  0; newline\
+\
+    /* if z >= 2^385 then z -= 19m */ newline\
+\
+    setp.gt.u64 gt, T##6, 1; newline\
+    @gt sub.u64.cc  Z##0, Z##0, 0xCDECFFFFFFF9AAB1U; newline\
+    @gt subc.u64.cc Z##1, Z##1, 0x46C3FFE7293BFFFAU; newline\
+    @gt subc.u64.cc Z##2, Z##2, 0xA89FA1F24F2244AEU; newline\
+    @gt subc.u64.cc Z##3, Z##3, 0x74DA9ADE12E06434U; newline\
+    @gt subc.u64.cc Z##4, Z##4, 0x930D7286FE9DD3FCU; newline\
+    @gt subc.u64.cc Z##5, Z##5, 0xEE145462447E1D73U; newline\
+    @gt subc.u64    T##6, T##6, 1; newline\
+\
+    /* if z >= 2^384 then z -= 9m */ newline\
+\
+    setp.gt.u64 gt, T##6, 0; newline\
+    @gt sub.u64.cc  Z##0, Z##0, 0x89F6FFFFFFFD0003U; newline\
+    @gt subc.u64.cc Z##1, Z##1, 0x140BFFF43BF3FFFDU; newline\
+    @gt subc.u64.cc Z##2, Z##2, 0xA0B767A8AC38A745U; newline\
+    @gt subc.u64.cc Z##3, Z##3, 0x8831A7AC8FADA8BAU; newline\
+    @gt subc.u64.cc Z##4, Z##4, 0xA3F8E5685DA91392U; newline\
+    @gt subc.u64.cc Z##5, Z##5, 0xEA09A13C057F1B6CU; newline\
+    @gt subc.u64    T##6, T##6, 0; newline\
+\
+    /* if z >= 2^384 then z -= 9m */ newline\
+\
+    setp.gt.u64 gt, T##6, 0; newline\
+    @gt sub.u64.cc  Z##0, Z##0, 0x89F6FFFFFFFD0003U; newline\
+    @gt subc.u64.cc Z##1, Z##1, 0x140BFFF43BF3FFFDU; newline\
+    @gt subc.u64.cc Z##2, Z##2, 0xA0B767A8AC38A745U; newline\
+    @gt subc.u64.cc Z##3, Z##3, 0x8831A7AC8FADA8BAU; newline\
+    @gt subc.u64.cc Z##4, Z##4, 0xA3F8E5685DA91392U; newline\
     @gt subc.u64.cc Z##5, Z##5, 0xEA09A13C057F1B6CU
 
 #endif

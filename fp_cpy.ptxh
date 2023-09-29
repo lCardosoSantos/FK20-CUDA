@@ -1,0 +1,22 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
+#ifndef FP_CPY
+
+/**
+ * @brief PTX macro for copying x to z.
+ *
+ * For inclusion directly into ptx code by the C preprocessor.
+ */
+#define FP_CPY(Z, X) newline\
+    /* z = x */ newline\
+\
+    mov.u64  Z##0, X##0; newline\
+    mov.u64  Z##1, X##1; newline\
+    mov.u64  Z##2, X##2; newline\
+    mov.u64  Z##3, X##3; newline\
+    mov.u64  Z##4, X##4; newline\
+    mov.u64  Z##5, X##5;
+
+#endif

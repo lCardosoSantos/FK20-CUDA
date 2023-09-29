@@ -8,8 +8,7 @@
 .target sm_80
 .address_size 64
 
-	// .globl	_Z11g1p_dbl_ptxP5g1p_t
-
+#include "fp_cpy.ptxh"
 #include "fp_x2.ptxh"
 #include "fp_x3.ptxh"
 #include "fp_x8.ptxh"
@@ -20,126 +19,218 @@
 #include "fp_mul.ptxh"
 #include "fp_reduce12.ptxh"
 
-#define FP_MOV(Z, X) \
-	mov.b64	Z##0, X##0; \
-	mov.b64	Z##1, X##1; \
-	mov.b64	Z##2, X##2; \
-	mov.b64	Z##3, X##3; \
-	mov.b64	Z##4, X##4; \
-	mov.b64	Z##5, X##5
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// g1p_ptx(uint32_t, g1p_t *, g1p_t *, const g1p_t *, const g1p_t *, const g1p_t *);
+//
+// Register usage in Fp operations:
+//  x{2,4,8}:   a <- a.
+//  x{3,12}:    a <- a. Modifies r.
+//  reduce12:   a <- a. Modifies q and r.
+//  sqr:        a <- b. Modifies q and r.
+//  mul:        a <- b, c. Modifies q and r.
+//  add:        a <- b, c. Modifies r.
+//  sub:        a <- b, c. Modifies r.
+//
+//////////////////////////////////////////////////////////////////////////////////////////
 
-.visible .func _Z11g1p_dbl_ptxP5g1p_t(
-	.param .b64 _Z11g1p_dbl_ptxP5g1p_t_param_0
+.visible .func _Z7g1p_ptxiP5g1p_tS0_PKS_S2_(
+        .param .u32 _Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_0,
+        .param .b64 _Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_1,
+        .param .b64 _Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_2,
+        .param .b64 _Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_3,
+        .param .b64 _Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_4
 )
 {
-	// Pointer to input point
-	.reg .b64	p;
+        //////// Register Allocation ////////
 
-	// Temporaries for reduction
-	.reg .u64	q<8>, r<7>, t<10>, ta, tb;
+        // Function and return address selectors
+        .reg .u32       %fun, %ret;
 
-	// g1p_dbl temporaries
-	.reg .u64	v<6>, w<6>, x<6>, y<6>, z<6>;
+        // Function parameters (g1p_t *)
+        .reg .b64       z, x, y;
 
-	// Addition overflow register
-	.reg .u32	z6;
+        // Operand registers
+        .reg .u64       a<10>, aa, ab, b<6>, c<6>; 
 
-	// Predicates: greater-than and non-zero
-	.reg .pred	gt, nz;
+        // Temporaries (fp_t)
+        .reg .u64       v<6>, w<6>, x<6>, y<6>, z<6>;
+
+        // Extended temporaries
+        .reg .u64       q<8>, r<7>;
+
+        // Predicates: greater-than and non-zero
+        .reg .pred      gt, nz;
 
 
-	ld.param.u64 	p, [_Z11g1p_dbl_ptxP5g1p_t_param_0];
+        //////// Labels & Label Indices ////////
 
-	ld.u64	x0, [p+0x00];
-	ld.u64	x1, [p+0x08];
-	ld.u64	x2, [p+0x10];
-	ld.u64	x3, [p+0x18];
-	ld.u64	x4, [p+0x20];
-	ld.u64	x5, [p+0x28];
+g1p_fun: .branchtargets
+        g1p_dbl,
+#define g1p_dbl_        0
+        g1p_add,
+#define g1p_add_        1
+        g1p_addsub,
+#define g1p_addsub_     2
+        g1p_dbl_add,
+#define g1p_dbl_add_    3
+        g1p_dbl_add2;
+#define g1p_dbl_add2_   4
 
-	ld.u64	y0, [p+0x30];
-	ld.u64	y1, [p+0x38];
-	ld.u64	y2, [p+0x40];
-	ld.u64	y3, [p+0x48];
-	ld.u64	y4, [p+0x50];
-	ld.u64	y5, [p+0x58];
 
-	ld.u64	z0, [p+0x60];
-	ld.u64	z1, [p+0x68];
-	ld.u64	z2, [p+0x70];
-	ld.u64	z3, [p+0x78];
-	ld.u64	z4, [p+0x80];
-	ld.u64	z5, [p+0x88];
+fp_fun: .branchtargets
+        fp_x2,
+#define fp_x2_          0
+        fp_x3,
+#define fp_x3_          1
+        fp_x4,
+#define fp_x4_          2
+        fp_x8,
+#define fp_x8_          3
+        fp_x12,
+#define fp_x12_         4
+        fp_add,
+#define fp_add_         5
+        fp_sub,
+#define fp_sub_         6
+        fp_sqr,
+#define fp_sqr_         7
+        fp_mul,
+#define fp_mul_         8
+        fp_reduce12,
+#define fp_reduce12_    9
+        fp_mma;
+#define fp_mma_         10
 
-	// fp_mul(x, x, y);
-	FP_MUL(t, x, y); FP_REDUCE12(t); FP_MOV(x, t);
 
-	// fp_sqr(v, z);
-	FP_SQR(t, z); FP_REDUCE12(t); FP_MOV(v, t);
+fp_ret: .branchtargets
+        dbl_x2,
+#define dbl_x2_         0
+        dbl_x3,
+#define dbl_x3_         1
+        dbl_x8,
+#define dbl_x8_         2
+        dbl_x12,
+#define dbl_x12_        3
+        add_x3,
+#define add_x3_         4
+        add_x12_0,
+#define add_x12_0_      5
+        add_x12_1;
+#define add_x12_1_      6
 
-	// fp_x12(v, v);
-	FP_X12(v, v);
 
-	// fp_mul(z, z, y);
-	FP_MUL(t, z, y); FP_REDUCE12(t); FP_MOV(z, t);
+        //////// G1p Function Selection ////////
 
-	// fp_sqr(y, y);
-	FP_SQR(t, y); FP_REDUCE12(t); FP_MOV(y, t);
+        // Load parameters
 
-	// fp_x3(w, v);
-	FP_X3(w, v);
+        ld.param.u32    %fun, [_Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_0];
+        ld.param.b64    z, [_Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_1];
+        ld.param.b64    x, [_Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_2];
+        ld.param.b64    y, [_Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_3];
 
-	// fp_sub(w, y, w);
-	FP_SUB(w, y, w);
+        // Jump to selected g1p function
 
-	// fp_mul(x, x, w);
-	FP_MUL(t, x, w); FP_REDUCE12(t); FP_MOV(x, t);
+        setp.gt.u32     gt, %fun, g1p_dbl_add2_;        // >last?
+@!gt    brx.idx.uni     %fun, g1p_fun;
 
-	// fp_add(y, y, v);
-	FP_ADD(y, y, v);
+        // No valid g1p function chosen
 
-	// fp_mul(w, w, y);
-	FP_MUL(t, w, y); FP_REDUCE12(t); FP_MOV(w, t);
+        ret.uni;
 
-	// fp_sub(y, y, v);
-	FP_SUB(y, y, v);
+        //////// G1p Functions ////////
 
-	// fp_x8(y, y);
-	FP_X8(y, y);
+        //// g1p_dbl ////
 
-	// fp_x2(x, x);
-	FP_X2(x, x);
+g1p_dbl:
+        mov.u32         %fun, fp_x12_;
+        mov.u32         %ret, dbl_x12_;
+        brx.idx.uni     %fun, fp_fun;
+    dbl_x12:
 
-	// fp_mul(z, z, y);
-	FP_MUL(t, z, y); FP_REDUCE12(t); FP_MOV(z, t);
+        mov.u32         %fun, fp_x3_;
+        mov.u32         %ret, dbl_x3_;
+        brx.idx.uni     %fun, fp_fun;
+    dbl_x3:
 
-	// fp_mul(y, y, v);
-	FP_MUL(t, y, v); FP_REDUCE12(t); FP_MOV(y, t);
+        mov.u32         %fun, fp_x8_;
+        mov.u32         %ret, dbl_x8_;
+        brx.idx.uni     %fun, fp_fun;
+    dbl_x8:
 
-	// fp_add(y, y, w);
-	FP_ADD(y, y, w);
+        mov.u32         %fun, fp_x2_;
+        mov.u32         %ret, dbl_x2_;
+        brx.idx.uni     %fun, fp_fun;
+    dbl_x2:
 
-	st.u64	[p+0x00], x0;
-	st.u64	[p+0x08], x1;
-	st.u64	[p+0x10], x2;
-	st.u64	[p+0x18], x3;
-	st.u64	[p+0x20], x4;
-	st.u64	[p+0x28], x5;
+        ret.uni;
 
-	st.u64	[p+0x30], y0;
-	st.u64	[p+0x38], y1;
-	st.u64	[p+0x40], y2;
-	st.u64	[p+0x48], y3;
-	st.u64	[p+0x50], y4;
-	st.u64	[p+0x58], y5;
+        //// g1p_add ////
 
-	st.u64	[p+0x60], z0;
-	st.u64	[p+0x68], z1;
-	st.u64	[p+0x70], z2;
-	st.u64	[p+0x78], z3;
-	st.u64	[p+0x80], z4;
-	st.u64	[p+0x88], z5;
+g1p_add:
+    add_x3:
+    add_x12_0:
+    add_x12_1:
+        ret.uni;
 
-	ret;
+        //// g1p_addsub ////
+
+g1p_addsub:
+    addsub_x12_0:
+    addsub_x3:
+    addsub_x12_1:
+        ret.uni;
+
+        //// g1p_dbl_add ////
+
+g1p_dbl_add:
+        ret.uni;
+
+        //// g1p_dbl_add2 ////
+
+g1p_dbl_add2:
+        ret.uni;
+
+        //////// Fp Functions ////////
+
+fp_x3:
+        FP_X3(a, a, a);
+        brx.idx.uni     %ret, fp_ret;
+
+        // Space-saving const-multiplier code
+fp_x12:
+        FP_X3(a, a, a);
+        bra.uni         fp_x4;
+fp_x8:
+        FP_X2(a, a, a);
+fp_x4:
+        FP_X2(a, a, a);
+fp_x2:
+        FP_X2(a, a, a);
+        brx.idx.uni     %ret, fp_ret;
+
+fp_add:
+        FP_ADD(a, b, c, a);
+        brx.idx.uni     %ret, fp_ret;
+
+fp_sub:
+        FP_SUB(a, b, c, a);
+        brx.idx.uni     %ret, fp_ret;
+
+fp_mma:
+        bra.uni         fp_reduce12;
+
+fp_sqr:
+        FP_SQR(a, b);
+        bra.uni         fp_reduce12;
+
+fp_mul:
+        FP_MUL(a, b, c);
+//      bra.uni         fp_reduce12;    // Fall through to reduction
+
+fp_reduce12:
+        FP_REDUCE12(a);
+        brx.idx.uni     %ret, fp_ret;
 }
 
+// vim: ts=8 et sw=8 si

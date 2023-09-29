@@ -1,68 +1,74 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
 #ifndef FP_MUL
 
 /**
- * @brief PTX macro for multiplication of two residues mod p
- * Reads X0..X5 and Y0..Y5. Writes Z0..Zb
+ * @brief PTX macro for multiplication of two residues mod p. Z←X*Y
+ * Z may NOT be the same as X or Y.
+ * X and Y may be the same.
  * 
+ * For inclusion directly into ptx code by the C preprocessor.
  */
 #define FP_MUL(Z, X, Y) \
-    mul.lo.u64     Z##1, X##0, Y##1       ; mul.hi.u64    Z##2, X##0, Y##1      ; \
-    mul.lo.u64     Z##3, X##0, Y##3       ; mul.hi.u64    Z##4, X##0, Y##3      ; \
-    mul.lo.u64     Z##5, X##0, Y##5       ; mul.hi.u64    Z##6, X##0, Y##5      ; \
+    mul.lo.u64     Z##1, X##0, Y##1       ; mul.hi.u64    Z##2, X##0, Y##1      ; newline\
+    mul.lo.u64     Z##3, X##0, Y##3       ; mul.hi.u64    Z##4, X##0, Y##3      ; newline\
+    mul.lo.u64     Z##5, X##0, Y##5       ; mul.hi.u64    Z##6, X##0, Y##5      ; newline\
 \
-    mul.lo.u64     Z##0, X##0, Y##0       ; mad.hi.u64.cc Z##1, X##0, Y##0, Z##1; \
-    madc.lo.u64.cc Z##2, X##0, Y##2, Z##2; madc.hi.u64.cc Z##3, X##0, Y##2, Z##3; \
-    madc.lo.u64.cc Z##4, X##0, Y##4, Z##4; madc.hi.u64.cc Z##5, X##0, Y##4, Z##5; \
-    addc.u64       Z##6,    0, Z##6; \
-\
-\
-    mad.lo.u64.cc  Z##2, X##1, Y##1, Z##2; madc.hi.u64.cc Z##3, X##1, Y##1, Z##3; \
-    madc.lo.u64.cc Z##4, X##1, Y##3, Z##4; madc.hi.u64.cc Z##5, X##1, Y##3, Z##5; \
-    madc.lo.u64.cc Z##6, X##1, Y##5, Z##6; madc.hi.u64    Z##7, X##1, Y##5,    0; \
-\
-    mad.lo.u64.cc  Z##1, X##1, Y##0, Z##1; madc.hi.u64.cc Z##2, X##1, Y##0, Z##2; \
-    madc.lo.u64.cc Z##3, X##1, Y##2, Z##3; madc.hi.u64.cc Z##4, X##1, Y##2, Z##4; \
-    madc.lo.u64.cc Z##5, X##1, Y##4, Z##5; madc.hi.u64.cc Z##6, X##1, Y##4, Z##6; \
-    addc.u64       Z##7,    0, Z##7; \
+    mul.lo.u64     Z##0, X##0, Y##0       ; mad.hi.u64.cc Z##1, X##0, Y##0, Z##1; newline\
+    madc.lo.u64.cc Z##2, X##0, Y##2, Z##2; madc.hi.u64.cc Z##3, X##0, Y##2, Z##3; newline\
+    madc.lo.u64.cc Z##4, X##0, Y##4, Z##4; madc.hi.u64.cc Z##5, X##0, Y##4, Z##5; newline\
+    addc.u64       Z##6,    0, Z##6; newline\
 \
 \
-    mad.lo.u64.cc  Z##3, X##2, Y##1, Z##3; madc.hi.u64.cc Z##4, X##2, Y##1, Z##4; \
-    madc.lo.u64.cc Z##5, X##2, Y##3, Z##5; madc.hi.u64.cc Z##6, X##2, Y##3, Z##6; \
-    madc.lo.u64.cc Z##7, X##2, Y##5, Z##7; madc.hi.u64    Z##8, X##2, Y##5,    0; \
+    mad.lo.u64.cc  Z##2, X##1, Y##1, Z##2; madc.hi.u64.cc Z##3, X##1, Y##1, Z##3; newline\
+    madc.lo.u64.cc Z##4, X##1, Y##3, Z##4; madc.hi.u64.cc Z##5, X##1, Y##3, Z##5; newline\
+    madc.lo.u64.cc Z##6, X##1, Y##5, Z##6; madc.hi.u64    Z##7, X##1, Y##5,    0; newline\
 \
-    mad.lo.u64.cc  Z##2, X##2, Y##0, Z##2; madc.hi.u64.cc Z##3, X##2, Y##0, Z##3; \
-    madc.lo.u64.cc Z##4, X##2, Y##2, Z##4; madc.hi.u64.cc Z##5, X##2, Y##2, Z##5; \
-    madc.lo.u64.cc Z##6, X##2, Y##4, Z##6; madc.hi.u64.cc Z##7, X##2, Y##4, Z##7; \
-    addc.u64       Z##8,    0, Z##8; \
-\
-\
-    mad.lo.u64.cc  Z##4, X##3, Y##1, Z##4; madc.hi.u64.cc Z##5, X##3, Y##1, Z##5; \
-    madc.lo.u64.cc Z##6, X##3, Y##3, Z##6; madc.hi.u64.cc Z##7, X##3, Y##3, Z##7; \
-    madc.lo.u64.cc Z##8, X##3, Y##5, Z##8; madc.hi.u64    Z##9, X##3, Y##5,    0; \
-\
-    mad.lo.u64.cc  Z##3, X##3, Y##0, Z##3; madc.hi.u64.cc Z##4, X##3, Y##0, Z##4; \
-    madc.lo.u64.cc Z##5, X##3, Y##2, Z##5; madc.hi.u64.cc Z##6, X##3, Y##2, Z##6; \
-    madc.lo.u64.cc Z##7, X##3, Y##4, Z##7; madc.hi.u64.cc Z##8, X##3, Y##4, Z##8; \
-    addc.u64       Z##9,    0, Z##9; \
+    mad.lo.u64.cc  Z##1, X##1, Y##0, Z##1; madc.hi.u64.cc Z##2, X##1, Y##0, Z##2; newline\
+    madc.lo.u64.cc Z##3, X##1, Y##2, Z##3; madc.hi.u64.cc Z##4, X##1, Y##2, Z##4; newline\
+    madc.lo.u64.cc Z##5, X##1, Y##4, Z##5; madc.hi.u64.cc Z##6, X##1, Y##4, Z##6; newline\
+    addc.u64       Z##7,    0, Z##7; newline\
 \
 \
-    mad.lo.u64.cc  Z##5, X##4, Y##1, Z##5; madc.hi.u64.cc Z##6, X##4, Y##1, Z##6; \
-    madc.lo.u64.cc Z##7, X##4, Y##3, Z##7; madc.hi.u64.cc Z##8, X##4, Y##3, Z##8; \
-    madc.lo.u64.cc Z##9, X##4, Y##5, Z##9; madc.hi.u64    Z##a, X##4, Y##5,    0; \
+    mad.lo.u64.cc  Z##3, X##2, Y##1, Z##3; madc.hi.u64.cc Z##4, X##2, Y##1, Z##4; newline\
+    madc.lo.u64.cc Z##5, X##2, Y##3, Z##5; madc.hi.u64.cc Z##6, X##2, Y##3, Z##6; newline\
+    madc.lo.u64.cc Z##7, X##2, Y##5, Z##7; madc.hi.u64    Z##8, X##2, Y##5,    0; newline\
 \
-    mad.lo.u64.cc  Z##4, X##4, Y##0, Z##4; madc.hi.u64.cc Z##5, X##4, Y##0, Z##5; \
-    madc.lo.u64.cc Z##6, X##4, Y##2, Z##6; madc.hi.u64.cc Z##7, X##4, Y##2, Z##7; \
-    madc.lo.u64.cc Z##8, X##4, Y##4, Z##8; madc.hi.u64.cc Z##9, X##4, Y##4, Z##9; \
-    addc.u64       Z##a,    0, Z##a; \
+    mad.lo.u64.cc  Z##2, X##2, Y##0, Z##2; madc.hi.u64.cc Z##3, X##2, Y##0, Z##3; newline\
+    madc.lo.u64.cc Z##4, X##2, Y##2, Z##4; madc.hi.u64.cc Z##5, X##2, Y##2, Z##5; newline\
+    madc.lo.u64.cc Z##6, X##2, Y##4, Z##6; madc.hi.u64.cc Z##7, X##2, Y##4, Z##7; newline\
+    addc.u64       Z##8,    0, Z##8; newline\
 \
 \
-    mad.lo.u64.cc  Z##6, X##5, Y##1, Z##6; madc.hi.u64.cc Z##7, X##5, Y##1, Z##7; \
-    madc.lo.u64.cc Z##8, X##5, Y##3, Z##8; madc.hi.u64.cc Z##9, X##5, Y##3, Z##9; \
-    madc.lo.u64.cc Z##a, X##5, Y##5, Z##a; madc.hi.u64    Z##b, X##5, Y##5,    0; \
+    mad.lo.u64.cc  Z##4, X##3, Y##1, Z##4; madc.hi.u64.cc Z##5, X##3, Y##1, Z##5; newline\
+    madc.lo.u64.cc Z##6, X##3, Y##3, Z##6; madc.hi.u64.cc Z##7, X##3, Y##3, Z##7; newline\
+    madc.lo.u64.cc Z##8, X##3, Y##5, Z##8; madc.hi.u64    Z##9, X##3, Y##5,    0; newline\
 \
-    mad.lo.u64.cc  Z##5, X##5, Y##0, Z##5; madc.hi.u64.cc Z##6, X##5, Y##0, Z##6; \
-    madc.lo.u64.cc Z##7, X##5, Y##2, Z##7; madc.hi.u64.cc Z##8, X##5, Y##2, Z##8; \
-    madc.lo.u64.cc Z##9, X##5, Y##4, Z##9; madc.hi.u64.cc Z##a, X##5, Y##4, Z##a; \
+    mad.lo.u64.cc  Z##3, X##3, Y##0, Z##3; madc.hi.u64.cc Z##4, X##3, Y##0, Z##4; newline\
+    madc.lo.u64.cc Z##5, X##3, Y##2, Z##5; madc.hi.u64.cc Z##6, X##3, Y##2, Z##6; newline\
+    madc.lo.u64.cc Z##7, X##3, Y##4, Z##7; madc.hi.u64.cc Z##8, X##3, Y##4, Z##8; newline\
+    addc.u64       Z##9,    0, Z##9; newline\
+\
+\
+    mad.lo.u64.cc  Z##5, X##4, Y##1, Z##5; madc.hi.u64.cc Z##6, X##4, Y##1, Z##6; newline\
+    madc.lo.u64.cc Z##7, X##4, Y##3, Z##7; madc.hi.u64.cc Z##8, X##4, Y##3, Z##8; newline\
+    madc.lo.u64.cc Z##9, X##4, Y##5, Z##9; madc.hi.u64    Z##a, X##4, Y##5,    0; newline\
+\
+    mad.lo.u64.cc  Z##4, X##4, Y##0, Z##4; madc.hi.u64.cc Z##5, X##4, Y##0, Z##5; newline\
+    madc.lo.u64.cc Z##6, X##4, Y##2, Z##6; madc.hi.u64.cc Z##7, X##4, Y##2, Z##7; newline\
+    madc.lo.u64.cc Z##8, X##4, Y##4, Z##8; madc.hi.u64.cc Z##9, X##4, Y##4, Z##9; newline\
+    addc.u64       Z##a,    0, Z##a; newline\
+\
+\
+    mad.lo.u64.cc  Z##6, X##5, Y##1, Z##6; madc.hi.u64.cc Z##7, X##5, Y##1, Z##7; newline\
+    madc.lo.u64.cc Z##8, X##5, Y##3, Z##8; madc.hi.u64.cc Z##9, X##5, Y##3, Z##9; newline\
+    madc.lo.u64.cc Z##a, X##5, Y##5, Z##a; madc.hi.u64    Z##b, X##5, Y##5,    0; newline\
+\
+    mad.lo.u64.cc  Z##5, X##5, Y##0, Z##5; madc.hi.u64.cc Z##6, X##5, Y##0, Z##6; newline\
+    madc.lo.u64.cc Z##7, X##5, Y##2, Z##7; madc.hi.u64.cc Z##8, X##5, Y##2, Z##8; newline\
+    madc.lo.u64.cc Z##9, X##5, Y##4, Z##9; madc.hi.u64.cc Z##a, X##5, Y##4, Z##a; newline\
     addc.u64       Z##b,    0, Z##b
 
 #endif
