@@ -5,7 +5,9 @@
 #ifndef FP_X8
 
 /**
- * @brief PTX macro for multiplication by 8. Stores in Z.
+ * @brief PTX macro for multiplication by 8. Z ← 8*X
+ * Z and X may be the same. Modifies T6.
+ *
  * For inclusion directly into ptx code by the C preprocessor.
  */
 #define FP_X8(Z, X, T) \

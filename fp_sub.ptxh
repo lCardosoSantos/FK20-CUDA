@@ -5,7 +5,7 @@
 #ifndef FP_SUB
 
 /**
- * @brief PTX macro for subtraction of two residues modulo p. Z←X-Y
+ * @brief PTX macro for subtraction of two residues modulo p. Z ← X-Y
  * Z, X and Y may be the same.
  * Modifies T6.
  * 

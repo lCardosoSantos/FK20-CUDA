@@ -33,7 +33,7 @@ __device__ void fp_sqr(fp_t &z, const fp_t &x) {
     "\n\tmov.u64 x5, %11;"
 
 FP_SQR(u, x)
-FP_REDUCE12(u)
+FP_REDUCE12(u, q, r)
 
     "\n\tmov.u64 %0,  u0;"
     "\n\tmov.u64 %1,  u1;"

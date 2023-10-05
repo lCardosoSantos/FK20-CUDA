@@ -4,12 +4,12 @@
 
 /**
  * @brief Device macro for Z = X+Y with overflow check
- * 
+ *
  * @param[out] Z destination register
  * @param[in ] X first operand
  * @param[in ] Y second operand
  * @return void
- * 
+ *
  */
 #define FR_ADD(Z, X, Y) \
     /* z = x + y */ \

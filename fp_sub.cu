@@ -6,7 +6,7 @@
 #include "fp_sub.cuh"
 
 /**
- * @brief Calculates the difference of two residues modulo p and stores it into z.
+ * @brief Calculates the difference between two residues modulo p and stores it into z. Z ← X-Y 
  *
  * @param[out] z 
  * @param[in] x minuend
@@ -24,8 +24,7 @@ __device__ void fp_sub(fp_t &z, const fp_t &x, const fp_t &y) {
 
     asm volatile (
     "\n\t{"
-    "\n\t.reg .u64 z<6>, x<6>, y<6>;"
-    "\n\t.reg .u32 z6;"
+    "\n\t.reg .u64 z<7>, x<6>, y<6>;"
     "\n\t.reg .pred gt, nz;"
 
     "\n\tmov.u64 x0,  %6;"

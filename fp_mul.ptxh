@@ -5,7 +5,7 @@
 #ifndef FP_MUL
 
 /**
- * @brief PTX macro for multiplication of two residues mod p. Z←X*Y
+ * @brief PTX macro for multiplication of two residues mod p. Z ← X*Y
  * Z may NOT be the same as X or Y.
  * X and Y may be the same.
  * 

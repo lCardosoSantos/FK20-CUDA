@@ -22,10 +22,7 @@ __device__ void fp_mul(fp_t &z, const fp_t &x, const fp_t &y) {
 
     asm volatile (
     "\n\t{"
-    "\n\t.reg .u64 x<6>, y<6>;"
-    "\n\t.reg .u64 u<10>, ua, ub;"
-    "\n\t.reg .u64 q<8>;"
-    "\n\t.reg .u64 r<7>;"
+    "\n\t.reg .u64 z<10>, za, zb, x<8>, y<7>;"
 
     "\n\tmov.u64 x0,  %6;"
     "\n\tmov.u64 x1,  %7;"
@@ -41,15 +38,15 @@ __device__ void fp_mul(fp_t &z, const fp_t &x, const fp_t &y) {
     "\n\tmov.u64 y4, %16;"
     "\n\tmov.u64 y5, %17;"
 
-FP_MUL(u, x, y)
-FP_REDUCE12(u)
+FP_MUL(z, x, y)
+FP_REDUCE12(z, x, y)
 
-    "\n\tmov.u64 %0,  u0;"
-    "\n\tmov.u64 %1,  u1;"
-    "\n\tmov.u64 %2,  u2;"
-    "\n\tmov.u64 %3,  u3;"
-    "\n\tmov.u64 %4,  u4;"
-    "\n\tmov.u64 %5,  u5;"
+    "\n\tmov.u64 %0,  z0;"
+    "\n\tmov.u64 %1,  z1;"
+    "\n\tmov.u64 %2,  z2;"
+    "\n\tmov.u64 %3,  z3;"
+    "\n\tmov.u64 %4,  z4;"
+    "\n\tmov.u64 %5,  z5;"
 
     "\n\t}"
     :

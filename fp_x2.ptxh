@@ -5,7 +5,7 @@
 #ifndef FP_X2
 
 /**
- * @brief PTX macro for multiplication by 2. Z←2*X
+ * @brief PTX macro for multiplication by 2. Z ← 2*X
  * Z and X may be the same. Modifies T6.
  * 
  * For inclusion directly into ptx code by the C preprocessor.

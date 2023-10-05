@@ -5,9 +5,8 @@
 #ifndef FP_SQR
 
 /**
- * @brief PTX macro for computing the square of the residue x modulo p. Z←X*X
+ * @brief PTX macro for computing the square of the residue x modulo p. Z ← X*X
  * Z and X may NOT be the same.  
- * Modifies q0..q7, r0..r6.
  * 
  * For inclusion directly into ptx code by the C preprocessor.
  */

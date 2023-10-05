@@ -4,7 +4,7 @@
 
 #ifndef FP_X12
 /**
- * @brief PTX macro for multiplication by 12. Z←12*X
+ * @brief PTX macro for multiplication by 12. Z ← 12*X
  * Z and X may be the same. Modifies T6.
  * 
  * For inclusion directly into ptx code by the C preprocessor.

@@ -54,7 +54,7 @@
 	
 	{
 	.reg .u64 z<6>, x<6>, y<6>;
-	.reg .u32 z6;
+	.reg .u64 z6;
 	.reg .pred gt, nz;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -69,7 +69,7 @@
 	mov.u64 y4, %rd17;
 	mov.u64 y5, %rd18;
 
-    FP_ADD(z, x, y);
+    FP_ADD(z, x, y, z);
 
 	mov.u64 %rd1,  z0;
 	mov.u64 %rd2,  z1;
@@ -118,7 +118,7 @@
 	
 	{
 	.reg .u64 z<6>, x<6>, y<6>;
-	.reg .u32 z6;
+	.reg .u64 z6;
 	.reg .pred gt, nz;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -133,7 +133,7 @@
 	mov.u64 y4, %rd17;
 	mov.u64 y5, %rd18;
 
-	FP_SUB(z, x, y);
+	FP_SUB(z, x, y, z);
 
 	mov.u64 %rd1,  z0;
 	mov.u64 %rd2,  z1;
@@ -292,7 +292,7 @@
 	
 	{
 	.reg .u64 x<6>, z<6>;
-	.reg .u32 z6;
+	.reg .u64 z6;
 	.reg .pred gt, nz;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -301,7 +301,7 @@
 	mov.u64 x4, %rd11;
 	mov.u64 x5, %rd12;
 	
-    FP_X2(z, x);
+    FP_X2(z, x, z);
 
 	mov.u64 %rd1,  z0;
 	mov.u64 %rd2,  z1;
@@ -342,7 +342,7 @@
 	
 	{
 	.reg .u64 t<6>, x<6>, z<6>;
-	.reg .u32 z6;
+	.reg .u64 z6;
 	.reg .pred gt;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -351,7 +351,7 @@
 	mov.u64 x4, %rd11;
 	mov.u64 x5, %rd12;
 	
-    FP_X3(z, x);
+    FP_X3(z, x, z);
 
 	mov.u64 %rd1,  z0;
 	mov.u64 %rd2,  z1;
@@ -392,7 +392,7 @@
 	
 	{
 	.reg .u64 t<6>, x<6>, z<6>;
-	.reg .u32 z6;
+	.reg .u64 z6;
 	.reg .pred gt;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -401,7 +401,7 @@
 	mov.u64 x4, %rd11;
 	mov.u64 x5, %rd12;
 	
-    FP_X4(z, x);
+    FP_X4(z, x, z);
 
 	mov.u64 %rd1,  z0;
 	mov.u64 %rd2,  z1;
@@ -442,7 +442,7 @@
 	
 	{
 	.reg .u64 x<6>, z<6>;
-	.reg .u32 z6;
+	.reg .u64 z6;
 	.reg .pred gt;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -451,7 +451,7 @@
 	mov.u64 x4, %rd11;
 	mov.u64 x5, %rd12;
 	
-    FP_X8(z, x);
+    FP_X8(z, x, z);
 
 	mov.u64 %rd1,  z0;
 	mov.u64 %rd2,  z1;
@@ -492,7 +492,7 @@
 	
 	{
 	.reg .u64 t<6>, x<6>, z<6>;
-	.reg .u32 z6;
+	.reg .u64 z6;
 	.reg .pred gt;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -501,7 +501,7 @@
 	mov.u64 x4, %rd11;
 	mov.u64 x5, %rd12;
 	
-    FP_X12(z, x);
+    FP_X12(z, x, z);
 
 	mov.u64 %rd1,  z0;
 	mov.u64 %rd2,  z1;

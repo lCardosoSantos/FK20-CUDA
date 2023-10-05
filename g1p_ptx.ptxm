@@ -229,7 +229,7 @@ fp_mul:
 //      bra.uni         fp_reduce12;    // Fall through to reduction
 
 fp_reduce12:
-        FP_REDUCE12(a);
+        FP_REDUCE12(a, q, r);
         brx.idx.uni     %ret, fp_ret;
 }
 

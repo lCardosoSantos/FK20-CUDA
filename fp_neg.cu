@@ -3,9 +3,10 @@
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
+#include "fp_neg.cuh"
 
 /**
- * @brief Compute an additive inverse of a residue x modulo p. Stores in z.
+ * @brief Compute an additive inverse of a residue x modulo p. Z ← -X
  * Subtracts x from the highest multiple of p less than 2^384,
  * then adds p in case of underflow.
  *
@@ -24,28 +25,24 @@ __device__ void fp_neg(fp_t &z, const fp_t &x) {
 
     asm volatile (
     "\n\t{"
-    "\n\t.reg .u32 z6;"
+    "\n\t.reg .u64 z<7>, x<6>;"
     "\n\t.reg .pred nz;"
 
-    // z = pmmu0 - x
+    "\n\tmov.u64 x0,  %6;"
+    "\n\tmov.u64 x1,  %7;"
+    "\n\tmov.u64 x2,  %8;"
+    "\n\tmov.u64 x3,  %9;"
+    "\n\tmov.u64 x4, %10;"
+    "\n\tmov.u64 x5, %11;"
 
-    "\n\tsub.u64.cc  %0, 0x89F6FFFFFFFD0003U,  %6;"
-    "\n\tsubc.u64.cc %1, 0x140BFFF43BF3FFFDU,  %7;"
-    "\n\tsubc.u64.cc %2, 0xA0B767A8AC38A745U,  %8;"
-    "\n\tsubc.u64.cc %3, 0x8831A7AC8FADA8BAU,  %9;"
-    "\n\tsubc.u64.cc %4, 0xA3F8E5685DA91392U, %10;"
-    "\n\tsubc.u64.cc %5, 0xEA09A13C057F1B6CU, %11;"
-    "\n\tsubc.u32    z6,  0, 0;"
-    "\n\tsetp.ne.u32 nz, z6, 0;"
+FP_NEG(z, x)
 
-    // if nz (borrow) then z += p
-
-    "\n@nz\tadd.u64.cc  %0, %0, 0xB9FEFFFFFFFFAAABU;"
-    "\n@nz\taddc.u64.cc %1, %1, 0x1EABFFFEB153FFFFU;"
-    "\n@nz\taddc.u64.cc %2, %2, 0x6730D2A0F6B0F624U;"
-    "\n@nz\taddc.u64.cc %3, %3, 0x64774B84F38512BFU;"
-    "\n@nz\taddc.u64.cc %4, %4, 0x4B1BA7B6434BACD7U;"
-    "\n@nz\taddc.u64    %5, %5, 0x1A0111EA397FE69AU;"
+    "\n\tmov.u64 %0,  z0;"
+    "\n\tmov.u64 %1,  z1;"
+    "\n\tmov.u64 %2,  z2;"
+    "\n\tmov.u64 %3,  z3;"
+    "\n\tmov.u64 %4,  z4;"
+    "\n\tmov.u64 %5,  z5;"
 
     "\n\t}"
     :

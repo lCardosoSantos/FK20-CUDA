@@ -29,7 +29,7 @@ __device__ void fp_mma(fp_t &z, const fp_t &v, const fp_t &w, const fp_t &x, con
     "\n\t{"
     "\n\t.reg .u64 v<6>, w<6>, x<6>, y<6>;"
     "\n\t.reg .u64 u<10>, ua, ub;"
-    "\n\t.reg .u32 uc;"
+    "\n\t.reg .u64 uc;"
     "\n\t.reg .u64 q<8>;"
     "\n\t.reg .u64 r<7>;"
     "\n\t.reg .pred nz;"
@@ -94,24 +94,24 @@ FP_MUL(u, x, y)
     "\n\taddc.u64.cc u9, u9, w3;"
     "\n\taddc.u64.cc ua, ua, w4;"
     "\n\taddc.u64.cc ub, ub, w5;"
-    "\n\taddc.u32    uc,  0,  0;"
+    "\n\taddc.u64    uc,  0,  0;"
 
     // Double-width reduction
 
     /* if u >= 2^768 then u -= mmu0 * 2^384 */
 
-    "\n\tsetp.ne.u32 nz, uc, 0;"
+    "\n\tsetp.ne.u64 nz, uc, 0;"
     "\n@nz\tsub.u64.cc  u6, u6, 0x89f6fffffffd0003U;"
     "\n@nz\tsubc.u64.cc u7, u7, 0x140bfff43bf3fffdU;"
     "\n@nz\tsubc.u64.cc u8, u8, 0xa0b767a8ac38a745U;"
     "\n@nz\tsubc.u64.cc u9, u9, 0x8831a7ac8fada8baU;"
     "\n@nz\tsubc.u64.cc ua, ua, 0xa3f8e5685da91392U;"
     "\n@nz\tsubc.u64.cc ub, ub, 0xea09a13c057f1b6cU;"
-    "\n@nz\tsubc.u32    uc, uc, 0;"
+    "\n@nz\tsubc.u64    uc, uc, 0;"
 
     /* if u >= 2^768 then u -= mmu0 * 2^384 */
 
-    "\n\tsetp.ne.u32 nz, uc, 0;"
+    "\n\tsetp.ne.u64 nz, uc, 0;"
     "\n@nz\tsub.u64.cc  u6, u6, 0x89f6fffffffd0003U;"
     "\n@nz\tsubc.u64.cc u7, u7, 0x140bfff43bf3fffdU;"
     "\n@nz\tsubc.u64.cc u8, u8, 0xa0b767a8ac38a745U;"
@@ -119,7 +119,7 @@ FP_MUL(u, x, y)
     "\n@nz\tsubc.u64.cc ua, ua, 0xa3f8e5685da91392U;"
     "\n@nz\tsubc.u64.cc ub, ub, 0xea09a13c057f1b6cU;"
 
-FP_REDUCE12(u)
+FP_REDUCE12(u, q, r)
 
     "\n\tmov.u64 %0,  u0;"
     "\n\tmov.u64 %1,  u1;"

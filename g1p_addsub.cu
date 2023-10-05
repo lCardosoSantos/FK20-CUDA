@@ -8,8 +8,8 @@
 #include "g1.cuh"
 
 /**
- * @brief Stores the sum and difference of p and q into p and q.
- * Projective p and q, p,q ← p+q,p-q
+ * @brief Stores the sum and difference of p and q into p and q. p,q ← p+q,p-q
+ * Projective p and q.
  * 
  * @param[in, out] p First parameter, stores p+q
  * @param[in, out] q Second parameter, stores p-q
@@ -17,7 +17,7 @@
  */
 __device__ void g1p_addsub(g1p_t &p, g1p_t &q) {
 
-#ifndef NDEBUG
+#if 0 //ndef NDEBUG
     if (!g1p_isPoint(p) || !(g1p_isPoint(q))) {
         //printf("ERROR in g1p_addsub(): Invalid point(s)\n");
         //g1p_print("p: ", p);
@@ -32,7 +32,9 @@ __device__ void g1p_addsub(g1p_t &p, g1p_t &q) {
     }
 #endif
 
-
+#if 0
+    g1p_multi(2, &p, &q, NULL, NULL);
+#else
     fp_t
         &X1 = p.x, &Y1 = p.y, &Z1 = p.z,
         &X2 = q.x, &Y2 = q.y, &Z2 = q.z,
@@ -158,6 +160,7 @@ __device__ void g1p_addsub(g1p_t &p, g1p_t &q) {
     //fp_print("X4 = ",  X2);
     //fp_print("Y4 = ",  Y2);
     //fp_print("Z4 = ",  Z2);
+#endif
 }
 
 // vim: ts=4 et sw=4 si

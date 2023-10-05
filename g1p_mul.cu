@@ -9,16 +9,16 @@
 #include "g1.cuh"
 
 /**
- * @brief p ← k·p Point multiplication by scalar, in projective coordinates. That result is 
- * stored back into p.
+ * @brief Point multiplication by scalar, in projective coordinates. p ← k·p
  * 
  * @param[in, out] p Multiplicand (stores result after call)
- * @param[in] k Fr operand
+ * @param[in] k Fr multiplier
  * @return void 
  */
 __device__ void g1p_mul(g1p_t &p, const fr_t &k) {
     // TODO: Use 4-bit lookup table to reduce additions by a factor 4.
     
+#if 0 //ndef NDEBUG
     if (!g1p_isPoint(p)) {
         //g1p_print("ERROR in g1p_mul(): Invalid point ", p);
 
@@ -29,6 +29,7 @@ __device__ void g1p_mul(g1p_t &p, const fr_t &k) {
 
         return;
     }
+#endif
 
     g1p_t q;
 

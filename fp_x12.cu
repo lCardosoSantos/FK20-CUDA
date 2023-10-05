@@ -23,8 +23,8 @@ __device__ void fp_x12(fp_t &z, const fp_t &x) {
 
     asm volatile (
     "\n\t{"
-    "\n\t.reg .u64 t<6>, x<6>, z<6>;"
-    "\n\t.reg .u32 z6;"
+    "\n\t.reg .u64 z<7>, x<6>;"
+    "\n\t.reg .u64 t<6>;"
     "\n\t.reg .pred gt;"
 
     "\n\tmov.u64 x0,  %6;"
@@ -34,7 +34,7 @@ __device__ void fp_x12(fp_t &z, const fp_t &x) {
     "\n\tmov.u64 x4, %10;"
     "\n\tmov.u64 x5, %11;"
 
-FP_X12(z, x)
+FP_X12(z, x, t)
 
     "\n\tmov.u64 %0,  z0;"
     "\n\tmov.u64 %1,  z1;"

@@ -5,7 +5,7 @@
 #ifndef FP_X3
 
 /**
- * @brief PTX macro for multiplication by 3. Z←3*X
+ * @brief PTX macro for multiplication by 3. Z ← 3*X
  * Z and X may be the same. Modifies T.
  * 
  * For inclusion directly into ptx code by the C preprocessor.
