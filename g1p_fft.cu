@@ -62,7 +62,7 @@ __device__ void g1p_fft(g1p_t *output, const g1p_t *input) {
     //g1p_mul(g1p_tmp[r], fr_roots[w]);
     g1p_addsub(g1p_tmp[l], g1p_tmp[r]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 1
 
@@ -73,7 +73,7 @@ __device__ void g1p_fft(g1p_t *output, const g1p_t *input) {
     if (w) g1p_mul(g1p_tmp[r], fr_roots[w]);
     g1p_addsub(g1p_tmp[l], g1p_tmp[r]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 2
 
@@ -84,7 +84,7 @@ __device__ void g1p_fft(g1p_t *output, const g1p_t *input) {
     g1p_mul(g1p_tmp[r], fr_roots[w]);
     g1p_addsub(g1p_tmp[l], g1p_tmp[r]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 3
 
@@ -95,7 +95,7 @@ __device__ void g1p_fft(g1p_t *output, const g1p_t *input) {
     g1p_mul(g1p_tmp[r], fr_roots[w]);
     g1p_addsub(g1p_tmp[l], g1p_tmp[r]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 4
 
@@ -106,7 +106,7 @@ __device__ void g1p_fft(g1p_t *output, const g1p_t *input) {
     g1p_mul(g1p_tmp[r], fr_roots[w]);
     g1p_addsub(g1p_tmp[l], g1p_tmp[r]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 5
 
@@ -248,7 +248,7 @@ __device__ void g1p_ift(g1p_t *output, const g1p_t *input) {
     g1p_addsub(g1p_tmp[l], g1p_tmp[r]);
     g1p_mul(g1p_tmp[r], fr_roots[512-w]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 4
 
@@ -259,7 +259,7 @@ __device__ void g1p_ift(g1p_t *output, const g1p_t *input) {
     g1p_addsub(g1p_tmp[l], g1p_tmp[r]);
     g1p_mul(g1p_tmp[r], fr_roots[512-w]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 3
 
@@ -270,7 +270,7 @@ __device__ void g1p_ift(g1p_t *output, const g1p_t *input) {
     g1p_addsub(g1p_tmp[l], g1p_tmp[r]);
     g1p_mul(g1p_tmp[r], fr_roots[512-w]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 2
 
@@ -281,7 +281,7 @@ __device__ void g1p_ift(g1p_t *output, const g1p_t *input) {
     g1p_addsub(g1p_tmp[l], g1p_tmp[r]);
     g1p_mul(g1p_tmp[r], fr_roots[512-w]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 1
 
@@ -293,7 +293,7 @@ __device__ void g1p_ift(g1p_t *output, const g1p_t *input) {
     g1p_mul(g1p_tmp[l], fr_roots[513]);    // 2**-9
     g1p_mul(g1p_tmp[r], fr_roots[513+w]);  // w ? 2**-9/fr_roots[128] : 2**-9
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 0
 
