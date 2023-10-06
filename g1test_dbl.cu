@@ -7,6 +7,7 @@
 #include "g1.cuh"
 #include "fr.cuh"
 #include "g1test.cuh"
+#include "g1p_ptx.cuh"
 
 /**
  * @brief Test for point doubling in G1:
@@ -16,7 +17,7 @@
  * @return void 
  */
 __global__ void G1TestDbl(testval_t *) {
-
+    #define g1p_dbl(q) g1m(OP_DBL, q, q, q, q);
     if ((blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) == 0)
         printf("=== RUN   %s\n", __func__);
 
@@ -54,6 +55,7 @@ __global__ void G1TestDbl(testval_t *) {
 
         PRINTPASS(pass);
     }
+     #undef g1p_dbl
 }
 
 
@@ -83,7 +85,7 @@ __global__ void G1TestDbl_noPTX(testval_t *) {
         g1p_cpy(v, q);
 
         g1p_add(p, p);  // p += p
-        g1p_dbl_noPTX(q);     // q *= 2
+        g1p_dbl(q);     // q *= 2
 
         if (g1p_neq(p, q)) {
             pass = false;

@@ -4,6 +4,8 @@ g1p_sub:
     mov.u32 %ret, retg1p_sub_0_;
     brx.idx.uni %fun, fp_fun;
 retg1p_sub_0:
+        // mov.u32 %fun, STORE1_;    //debug, return early
+        // brx.idx.uni %fun, fp_fun; //debug, return early
 // BLOCK 0
 	// fp_add(ta, X1, Y1); // t4
 	FP_MOV(b, x)

@@ -1,6 +1,6 @@
 CXX=g++
 CPP=cpp
-NVCC=nvcc -rdc=true --generate-line-info --std=c++14 -DNDEBUG #--maxrregcount=128 -Xlinker=--no-relax
+NVCC=nvcc -rdc=true --generate-line-info --std=c++14 #-DNDEBUG #--maxrregcount=128 -Xlinker=--no-relax
 NVOPTS=--compile
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86 
 COPTS= -O2
@@ -83,6 +83,7 @@ clean:
 shallowclean:
 	@(echo "Removing only objects that are fast to compile!")
 	-rm -f $(OBJS) $(CUBIN)
+	rm -rf *.ptx
 
 clobber: clean
 	-rm -f fptest frtest g1test fk20test fk20_512test fk20test_poly2toeplitz_coefficients fk20test_poly2toeplitz_coefficients_fft

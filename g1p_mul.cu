@@ -10,6 +10,7 @@
 #include "g1p_ptx.cuh"
 
 #define g1p_dbl(q) g1m(OP_DBL, q, q, q, q);
+#define g1p_add(p, q) g1m(OP_ADD, p, p, p, q);
 
 /**
  * @brief p ← k·p Point multiplication by scalar, in projective coordinates. That result is 

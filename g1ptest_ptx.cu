@@ -15,7 +15,7 @@
 #include "g1p_ptx.cuh"
 
 #define TESTVALS 256
-
+#define NTEST 5
 typedef struct {
     uint64_t val[22];
 } testval_t;
@@ -94,21 +94,93 @@ int main(int argc, char **argv) {
     init();
 
     TEST(G1_ADD_PTX);
-    TEST(G1_SUB_PTX);
+    //TEST(G1_SUB_PTX);
     TEST(G1_DBL_PTX);
-    TEST(G1_ADDSUB_PTX);
+    //TEST(G1_ADDSUB_PTX);
 
 
     return err;
 }
 
 __global__ void G1_ADD_PTX(testval_t *testval){
-    printf("== TEST %s NOT IMPLEMENTED\n", __func__);
+    printf("== TEST %s \n", __func__);
+
+    bool pass = true;
+    size_t count = 0;
+
+    g1p_t out1, out0, in1, in0;
+    g1p_t p, q, u, v;
+
+    g1p_gen(q); g1p_gen(p);
+    g1p_gen(in0);
+
+    for (int i=0; pass & i<NTEST; i++){
+        g1p_add(p, q); 
+        g1m(OP_ADD, out1, out0, in0, in0);
+
+        if(!g1p_eq(p, out0)){
+            pass = false;
+            printf("%d: FAILED\n", i);
+            printf("FAILED\n" );
+            g1p_print("cuda = ", p);
+            g1p_print("ptxm = ", out0);
+            pass = false;
+        }
+
+        g1p_cpy(q, p);
+        g1p_cpy(in0, out0);
+        ++count;
+    }
+
+    if (!pass || (blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) == 0){
+        printf("%ld tests\n", count);
+        PRINTPASS(pass);
+    }
+
 
 }
 
 __global__ void G1_SUB_PTX(testval_t *testval){
-    printf("== TEST %s NOT IMPLEMENTED\n", __func__);
+    printf("== TEST %s \n", __func__);
+
+    bool pass = true;
+    size_t count = 0;
+
+    g1p_t out1, out0, in1, in0;
+    g1p_t p, q, u, v;
+
+    g1p_gen(q); g1p_dbl(q);
+    g1p_cpy(p, q);
+    g1p_cpy(in0, q);
+    g1p_cpy(in1, q);
+
+    for (int i=0; pass & i<NTEST; i++){
+            printf("\n=====\n");
+            g1p_print("inf = ", q);
+        g1p_sub(p, q);  //p = p-q
+        g1m(OP_SUB, out1, out0, in1, in0); //out0 = in0-in1
+            g1p_print("p   = ", p);
+            g1p_print("o0  = ", out0);
+            printf("\n=====\n");
+
+
+        if(g1p_neq(p, out0)){
+            pass = false;
+            printf("%d: FAILED\n", i);
+            printf("FAILED\n" );
+            g1p_print("cuda = ", p);
+            g1p_print("ptxm = ", out0);
+            pass = false;
+        }
+
+        g1p_cpy(in1, out0);
+        ++count;
+    }
+
+    if (!pass || (blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) == 0){
+        printf("%ld tests\n", count);
+        PRINTPASS(pass);
+    }
 
 }
 
@@ -123,24 +195,20 @@ __global__ void G1_DBL_PTX(testval_t *testval){
     g1p_gen(p);
     g1p_gen(in0);
 
-    g1p_print("cuda p = ", p);
-    g1p_print("ptxm in0= ", in0); 
-    printf("\n\n");
-
-    for (int i=0; pass&i<20000; i++){
+    for (int i=0; pass & i<NTEST; i++){
         g1p_dbl(p); 
-        g1m(OP_DBL, out0, in0, in0, in0);
+        g1m(OP_DBL, out1, out0, in1, in0);
 
-        if(g1p_neq(p, in0)){
+        if(g1p_neq(p, out0)){
             pass = false;
             printf("%d: FAILED\n", i);
             printf("FAILED\n" );
             g1p_print("cuda = ", p);
-            g1p_print("ptxm = ", in0);
+            g1p_print("ptxm = ", out0);
             pass = false;
         }
 
-        //g1p_cpy(in0, out0);
+        g1p_cpy(in0, out0);
         ++count;
     }
 

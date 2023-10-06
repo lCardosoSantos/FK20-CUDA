@@ -7,6 +7,10 @@
 #include "fr.cuh"
 #include "g1.cuh"
 #include "fk20.cuh"
+#include "g1p_ptx.cuh"
+
+#define g1p_dbl(q) g1m(OP_DBL, q, q, q, q);
+#define g1p_add(p, q) g1m(OP_ADD, p, p, p, q);
 
 /**
  * @brief toeplitz_coefficients_fft + xext_fft -> hext_fft

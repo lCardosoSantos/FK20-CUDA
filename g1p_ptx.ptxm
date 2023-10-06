@@ -13,6 +13,8 @@
 #include "fp_sqr.ptxh"
 #include "fp_mul.ptxh"
 #include "fp_reduce12.ptxh"
+#include "fp_neg.ptxh"
+#include "fp_mma.ptxh"
 
 
 //for debugging //printf("%d\n", var);
@@ -118,14 +120,16 @@ fp_fun: .branchtargets
 #define fp_reduce12_    9
         fp_mma,
 #define fp_mma_         10
+        fp_neg,
+#define fp_neg_         11
         LOAD1,
-#define LOAD1_   11
+#define LOAD1_   12
         LOAD2,
-#define LOAD2_   12
+#define LOAD2_   13
         STORE1,
-#define STORE1_   13
+#define STORE1_   14
         STORE2;
-#define STORE2_   14
+#define STORE2_   15
 
 
 //fp_ret: .branchtargets
@@ -145,19 +149,18 @@ StoreTMP32_out0:
     // print the contents of tmp64
     ret;
 
-g1p_add:
-    mov.u32 tmp32, 1;
-    bra StoreTMP32_out0;
+//g1p_add:
+	#include "g1p_add.inc"
+	
 
-g1p_sub:
-    mov.u32 tmp32, 2;
-    bra StoreTMP32_out0;
+//g1p_sub:
+    #include "g1p_sub.inc"
 
 //g1p_dbl:
     #include "g1p_dbl.inc"
     
-g1p_addsub:
-    ret;
+//g1p_addsub:
+    #include "g1p_addsub.inc"
 
 /// FP functions
 // Note the symbols without a branch in the end: Order of these functions matter
@@ -197,6 +200,10 @@ fp_mul:
 fp_reduce12:
         FP_REDUCE12(a);
         brx.idx.uni     %ret, fp_ret;
+
+fp_neg:
+		FP_NEG(a, b);
+		brx.idx.uni     %ret, fp_ret;
 
 /// IO functions
 
@@ -314,3 +321,8 @@ PRINTTMP:
     ret;
 
 }
+
+
+//      for returning early
+		// mov.u32 %fun, STORE1_;
+        // brx.idx.uni %fun, fp_fun;

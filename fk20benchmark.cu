@@ -131,8 +131,8 @@ int compare(const void *  a, const void *  b);
 void printHeader(unsigned rows);
 
 int main(int argc, char **argv) {
-    unsigned rows = 32;
-    NSAMPLES = 7;
+    unsigned rows = 512;
+    NSAMPLES = 3;
     int opt;
 
     while((opt = getopt(argc, argv, "r:s:h")) != -1){
