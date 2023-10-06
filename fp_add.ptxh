@@ -19,13 +19,13 @@
     addc.u64.cc Z##3, X##3, Y##3; newline\
     addc.u64.cc Z##4, X##4, Y##4; newline\
     addc.u64.cc Z##5, X##5, Y##5; newline\
-    addc.u64    T##6,    0,    0; newline\
+    addc.u64    Z##6,    0,    0; newline\
  \
     /* gt = (z>>320) > (m>>320) */ newline\
     /* nz = (z>>384) > 0 */ newline\
  \
-    setp.gt.u64 gt, T##5, 0x1a0111ea397fe69aU; newline\
-    setp.ne.u64 nz, T##6, 0; newline\
+    setp.gt.u64 gt, Z##5, 0x1a0111ea397fe69aU; newline\
+    setp.ne.u64 nz, Z##6, 0; newline\
  \
     /* If gt then subtract m */ newline\
  \

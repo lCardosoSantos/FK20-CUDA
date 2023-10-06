@@ -1,14 +1,9 @@
-/*
- * bls12_381: Arithmetic for BLS12-381
- * Copyright 2022-2023 Dag Arne Osvik
- * Copyright 2022-2023 Luan Cardoso dos Santos
- */
-
-.version 8.1
+.version 8.2
 .target sm_80
 .address_size 64
 
-#include "fp_cpy.ptxh"
+
+#include "fp_cpy.ptxh" //better definition for fpmov
 #include "fp_x2.ptxh"
 #include "fp_x3.ptxh"
 #include "fp_x8.ptxh"
@@ -19,64 +14,86 @@
 #include "fp_mul.ptxh"
 #include "fp_reduce12.ptxh"
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//
-// g1p_ptx(uint32_t, g1p_t *, g1p_t *, const g1p_t *, const g1p_t *, const g1p_t *);
-//
-// Register usage in Fp operations:
-//  x{2,4,8}:   a <- a.
-//  x{3,12}:    a <- a. Modifies r.
-//  reduce12:   a <- a. Modifies q and r.
-//  sqr:        a <- b. Modifies q and r.
-//  mul:        a <- b, c. Modifies q and r.
-//  add:        a <- b, c. Modifies r.
-//  sub:        a <- b, c. Modifies r.
-//
-//////////////////////////////////////////////////////////////////////////////////////////
 
-.visible .func _Z7g1p_ptxiP5g1p_tS0_PKS_S2_(
-        .param .u32 _Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_0,
-        .param .b64 _Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_1,
-        .param .b64 _Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_2,
-        .param .b64 _Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_3,
-        .param .b64 _Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_4
+//for debugging //printf("%d\n", var);
+	// .globl	_Z3g1miR5g1p_tS0_S0_S0_
+.extern .func  (.param .b32 func_retval0) vprintf
+(
+	.param .b64 vprintf_param_0,
+	.param .b64 vprintf_param_1
+)
+;
+.global .align 1 .b8 $str[5] = {37, 108, 120, 10};
+
+	// .globl	_Z3g1miR5g1p_tS0_S0_S0_
+//End of printf definintion
+
+//Note: the newline token is exchanged by a proper \n before compilation
+#define FP_MOV(a, b) newline\
+        newline\
+	mov.u64 a##0, b##0; newline \
+	mov.u64 a##1, b##1; newline \
+	mov.u64 a##2, b##2; newline \
+	mov.u64 a##3, b##3; newline \
+	mov.u64 a##4, b##4; newline \
+	mov.u64 a##5, b##5; newline \
+
+
+
+.visible .func _Z3g1mmR5g1p_tS0_S0_S0_(
+	.param .b64 _Z3g1mmR5g1p_tS0_S0_S0__param_0,
+	.param .b64 _Z3g1mmR5g1p_tS0_S0_S0__param_1,
+	.param .b64 _Z3g1mmR5g1p_tS0_S0_S0__param_2,
+	.param .b64 _Z3g1mmR5g1p_tS0_S0_S0__param_3,
+	.param .b64 _Z3g1mmR5g1p_tS0_S0_S0__param_4
 )
 {
-        //////// Register Allocation ////////
+.reg .b64 op;
+.reg .b64 out1, out0, in1, in0;
+.reg .u32 tmp32;
+.reg .u64 tmp64;
 
-        // Function and return address selectors
-        .reg .u32       %fun, %ret;
+.reg .u32 %fun, %ret;
 
-        // Function parameters (g1p_t *)
-        .reg .b64       z, x, y;
+// Temporaries (fp_t)
+.reg .u64      u<6>, v<6>, w<6>, x<6>, y<6>, z<6>, ta<6>, tb<6>, tc<6>, td<6>;
 
-        // Operand registers
-        .reg .u64       a<10>, aa, ab, b<6>, c<6>; 
-
-        // Temporaries (fp_t)
-        .reg .u64       v<6>, w<6>, x<6>, y<6>, z<6>;
-
-        // Extended temporaries
-        .reg .u64       q<8>, r<7>;
-
-        // Predicates: greater-than and non-zero
-        .reg .pred      gt, nz;
+ // Operand registers
+.reg .u64       a<10>, aa, ab, b<6>, c<6>; 
 
 
-        //////// Labels & Label Indices ////////
+// Extended temporaries
+.reg .u64	q<8>, r<7>;
 
-g1p_fun: .branchtargets
+//predicate greater than
+.reg .pred      gt, nz;
+
+//needed for printf
+	.local .align 8 .b8 	__local_depot0[8];
+	.reg .b64 	%SP;
+	.reg .b64 	%SPL;
+	.reg .b32 	%r<2>;
+	.reg .b64 	%rd<7>;
+
+//These variables hold the pointers tot he arguments
+ld.param.u64 op,     [_Z3g1mmR5g1p_tS0_S0_S0__param_0]; //not a pointer, value is in OP
+ld.param.u64 out1,   [_Z3g1mmR5g1p_tS0_S0_S0__param_1]; // ┐
+ld.param.u64 out0,   [_Z3g1mmR5g1p_tS0_S0_S0__param_2]; // ├ These are pointers to the parameters, all g1p_t 
+ld.param.u64 in1,    [_Z3g1mmR5g1p_tS0_S0_S0__param_3]; // │
+ld.param.u64 in0,    [_Z3g1mmR5g1p_tS0_S0_S0__param_4]; // ┘
+
+/// branch targets
+g1p_fun: .branchtargets 
+        g1p_add, 
+        #define g1p_add_ 0
+        g1p_sub, 
+        #define g1p_sub_ 1
         g1p_dbl,
-#define g1p_dbl_        0
-        g1p_add,
-#define g1p_add_        1
-        g1p_addsub,
-#define g1p_addsub_     2
-        g1p_dbl_add,
-#define g1p_dbl_add_    3
-        g1p_dbl_add2;
-#define g1p_dbl_add2_   4
-
+        #define g1p_dbl_ 2
+        StoreTMP32_out0,
+        #define StoreTMP32_out0_ 3
+        PRINTTMP;
+        #define PRINTTMP_ 4
 
 fp_fun: .branchtargets
         fp_x2,
@@ -99,107 +116,56 @@ fp_fun: .branchtargets
 #define fp_mul_         8
         fp_reduce12,
 #define fp_reduce12_    9
-        fp_mma;
+        fp_mma,
 #define fp_mma_         10
+        LOAD1,
+#define LOAD1_   11
+        LOAD2,
+#define LOAD2_   12
+        STORE1,
+#define STORE1_   13
+        STORE2;
+#define STORE2_   14
 
 
-fp_ret: .branchtargets
-        dbl_x2,
-#define dbl_x2_         0
-        dbl_x3,
-#define dbl_x3_         1
-        dbl_x8,
-#define dbl_x8_         2
-        dbl_x12,
-#define dbl_x12_        3
-        add_x3,
-#define add_x3_         4
-        add_x12_0,
-#define add_x12_0_      5
-        add_x12_1;
-#define add_x12_1_      6
+//fp_ret: .branchtargets
+#include "fp_retBranchTargets.inc" 
 
 
-        //////// G1p Function Selection ////////
 
-        // Load parameters
-
-        ld.param.u32    %fun, [_Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_0];
-        ld.param.b64    z, [_Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_1];
-        ld.param.b64    x, [_Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_2];
-        ld.param.b64    y, [_Z7g1p_ptxiP5g1p_tS0_PKS_S2__param_3];
-
-        // Jump to selected g1p function
-
-        setp.gt.u32     gt, %fun, g1p_dbl_add2_;        // >last?
+        setp.gt.u64     gt, op, 4;        // fun  > len(g1p_fun) ?
+        cvt.u32.u64     %fun, op;        // branching only works on 32bit reg
 @!gt    brx.idx.uni     %fun, g1p_fun;
-
-        // No valid g1p function chosen
-
         ret.uni;
 
-        //////// G1p Functions ////////
-
-        //// g1p_dbl ////
-
-g1p_dbl:
-        mov.u32         %fun, fp_x12_;
-        mov.u32         %ret, dbl_x12_;
-        brx.idx.uni     %fun, fp_fun;
-    dbl_x12:
-
-        mov.u32         %fun, fp_x3_;
-        mov.u32         %ret, dbl_x3_;
-        brx.idx.uni     %fun, fp_fun;
-    dbl_x3:
-
-        mov.u32         %fun, fp_x8_;
-        mov.u32         %ret, dbl_x8_;
-        brx.idx.uni     %fun, fp_fun;
-    dbl_x8:
-
-        mov.u32         %fun, fp_x2_;
-        mov.u32         %ret, dbl_x2_;
-        brx.idx.uni     %fun, fp_fun;
-    dbl_x2:
-
-        ret.uni;
-
-        //// g1p_add ////
+StoreTMP32_out0:
+    cvt.u64.u32 tmp64, tmp32;
+    st.u64 [out0], tmp64;
+    bra PRINTTMP;
+    // print the contents of tmp64
+    ret;
 
 g1p_add:
-    add_x3:
-    add_x12_0:
-    add_x12_1:
-        ret.uni;
+    mov.u32 tmp32, 1;
+    bra StoreTMP32_out0;
 
-        //// g1p_addsub ////
+g1p_sub:
+    mov.u32 tmp32, 2;
+    bra StoreTMP32_out0;
 
+//g1p_dbl:
+    #include "g1p_dbl.inc"
+    
 g1p_addsub:
-    addsub_x12_0:
-    addsub_x3:
-    addsub_x12_1:
-        ret.uni;
+    ret;
 
-        //// g1p_dbl_add ////
-
-g1p_dbl_add:
-        ret.uni;
-
-        //// g1p_dbl_add2 ////
-
-g1p_dbl_add2:
-        ret.uni;
-
-        //////// Fp Functions ////////
-
+/// FP functions
+// Note the symbols without a branch in the end: Order of these functions matter
 fp_x3:
-        FP_X3(a, a, a);
+        FP_X3(a, a, r);
         brx.idx.uni     %ret, fp_ret;
-
-        // Space-saving const-multiplier code
 fp_x12:
-        FP_X3(a, a, a);
+        FP_X3(a, a, r);
         bra.uni         fp_x4;
 fp_x8:
         FP_X2(a, a, a);
@@ -210,11 +176,11 @@ fp_x2:
         brx.idx.uni     %ret, fp_ret;
 
 fp_add:
-        FP_ADD(a, b, c, a);
+        FP_ADD(a, b, c, r);
         brx.idx.uni     %ret, fp_ret;
 
 fp_sub:
-        FP_SUB(a, b, c, a);
+        FP_SUB(a, b, c, r);
         brx.idx.uni     %ret, fp_ret;
 
 fp_mma:
@@ -231,6 +197,120 @@ fp_mul:
 fp_reduce12:
         FP_REDUCE12(a);
         brx.idx.uni     %ret, fp_ret;
-}
 
-// vim: ts=8 et sw=8 si
+/// IO functions
+
+LOAD2:
+	ld.b64 	u0, [in1+0];
+	ld.b64 	u1, [in1+8];
+	ld.b64 	u2, [in1+16];
+	ld.b64 	u3, [in1+24];
+	ld.b64 	u4, [in1+32];
+	ld.b64 	u5, [in1+40];
+	ld.b64 	v0, [in1+48];
+	ld.b64 	v1, [in1+56];
+	ld.b64 	v2, [in1+64];
+	ld.b64 	v3, [in1+72];
+	ld.b64 	v4, [in1+80];
+	ld.b64 	v5, [in1+88];
+	ld.b64 	w0, [in1+96];
+	ld.b64 	w1, [in1+104];
+	ld.b64 	w2, [in1+112];
+	ld.b64 	w3, [in1+120];
+	ld.b64 	w4, [in1+128];
+	ld.b64 	w5, [in1+136];
+LOAD1:
+	ld.b64 	x0, [in0+0];
+	ld.b64 	x1, [in0+8];
+	ld.b64 	x2, [in0+16];
+	ld.b64 	x3, [in0+24];
+	ld.b64 	x4, [in0+32];
+	ld.b64 	x5, [in0+40];
+	ld.b64 	y0, [in0+48];
+	ld.b64 	y1, [in0+56];
+	ld.b64 	y2, [in0+64];
+	ld.b64 	y3, [in0+72];
+	ld.b64 	y4, [in0+80];
+	ld.b64 	y5, [in0+88];
+	ld.b64 	z0, [in0+96];
+	ld.b64 	z1, [in0+104];
+	ld.b64 	z2, [in0+112];
+	ld.b64 	z3, [in0+120];
+	ld.b64 	z4, [in0+128];
+	ld.b64 	z5, [in0+136];
+	brx.idx.uni	%ret, fp_ret; //jump back to callee
+
+
+
+STORE2:
+	st.b64 	[out1+0]  , u0;
+	st.b64 	[out1+8]  , u1;
+	st.b64 	[out1+16] , u2;
+	st.b64 	[out1+24] , u3;
+	st.b64 	[out1+32] , u4;
+	st.b64 	[out1+40] , u5;
+	st.b64 	[out1+48] , v0;
+	st.b64 	[out1+56] , v1;
+	st.b64 	[out1+64] , v2;
+	st.b64 	[out1+72] , v3;
+	st.b64 	[out1+80] , v4;
+	st.b64 	[out1+88] , v5;
+	st.b64 	[out1+96] , w0;
+	st.b64 	[out1+104], w1;
+	st.b64 	[out1+112], w2;
+	st.b64 	[out1+120], w3;
+	st.b64 	[out1+128], w4;
+	st.b64 	[out1+136], w5;
+STORE1:
+	st.b64 	[out0+0]  , x0;
+	st.b64 	[out0+8]  , x1;
+	st.b64 	[out0+16] , x2;
+	st.b64 	[out0+24] , x3;
+	st.b64 	[out0+32] , x4;
+	st.b64 	[out0+40] , x5;
+	st.b64 	[out0+48] , y0;
+	st.b64 	[out0+56] , y1;
+	st.b64 	[out0+64] , y2;
+	st.b64 	[out0+72] , y3;
+	st.b64 	[out0+80] , y4;
+	st.b64 	[out0+88] , y5;
+	st.b64 	[out0+96] , z0;
+	st.b64 	[out0+104], z1;
+	st.b64 	[out0+112], z2;
+	st.b64 	[out0+120], z3;
+	st.b64 	[out0+128], z4;
+	st.b64 	[out0+136], z5;
+
+	ret;   //Function ends after store
+
+
+
+//////////////// DEBUG
+
+PRINTTMP:
+    mov.u64 	%SPL, __local_depot0;
+    cvta.local.u64 	%SP, %SPL;
+    // ld.param.u64 	%rd1, [_Z3g1mmR5g1p_tS0_S0_S0__param_0];
+    add.u64 	%rd2, %SP, 0;
+    add.u64 	%rd3, %SPL, 0;
+    st.local.u64 	[%rd3], tmp64;  //<<< LOAD HERE THE u64 to print
+    mov.u64 	%rd4, $str;
+    cvta.global.u64 	%rd5, %rd4;
+    { // callseq 0, 0
+        .reg .b32 temp_param_reg;
+        .param .b64 param0;
+        st.param.b64 	[param0+0], %rd5;
+        .param .b64 param1;
+        st.param.b64 	[param1+0], %rd2;
+        .param .b32 retval0;
+        call.uni (retval0), 
+        vprintf, 
+        (
+        param0, 
+        param1
+        );
+        ld.param.b32 	%r1, [retval0+0];
+    } // callseq 0
+    ret;
+
+}

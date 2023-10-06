@@ -1,0 +1,11 @@
+#ifndef PTXHEADER_H
+#define PTXHEADER_H
+
+// typedef enum{
+//         add, sub, mul, sqr
+//         } op_t;
+//Cant use a typedef, not valid in ptx. Macros will have to suffice
+
+
+
+#endif

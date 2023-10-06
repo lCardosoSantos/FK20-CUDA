@@ -79,7 +79,7 @@ __global__ void g1p_eq_wrapper(uint8_t *output, size_t len, const g1p_t *p, cons
 
 
 //Old version for comparisons:
-__device__ void g1p_dbl_noPTX(g1p_t &p);
+__device__ void g1p_dbl_PTX(g1p_t &p);
 
 #endif
 

@@ -1,6 +1,6 @@
 CXX=g++
 CPP=cpp
-NVCC=nvcc -rdc=true --generate-line-info --std=c++14 #--maxrregcount=128 -Xlinker=--no-relax
+NVCC=nvcc -rdc=true --generate-line-info --std=c++14 -DNDEBUG #--maxrregcount=128 -Xlinker=--no-relax
 NVOPTS=--compile
 NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86 
 COPTS= -O2
@@ -13,6 +13,7 @@ FK20=fk20 fk20_poly2h_fft fk20_poly2toeplitz_coefficients fk20_poly2toeplitz_coe
 FPTEST=test fptest fptest_kat fptest_cmp fptest_mma fptest_inv fptest_add fptest_sub fptest_mul fptest_mulconst fptest_sqr fptest_distributive fptest_fibonacci fp_ptx fpPTXtest
 FRTEST=test frtest frtest_kat frtest_cmp frtest_add frtest_mul frtest_inv frtest_sub frtest_addsub frtest_fibonacci frtest_mulconst frtest_sqr frtest_distributive frtest_fft
 G1TEST=test g1test g1test_kat g1test_fibonacci g1test_dbl g1test_fft
+G1TEST_PTX=test g1ptest_ptx g1p_ptx
 FK20TEST=test fk20test fk20test_poly fk20_testvector fk20test_fft fk20test_fft_rand
 FK20TEST_TC=test fk20test_poly2toeplitz_coefficients polynomial toeplitz_coefficients
 FK20TEST_TCFFT=test fk20test_poly2toeplitz_coefficients_fft polynomial toeplitz_coefficients_fft
@@ -35,6 +36,7 @@ FK20_CUBIN=$(FK20:%=%.cubin)
 FPTEST_OBJS=$(FPTEST:%=%.o)
 FRTEST_OBJS=$(FRTEST:%=%.o)
 G1TEST_OBJS=$(G1TEST:%=%.o)
+G1TEST_PTX_OBJS=$(G1TEST_PTX:%=%.o)
 FK20TEST_OBJS=$(FK20TEST:%=%.o)
 FK20TEST_TC_OBJS=$(FK20TEST_TC:%=%.o)
 FK20TEST_TCFFT_OBJS=$(FK20TEST_TCFFT:%=%.o)
@@ -100,7 +102,7 @@ clobber: clean
 %: %.o
 	$(NVCC) $(NVARCH) -o $@ $^ --resource-usage
 
-g1p_ptx.ptx: g1p_ptx.ptxm fp_x2.ptxh fp_x3.ptxh fp_x8.ptxh fp_x12.ptxh fp_add.ptxh fp_sub.ptxh fp_sqr.ptxh fp_mul.ptxh fp_reduce12.ptxh
+g1p_ptx.o: g1p_ptx.ptx
 
 fp_add.o: fp_add.cu fp_add.cuh
 
@@ -153,8 +155,14 @@ fptest_ptx: fptest_ptx.cu $(FP_OBJS) fp_ptx.o # fp_x2.ptx fp_x3.ptx fp_x4.ptx fp
 
 frtest: $(FRTEST_OBJS) $(FR_OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
-
+	
 g1test: $(G1TEST_OBJS) $(OBJS)
+	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
+
+g1ptest_ptx.o: g1ptest_ptx.cu
+	$(NVCC) $(COPTS) -o $@ -c $<
+
+g1test_ptx: $(G1TEST_PTX_OBJS) $(FP_OBJS) $(FR_OBJS) $(G1_OBJS) 
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
 fk20test: $(FK20TEST_OBJS) $(OBJS)

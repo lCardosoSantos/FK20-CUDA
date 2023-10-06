@@ -14,7 +14,8 @@
 #include "fp_mul.cuh"
 #include "fp_reduce12.cuh"
 
-extern __device__ void g1p_dbl_ptx(g1p_t *p);
+
+// extern __device__ void g1p_dbl_ptx(g1p_t *p);
 
 /**
  * @brief G1 point doubling, with write back: p=2*p
@@ -22,7 +23,7 @@ extern __device__ void g1p_dbl_ptx(g1p_t *p);
  * @param[in, out] p 
  * @return void 
  */
-__device__ void g1p_dbl(g1p_t &p) {
+__device__ void g1p_dbl_ptx(g1p_t &p) {
 
     if (!g1p_isPoint(p)) {
         g1p_print("ERROR in g1p_dbl(): Invalid point ", p);
@@ -34,7 +35,7 @@ __device__ void g1p_dbl(g1p_t &p) {
 
         return;
     } else {
-        g1p_dbl_ptx(&p);
+        // g1p_dbl_ptx(&p);
         return;
     }
 
@@ -240,8 +241,9 @@ __device__ void g1p_dbl(g1p_t &p) {
  * @param[in, out] p 
  * @return void 
  */
-__device__ void g1p_dbl_noPTX(g1p_t &p) {
+__device__ void g1p_dbl(g1p_t &p) {
 
+#ifndef NDEBUG
     if (!g1p_isPoint(p)) {
         g1p_print("ERROR in g1p_dbl(): Invalid point ", p);
 
@@ -252,7 +254,7 @@ __device__ void g1p_dbl_noPTX(g1p_t &p) {
 
         return;
     } 
-
+#endif
     fp_t x, y, z, v, w;
 
     fp_cpy(x, p.x);
