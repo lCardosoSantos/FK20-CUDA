@@ -16,7 +16,6 @@
  * @return void 
  */
 __device__ void g1p_mul(g1p_t &p, const fr_t &k) {
-    // TODO: Use 4-bit lookup table to reduce additions by a factor 4.
     
 #if 0 //ndef NDEBUG
     if (!g1p_isPoint(p)) {
@@ -35,10 +34,24 @@ __device__ void g1p_mul(g1p_t &p, const fr_t &k) {
 
     g1p_inf(q); // q = inf
 
-    for (int i=3; i>=0; i--) {
-        uint64_t
-            t = k[i],
-            j = 1ULL<<63;
+    uint64_t
+        t = k[3],
+        j = 1ULL<<63;
+
+    while ((j !=0) && ((t&j) == 0))
+        j >>= 1;
+
+    for (; j!=0; j>>=1) {
+        g1p_dbl(q);
+
+        if ((t&j) != 0) {
+            g1p_add(q, p);
+        }
+    }
+
+    for (int i=2; i>=0; i--) {
+        t = k[i];
+        j = 1ULL<<63;
 
         for (; j!=0; j>>=1) {
             g1p_dbl(q);

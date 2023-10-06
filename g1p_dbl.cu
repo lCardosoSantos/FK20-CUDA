@@ -57,8 +57,8 @@ __device__ void g1p_dbl(g1p_t &p) {
     }
 #endif
 
-#if 1
-    g1p_multi(0, &p, NULL, &p, NULL);
+#if 0
+    g1p_multi(-1, &p, NULL, &p, NULL);
     /*
     uint64_t T, V, W, X, Y, Z;
 

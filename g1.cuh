@@ -58,12 +58,13 @@ extern __device__ void g1p_mul(g1p_t &p, const fr_t &x);
 
 /*
  * Multifunctional G1 function
- * op name
- * 0  dbl:     p ← 2*r
- * 1  add:     p ← r+s
- * 2  addsub:  (p,q) ← (p+q,p-q)
- * 3  dbladd:  p ← 2*r+s
- * 4  dbladd2: p ← 2*p+r+s
+ * op  Name     Function
+ * >=0 Mul:     p ← r*fr_roots[op]
+ *  -1 Dbl:     p ← 2*r
+ *  -2 Add:     p ← r+s
+ *  -3 Addsub:  (p,q) ← (r+s,r-s)
+ *  -4 Dbladd:  p ← 2*r+s
+ *  -5 Dbladd2: p ← 2*q+r+s
  */
 extern __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_t *s);
 

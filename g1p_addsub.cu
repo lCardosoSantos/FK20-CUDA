@@ -32,8 +32,8 @@ __device__ void g1p_addsub(g1p_t &p, g1p_t &q) {
     }
 #endif
 
-#if 0
-    g1p_multi(2, &p, &q, NULL, NULL);
+#if 1
+    g1p_multi(-3, &p, &q, &p, &q);
 #else
     fp_t
         &X1 = p.x, &Y1 = p.y, &Z1 = p.z,

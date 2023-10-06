@@ -1,8 +1,8 @@
 CXX=g++
 CPP=cpp
-NVCC=nvcc -rdc=true --generate-line-info --std=c++14 -DNDEBUG #--maxrregcount=128 -Xlinker=--no-relax
+NVCC=nvcc -rdc=true --std=c++14 -Xlinker=--no-relax # -G # --generate-line-info # --maxrregcount=128
 NVOPTS=--compile
-NVARCH= --gpu-architecture=compute_80 --gpu-code=sm_86 
+NVARCH= --gpu-architecture=compute_86 --gpu-code=sm_86 
 COPTS= -O2
 
 FP=fp fp_cpy fp_reduce6 fp_eq fp_neq fp_neg fp_x2 fp_x3 fp_x4 fp_x8 fp_x12 fp_add fp_sub fp_sqr fp_mul fp_inv fp_isone fp_iszero fp_nonzero fp_mma
@@ -94,6 +94,9 @@ clobber: clean
 
 %.cubin: %.ptx
 	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $< -cubin
+
+%.ptx: %.cu
+	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $< -ptx
 
 %.o: %.ptx
 	$(NVCC) $(NVOPTS) $(NVARCH) -o $@ -c $<

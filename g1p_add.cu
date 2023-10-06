@@ -77,7 +77,7 @@ __device__ void g1p_add(g1p_t &p, const g1p_t &q) {
 #endif
 
 #if 1
-    g1p_multi(1, &p, NULL, &p, &q);   // p ← p+q
+    g1p_multi(-2, &p, NULL, &p, &q);   // p ← p+q
 #else
     uint64_t
         A, B, C,

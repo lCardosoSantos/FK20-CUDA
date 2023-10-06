@@ -4,9 +4,13 @@
 
 #include <stdio.h>
 
+#define SUPPORT_DBLADD2 0
+
 #include "g1.cuh"
 #include "fp.cuh"
+#include "fr.cuh"
 #include "fp_cpy.cuh"
+#include "fp_neg.cuh"
 #include "fp_x2.cuh"
 #include "fp_x3.cuh"
 #include "fp_x4.cuh"
@@ -48,12 +52,6 @@
 
 // Temporaries
 
-#define V v0, v1, v2, v3, v4, v5
-#define W w0, w1, w2, w3, w4, w5
-#define X x0, x1, x2, x3, x4, x5
-#define Y y0, y1, y2, y3, y4, y5
-#define Z z0, z1, z2, z3, z4, z5
-
 #define t0 t00, t01, t02, t03, t04, t05
 #define t1 t10, t11, t12, t13, t14, t15
 #define t2 t20, t21, t22, t23, t24, t25
@@ -70,37 +68,29 @@
 /**
  * @brief G1 point arithmetic toolbox.
  *
+ * @param[in] op Operation selector
  * @param[in, out] p
  * @param[in, out] q
  * @param[in] r
  * @param[in] s
  * @return void
  *
- * 0 Dbl:     p ← 2*r
- * 1 Add:     p ← r+s
- * 2 Addsub:  (p,q) ← (p+q,p-q)
- * 3 Dbladd:  p ← 2*r+s
- * 4 Dbladd2: p ← 2*p+r+s
+ * >=0 Mul:     p ← r*fr_roots[op]
+ *  -1 Dbl:     p ← 2*r
+ *  -2 Add:     p ← r+s
+ *  -3 Addsub:  (p,q) ← (r+s,r-s)
+ *  -4 Dbladd:  p ← 2*r+s
+ *  -5 Dbladd2: p ← 2*q+r+s
  */
 __noinline__
 __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_t *s) {
 
-#if 0 //ndef NDEBUG
-    if (!g1p_isPoint(p)) {
-        printf("ERROR in %s: ", __func__);
-        g1p_print("Invalid point ", p);
-
-        // return invalid point as result
-        fp_zero(p.x);
-        fp_zero(p.y);
-        fp_zero(p.z);
-
-        return;
-    }
-#endif
-
     uint64_t A, B, C, t0, t1, t2, t3, X1, Y1, Z1, X2, Y2, Z2;
-    unsigned call, ret;
+    uint64_t mul;    // partial multiplier
+    uint32_t
+        call,   // next state / function to call
+        ret,    // return state
+        ctr;    // repetition counter for point multiplication
 
     // Labels for the state machine
 
@@ -110,6 +100,7 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
         F_x2,
         F_x3,
+        F_x4,
         F_x8,
         F_x12,
         F_add,
@@ -174,17 +165,14 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
         A_add10,
         A_add11,
 
-        // G1 addsub
+        // G1 multiplication by 512-roots of unity
 
-        AS_begin,
+        M_dbl,
+        M_add,
 
-        // G1 dbladd
+        // Compositition
 
-        DA_begin,
-
-        // G1 dbladd2
-
-        DAA_begin,
+        L_compose,
 
         // The end
 
@@ -192,14 +180,24 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
     };
 
     switch(op) {
-        case 0:
+        case -1: // Dbl
+        case -4: // Dbladd
             fp_cpy(X1, RX);
             fp_cpy(Y1, RY);
             fp_cpy(Z1, RZ);
             call = D_begin;
             break;
-
-        case 1:
+#if SUPPORT_DBLADD2
+        case -5: // Dbladd2
+            fp_cpy(X1, QX);
+            fp_cpy(Y1, QY);
+            fp_cpy(Z1, QZ);
+            call = D_begin;
+            break;
+#endif
+        case -2: // Add
+        case -3: // Addsub
+            //printf("Addsub\n");
             fp_cpy(X1, RX);
             fp_cpy(Y1, RY);
             fp_cpy(Z1, RZ);
@@ -208,8 +206,22 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(Z2, SZ);
             call = A_begin;
             break;
-        default: return;
+        default:
+            if ((op < 0) || (op > 514))
+                return;
+            fp_cpy(X2, RX);
+            fp_cpy(Y2, RY);
+            fp_cpy(Z2, RZ);
+            // g1p_inf(X1, Y1, Z1);
+            X15 = X14 = X13 = X12 = X11 = X10 = 0;
+            Y15 = Y14 = Y13 = Y12 = Y11 = 0; Y10 = 1;
+            Z15 = Z14 = Z13 = Z12 = Z11 = Z10 = 0;
+            ctr = 255;
+            call = M_add;
+            break;
     }
+
+    // NB: No code should be inserted here - it will be skipped.
 
     // Fully inlined code is too big; emulate function calls to compress it.
     // Workaround for compiler bug: use a loop with a switch instead of labels and goto.
@@ -217,24 +229,34 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
     while (call != L_end) switch(call) {
 
         //// Fp functions ////
-
+#if 1
         case F_x2:  fp_x2(AL, AL);      call = ret; break;
         case F_x3:  fp_x3(AL, AL);      call = ret; break;
         case F_x8:  fp_x8(AL, AL);      call = ret; break;
         case F_x12: fp_x12(AL, AL);     call = ret; break;
+#else
+F_x3:   case F_x3:  fp_x3(AL, AL);      call = ret; break;
+F_x12:  case F_x12: fp_x3(AL, AL);      goto  L_x4; break;
+F_x8:   case F_x8:  fp_x2(AL, AL);
+F_x4:   case F_x4:  fp_x2(AL, AL);
+F_x2:   case F_x2:  fp_x2(AL, AL);      call = ret; break;
+#endif
         case F_add: fp_add(AL, B, C);   call = ret; break;
         case F_sub: fp_sub(AL, B, C);   call = ret; break;
-        case F_sqr: fp_sqr(A, B);       call = F_red; break;
-        case F_mul: fp_mul(A, B, C);    // fall through to reduction
-        case F_red: fp_reduce12(A);     call = ret; break;
+F_sqr:  case F_sqr: fp_sqr(A, B);       goto L_red; break;
+F_mul:  case F_mul: fp_mul(A, B, C);    // fall through to reduction
+L_red:  case F_red: fp_reduce12(A);     call = ret; break;
 
         //// G1 doubling ////
 
         case D_begin:
+            //if (op == -3) printf(" Dbl\n");
+
             fp_cpy(B, X1);
             fp_cpy(C, Y1);
             //fp_mul(X1, X1, Y1);
-            call = F_mul; ret  = D_mul0;
+            ret  = D_mul0;
+            goto F_mul;
             break;
 
         case D_mul0:
@@ -242,21 +264,27 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(B, Z1);
             //fp_sqr(t0, Z1);
-            call = F_sqr; ret = D_sqr0;
+            ret = D_sqr0;
+            goto F_sqr;
             break;
 
         case D_sqr0:
+#if 0
             //fp_x12(t0, t0);
-            call = F_x12; ret = D_x12;
+            ret = D_x12;
+            call = F_x12;
             break;
 
         case D_x12:
             fp_cpy(t0, AL);
-
+#else
+            fp_x12(t0, AL);
+#endif
             fp_cpy(B, Z1);
             fp_cpy(C, Y1);
             //fp_mul(Z1, Z1, Y1);
-            call = F_mul; ret = D_mul1;
+            ret = D_mul1;
+            goto F_mul;
             break;
 
         case D_mul1:
@@ -264,7 +292,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(B, Y1);
             //fp_sqr(Y1, Y1);
-            call = F_sqr; ret = D_sqr1;
+            ret = D_sqr1;
+            goto F_sqr;
             break;
 
         case D_sqr1:
@@ -272,70 +301,90 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(AL, t0);
             //fp_x3(t1, t0);
-            call = F_x3; ret = D_x3;
+            ret = D_x3;
+            call = F_x3;
             break;
 
         case D_x3:
+#if 0
             fp_cpy(C, AL);
             fp_cpy(B, Y1);
             // fp_sub(t1, Y1, t1);
-            call = F_sub; ret = D_sub0;
+            ret = D_sub0;
+            call = F_sub;
             break;
 
         case D_sub0:
             fp_cpy(t1, AL);
-
+#else
+            fp_sub(t1, Y1, AL);
+#endif
             fp_cpy(C, AL);
             fp_cpy(B, X1);
             //fp_mul(X1, X1, t1);
-            call = F_mul; ret = D_mul2;
+            ret = D_mul2;
+            goto F_mul;
             break;
 
         case D_mul2:
             //fp_x2(X1, X1);
-            call = F_x2; ret = D_x2;
+            ret = D_x2;
+            call = F_x2;
             break;
 
         case D_x2:
             fp_cpy(X1, AL);
-
+#if 1
             fp_cpy(B, Y1);
             fp_cpy(C, t0);
             //fp_add(Y1, Y1, t0);
-            call = F_add; ret = D_add0;
+            ret = D_add0;
+            call = F_add;
             break;
 
         case D_add0:
             fp_cpy(Y1, AL);
-
+#else
+            fp_add(Y1, Y1, t0);
+#endif
             fp_cpy(C, t1);
             fp_cpy(B, Y1);
             //fp_mul(t1, Y1, t1);
-            call = F_mul; ret = D_mul3;
+            ret = D_mul3;
+            goto F_mul;
             break;
 
         case D_mul3:
+#if 0
             fp_cpy(t1, AL);
 
             //fp_cpy(B, Y1);
             fp_cpy(C, t0);
             //fp_sub(Y1, Y1, t0);
-            call = F_sub; ret = D_sub1;
+            ret = D_sub1;
+            call = F_sub;
             break;
 
         case D_sub1:
 
             //fp_x8(Y1, Y1);
-            call = F_x8; ret = D_x8;
+            ret = D_x8;
+            call = F_x8;
             break;
 
         case D_x8:
             //fp_cpy(Y1, AL);
 
-            fp_cpy(B, Z1);
             fp_cpy(C, AL);
+#else
+            fp_sub(Y1, AL, t0);
+            fp_x8(Y1, Y1);
+            fp_cpy(C, Y1);
+#endif
+            fp_cpy(B, Z1);
             //fp_mul(Z1, Z1, Y1);
-            call = F_mul; ret = D_mul4;
+            ret = D_mul4;
+            goto F_mul;
             break;
 
         case D_mul4:
@@ -344,32 +393,42 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, t0);
             //fp_cpy(C, Y1);
             //fp_mul(Y1, t0, Y1);
-            call = F_mul; ret = D_mul5;
+            ret = D_mul5;
+            goto F_mul;
             break;
 
         case D_mul5:
             //fp_cpy(Y1, AL);
-
+#if 0
             fp_cpy(B, AL);
             fp_cpy(C, t1);
             //fp_add(Y1, Y1, t1);
-            call = F_add; ret = D_add1;
+            ret = D_add1;
+            call = F_add;
             break;
 
         case D_add1:
             fp_cpy(Y1, AL);
-
-            call = L_end;
+#else
+            fp_add(Y1, AL, t1);
+#endif
+            if (op < 0)
+                call = L_compose;
+            else
+                call = M_add;
             break;
 
         //// G1 addition ////
 
         case A_begin:
 
+            //if (op == -3) printf(" Add\n");
+#if 0
             fp_cpy(B, X1);
             fp_cpy(C, Y1);
             //fp_add(t0, X1, Y1); // t3
-            call = F_add; ret = A_add0;
+            ret = A_add0;
+            call = F_add;
             break;
 
         case A_add0:
@@ -377,7 +436,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(B, Z1);
             //fp_add(t1, Y1, Z1); // t8
-            call = F_add; ret = A_add1;
+            ret = A_add1;
+            call = F_add;
             break;
 
         case A_add1:
@@ -385,17 +445,24 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(C, X1);
             // fp_add(t2, Z1, X1); // td
-            call = F_add; ret = A_add2;
+            ret = A_add2;
+            call = F_add;
             break;
 
         case A_add2:
             fp_cpy(t2, AL);
 
         ////////
-
+#else
+            fp_add(t0, X1, Y1); // t3
+            fp_add(t1, Y1, Z1); // t8
+            fp_add(t2, Z1, X1); // td
+            fp_cpy(C, X1);
+#endif
             fp_cpy(B, X2);
             //fp_mul(X1, X1, X2); // t0
-            call = F_mul; ret = A_mul0;
+            ret = A_mul0;
+            goto F_mul;
             break;
 
         case A_mul0:
@@ -404,7 +471,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, Z1);
             fp_cpy(C, Z2);
             //fp_mul(Z1, Z1, Z2); // t2
-            call = F_mul; ret = A_mul1;
+            ret = A_mul1;
+            goto F_mul;
             break;
 
         case A_mul1:
@@ -413,17 +481,19 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, Y1);
             fp_cpy(C, Y2);
             //fp_mul(Y1, Y1, Y2); // t1
-            call = F_mul; ret = A_mul2;
+            ret = A_mul2;
+            goto F_mul;
             break;
 
         case A_mul2:
             fp_cpy(Y1, AL);
 
         ////////
-
+#if 0
             fp_cpy(B, X2);
             //fp_add(t3, X2, Y2); // t4
-            call = F_add; ret = A_add3;
+            ret = A_add3;
+            call = F_add;
             break;
 
         case A_add3:
@@ -431,7 +501,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(B, Z2);
             //fp_add(Y2, Z2, Y2); // t9
-            call = F_add; ret = A_add4;
+            ret = A_add4;
+            call = F_add;
             break;
 
         case A_add4:
@@ -439,18 +510,24 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(C, X2);
             //fp_add(Z2, Z2, X2); // te
-            call = F_add; ret = A_add5;
+            ret = A_add5;
+            call = F_add;
             break;
 
         case A_add5:
             fp_cpy(Z2, AL);
-
+#else
         ////////
 
+            fp_add(t3, X2, Y2); // t4
+            fp_add(Y2, Z2, Y2); // t9
+            fp_add(Z2, Z2, X2); // te
+#endif
             fp_cpy(B, t3);
             fp_cpy(C, t0);
             //fp_mul(X2, t3, t0); // t5
-            call = F_mul; ret = A_mul3;
+            ret = A_mul3;
+            goto F_mul;
             break;
 
         case A_mul3:
@@ -459,7 +536,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, Y2);
             fp_cpy(C, t1);
             //fp_mul(Y2, Y2, t1); // ta
-            call = F_mul; ret = A_mul4;
+            ret = A_mul4;
+            goto F_mul;
             break;
 
         case A_mul4:
@@ -468,17 +546,19 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, Z2);
             fp_cpy(C, t2);
             //fp_mul(Z2, Z2, t2); // tf
-            call = F_mul; ret = A_mul5;
+            ret = A_mul5;
+            goto F_mul;
             break;
 
         case A_mul5:
             fp_cpy(Z2, AL);
 
         ////////
-
+#if 0
             fp_cpy(AL, X1);
             //fp_x3(t0, X1);      // ti
-            call = F_x3; ret = A_x3;
+            ret = A_x3;
+            call = F_x3;
             break;
 
         case A_x3:
@@ -487,7 +567,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, X1);
             fp_cpy(C, Z1);
             //fp_add(t2, Z1, X1); // tg
-            call = F_add; ret = A_add6;
+            ret = A_add6;
+            call = F_add;
             break;
 
         case A_add6:
@@ -495,7 +576,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(B, Y1);
             //fp_add(t1, Y1, Z1); // tb
-            call = F_add; ret = A_add7;
+            ret = A_add7;
+            call = F_add;
             break;
 
         case A_add7:
@@ -503,7 +585,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(AL, Z1); // = C
             //fp_x12(t3, Z1);     // tk
-            call = F_x12; ret = A_x12a;
+            ret = A_x12a;
+            call = F_x12;
             break;
 
         case A_x12a:
@@ -513,7 +596,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(C, X1);
             //fp_add(X1, X1, Y1); // t6
-            call = F_add; ret = A_add8;
+            ret = A_add8;
+            call = F_add;
             break;
 
         case A_add8:
@@ -521,14 +605,16 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(C, t3);
             //fp_add(Z1, Y1, t3); // tl
-            call = F_add; ret = A_add9;
+            ret = A_add9;
+            call = F_add;
             break;
 
         case A_add9:
             fp_cpy(Z1, AL);
 
             //fp_sub(Y1, Y1, t3); // tm
-            call = F_sub; ret = A_sub0;
+            ret = A_sub0;
+            call = F_sub;
             break;
 
         case A_sub0:
@@ -538,17 +624,29 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(B, X2);
             fp_cpy(C, X1);
-            fp_sub(X1, X2, X1); // t7
-            call = F_sub; ret = A_sub1;
+            //fp_sub(X1, X2, X1); // t7
+            ret = A_sub1;
+            call = F_sub;
             break;
-
         case A_sub1:
             fp_cpy(X1, AL);
 
             fp_cpy(C, X1);
+#else
+            fp_x3(t0, X1);      // ti
+            fp_add(t2, Z1, X1); // tg
+            fp_add(t1, Y1, Z1); // tb
+            fp_x12(t3, Z1);     // tk
+            fp_add(X1, X1, Y1); // t6
+            fp_add(Z1, Y1, t3); // tl
+            fp_sub(Y1, Y1, t3); // tm
+            fp_sub(C, X2, X1); // t7
+#endif
+
             fp_cpy(B, t0);
             //fp_mul(X2, X1, t0); // ts
-            call = F_mul; ret = A_mul6;
+            ret = A_mul6;
+            goto F_mul;
             break;
 
         case A_mul6:
@@ -558,7 +656,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(B, Y1);
             //fp_mul(X1, X1, Y1); // tp
-            call = F_mul; ret = A_mul7;
+            ret = A_mul7;
+            goto F_mul;
             break;
 
         case A_mul7:
@@ -566,7 +665,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
             fp_cpy(C, Z1);
             //fp_mul(Y1, Y1, Z1); // tr
-            call = F_mul; ret = A_mul8;
+            ret = A_mul8;
+            goto F_mul;
             break;
 
         case A_mul8:
@@ -577,7 +677,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, Y2);
             fp_cpy(C, t1);
             //fp_sub(Y2, Y2, t1); // tc
-            call = F_sub; ret = A_sub2;
+            ret = A_sub2;
+            call = F_sub;
             break;
 
         case A_sub2:
@@ -586,7 +687,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, Y2);
             fp_cpy(C, Z1);
             //fp_mul(Z1, Z1, Y2); // tt
-            call = F_mul; ret = A_mul9;
+            ret = A_mul9;
+            goto F_mul;
             break;
 
         case A_mul9:
@@ -595,7 +697,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, Z2);
             fp_cpy(C, t2);
             //fp_sub(Z2, Z2, t2); // th
-            call = F_sub; ret = A_sub3;
+            ret = A_sub3;
+            call = F_sub;
             break;
 
         case A_sub3:
@@ -604,28 +707,30 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
         ////////
 
             //fp_x12(Z2, Z2);     // tn
-            call = F_x12; ret = A_x12b;
+            ret = A_x12b;
+            call = F_x12;
             break;
 
         case A_x12b:
-            fp_cpy(Z2, AL);
+            fp_cpy(C, AL);
 
             fp_cpy(B, Y2);
-            fp_cpy(C, Z2);
             //fp_mul(Y2, Y2, Z2); // to
-            call = F_mul; ret = A_mul10;
+            ret = A_mul10;
+            goto F_mul;
             break;
 
         case A_mul10:
             fp_cpy(Y2, AL);
 
-            fp_cpy(B, Z2);
-            fp_cpy(C, t0);
+            fp_cpy(B, t0);
             //fp_mul(Z2, Z2, t0); // tq
-            call = F_mul; ret = A_mul11;
+            ret = A_mul11;
+            goto F_mul;
             break;
 
         case A_mul11:
+#if 0
             fp_cpy(Z2, AL);
 
         ////////
@@ -633,7 +738,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, X1);
             fp_cpy(C, Y2);
             //fp_sub(X1, X1, Y2); // X3
-            call = F_sub; ret = A_sub4;
+            ret = A_sub4;
+            call = F_sub;
             break;
 
         case A_sub4:
@@ -642,7 +748,8 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, Y1);
             fp_cpy(C, Z2);
             //fp_add(Y1, Y1, Z2); // Y3
-            call = F_add; ret = A_add10;
+            ret = A_add10;
+            call = F_add;
             break;
 
         case A_add10:
@@ -651,15 +758,123 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             fp_cpy(B, Z1);
             fp_cpy(C, X2);
             //fp_add(Z1, Z1, X2); // Z3
-            call = F_add; ret = A_add11;
+            ret = A_add11;
+            call = F_add;
             break;
 
         case A_add11:
             fp_cpy(Z1, AL);
-
-            call = L_end;
+#else
+            fp_sub(X1, X1, Y2); // X3
+            fp_add(Y1, Y1, AL); // Y3
+            fp_add(Z1, Z1, X2); // Z3
+#endif
+            if (op < 0)
+                call = L_compose;
+            else
+                call = M_dbl;
             break;
 
+
+        // Handle composite operations
+
+        case L_compose:
+            //printf("op = %d\n", op);
+            switch (op) {
+                case -1:
+                case -2:
+                    call = L_end;
+                    break;
+
+                case -3:
+                    // NB: Addition is already done
+
+                    // load r
+                    fp_cpy(AL, RX);
+                    fp_cpy(B,  RY);
+                    fp_cpy(C,  RZ);
+
+                    // load s
+                    fp_cpy(X2, SX);
+                    fp_cpy(Y2, SY);
+                    fp_cpy(Z2, SZ);
+
+                    // save r+s to *p
+                    fp_cpy(PX, X1);
+                    fp_cpy(PY, Y1);
+                    fp_cpy(PZ, Z1);
+
+                    fp_cpy(X1, AL);
+                    fp_cpy(Y1, B);
+                    fp_cpy(Z1, C);
+
+                    // negate s
+                    fp_neg(Y2, Y2);
+
+                    // let p=q => r-s will be saved to q
+                    p = q;
+
+                    // call addition to compute r-s
+                    op = -2;
+                    //printf(" Sub\n");
+                    call = A_begin;
+                    break;
+
+                case -4:
+                    // load s
+                    fp_cpy(X2, SX);
+                    fp_cpy(Y2, SY);
+                    fp_cpy(Z2, SZ);
+
+                    op = -2;
+                    call = A_begin;
+                    break;
+#if SUPPORT_DBLADD2
+                case -5:
+                    // load r
+                    fp_cpy(X2, RX);
+                    fp_cpy(Y2, RY);
+                    fp_cpy(Z2, RZ);
+
+                    op = -4;
+                    call = A_begin;
+                    break;
+#endif
+            }
+            break;
+
+        case M_add:
+            // Load multiplier word
+            if ((ctr & 63) == 63)
+                mul = fr_roots[op][ctr >> 6];
+
+            if (mul & (1ULL << 63)) {
+                fp_cpy(X2, RX);
+                fp_cpy(Y2, RY);
+                fp_cpy(Z2, RZ);
+                call = A_begin;
+            }
+            else
+                call = M_dbl;
+
+            //printf("M_add: ctr = %3d, mul = %016llx -> %s\n", ctr, mul, (mul & (1ULL << 63)) ? "add" : "");
+
+            // shift up the multiplier word
+            mul <<= 1;
+
+            break;
+
+        case M_dbl:
+
+            if (ctr > 0)
+                call = D_begin;
+            else
+                call = L_end;
+
+            // count down the number of bits
+            ctr--;
+
+            break;
 
         default: call = L_end; break;
     }
