@@ -129,18 +129,18 @@ __global__ void G1_DBL_PTX(testval_t *testval){
 
     for (int i=0; pass&i<20000; i++){
         g1p_dbl(p); 
-        g1m(OP_DBL, out1, out0, in1, in0);
+        g1m(OP_DBL, out0, in0, in0, in0);
 
-        if(g1p_neq(p, out0)){
+        if(g1p_neq(p, in0)){
             pass = false;
             printf("%d: FAILED\n", i);
             printf("FAILED\n" );
             g1p_print("cuda = ", p);
-            g1p_print("ptxm = ", out0);
+            g1p_print("ptxm = ", in0);
             pass = false;
         }
 
-        g1p_cpy(in0, out0);
+        //g1p_cpy(in0, out0);
         ++count;
     }
 

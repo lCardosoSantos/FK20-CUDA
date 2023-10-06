@@ -231,17 +231,29 @@ void benchFull(int rows){
     float median;
 
     // Setup
+    if (rows == 512)
+    fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>((g1a_t (*)[512][256])(xext_lut), xext_fft);
 
     SET_SHAREDMEM(fr_sharedmem,  fr_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
-    printf("\n=== Test without stalling on Device\n");fflush(stdout);
+    if(rows==512){
+        printf("\n=== Test without stalling on Device, using comb msm\n");fflush(stdout);
+    }
+    else{
+        printf("\n=== Test without stalling on Device\n");fflush(stdout);
+    }
 
     BENCH_BEFORE;
         fk20_poly2toeplitz_coefficients<<<rows, 256>>>(b_fr_tmp, b_polynomial);
         fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);
-        fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
+        if(rows!=512)
+            fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
+        else
+            fk20_msm_comb<<<512, 256>>>((g1p_t (*)[512])(b_g1p_tmp), \
+                                    (const fr_t (*)[16][512])(b_toeplitz_coefficients_fft), \
+                                    (g1a_t (*)[512][256])(xext_lut));
         g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
         fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
         g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);

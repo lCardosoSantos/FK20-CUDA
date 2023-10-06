@@ -7,6 +7,9 @@
 #include "fp.cuh"
 #include "fr.cuh"
 #include "g1.cuh"
+#include "g1p_ptx.cuh"
+
+#define g1p_dbl(q) g1m(OP_DBL, q, q, q, q);
 
 /**
  * @brief p ← k·p Point multiplication by scalar, in projective coordinates. That result is 
@@ -18,7 +21,8 @@
  */
 __device__ void g1p_mul(g1p_t &p, const fr_t &k) {
     // TODO: Use 4-bit lookup table to reduce additions by a factor 4.
-    
+
+#ifndef NDEBUG    
     if (!g1p_isPoint(p)) {
         //g1p_print("ERROR in g1p_mul(): Invalid point ", p);
 
@@ -29,6 +33,7 @@ __device__ void g1p_mul(g1p_t &p, const fr_t &k) {
 
         return;
     }
+#endif
 
     g1p_t q;
 

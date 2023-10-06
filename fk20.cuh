@@ -9,6 +9,7 @@
 
 #include "fr.cuh"
 #include "g1.cuh"
+#include "g1p_ptx.cuh"
 
 // Shared memory sizes
 const size_t g1p_sharedmem = 512 * 3 * 6 * 8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
