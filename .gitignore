@@ -5,6 +5,8 @@ test/
 .vscode/
 .clang-format
 .vscode_old/
+tmp*
+*.old
 Doxyfile
 FK20Py/consumer
 FK20Py/consumer.c
