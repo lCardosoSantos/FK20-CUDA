@@ -4,6 +4,7 @@
 
 #include <cstring>
 #include <time.h>
+#include <unistd.h>
 #include "fr.cuh"
 #include "fp.cuh"
 #include "g1.cuh"
@@ -11,20 +12,15 @@
 #include "fk20test.cuh"
 
 // Test vector inputs
-
-extern __managed__ g1p_t xext_fft[16][512];
-extern __managed__ fr_t polynomial[512*4096];
-
+g1p_t *xext_fft; //size [16][512];
+fr_t  *polynomial; //size [512*4096];
 // Intermediate values
-
-extern __managed__ fr_t toeplitz_coefficients[512*16][512];
-extern __managed__ fr_t toeplitz_coefficients_fft[512][16][512];
-extern __managed__ g1p_t hext_fft[512*512];
-extern __managed__ g1p_t h[512*512];
-
+fr_t  *toeplitz_coefficients; //size [512*16][512];
+fr_t  *toeplitz_coefficients_fft; //size [512][16][512];
+g1p_t *hext_fft; //size [512*512];
+g1p_t *h; //size [512*512];
 // Test vector output
-
-extern __managed__ g1p_t h_fft[512*512];
+g1p_t *h_fft; //size [512*512];
 
 // Workspace
 
@@ -43,7 +39,7 @@ static __managed__ g1a_t xext_lut[16][512][256];
 #endif
 
 // 512-row tests
-
+void katInit();
 void toeplitz_coefficients2toeplitz_coefficients_fft_512(unsigned rows);
 void h2h_fft_512(unsigned rows);
 void h_fft2h_512(unsigned rows);
@@ -75,7 +71,7 @@ void varMangle(g1p_t *target, size_t size, unsigned step);
  */
 int main(int argc, char **argv) {
     testinit(); // setup functions here
-
+    katInit();  // setup memory
     unsigned rows = 2;
 
     if (argc > 1)
@@ -193,13 +189,13 @@ void fullTest_512(unsigned rows){
     PRINTPASS(pass);
 
     if(rows != 512){ 
-        printf("     WARNING: msm_comb runs with 512 rows only.\n");
+        printf("     WARNING: msm_comb runs with 512 rows only! Testing with rows=512\n");
     }
     // Generate lookup tables for 8-way comb
     printf("Generating lookup tables for MSM with comb multiplication\n"); fflush(stdout);
 
     CLOCKSTART;
-    fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>(xext_lut, xext_fft);
+    fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>(xext_lut, (const g1p_t (*)[512])(xext_fft));
     CUDASYNC("fk20_msm_makelut");
     CLOCKEND;
 
@@ -208,7 +204,7 @@ void fullTest_512(unsigned rows){
     printf("MSM with comb multiplication\n"); fflush(stdout);
 
     CLOCKSTART;
-    fk20_msm_comb<<<512, 256>>>(g1p_tmp, toeplitz_coefficients_fft, xext_lut);
+    fk20_msm_comb<<<512, 256>>>(g1p_tmp, (const fr_t (*)[16][512])(toeplitz_coefficients_fft), xext_lut);
     CUDASYNC("fk20_msm_comb");
     CLOCKEND;
 
@@ -731,6 +727,67 @@ void fk20_msmloop_512(unsigned rows){
         PRINTPASS(pass);
     }
 #endif
+
+/**
+ * @brief initializes memory and load KAT
+ * 
+ */
+void katInit(){
+    #define MALLOCSYNC(fmt, ...) \
+    if (err != cudaSuccess)                                                                                            \
+    printf("%s:%d " fmt " Error: %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err), ##__VA_ARGS__)
+
+    const char* FILENAME = "fk20_512_kat.bin";
+    cudaError_t err;
+
+    err = cudaMallocManaged(&xext_fft,  16*512 * sizeof(g1p_t)); 
+        MALLOCSYNC("xext_fft");
+    err = cudaMallocManaged(&polynomial,  512*4096 * sizeof(fr_t)); 
+        MALLOCSYNC("polynomial");
+    err = cudaMallocManaged(&toeplitz_coefficients,  512*16*512 * sizeof(fr_t)); 
+        MALLOCSYNC("toeplitz_coefficients");
+    err = cudaMallocManaged(&toeplitz_coefficients_fft,  512*16*512 * sizeof(fr_t)); 
+        MALLOCSYNC("toeplitz_coefficients_fft");
+    err = cudaMallocManaged(&hext_fft,  512*512 * sizeof(g1p_t)); 
+        MALLOCSYNC("hext_fft");
+    err = cudaMallocManaged(&h,  512*512 * sizeof(g1p_t)); 
+        MALLOCSYNC("h");
+    err = cudaMallocManaged(&h_fft,  512*512 * sizeof(g1p_t)); 
+        MALLOCSYNC("h_fft");
+
+    size_t bytesRead=0;
+    size_t bytesExpected = 449970176;
+
+    if(access(FILENAME, F_OK) != 0){
+        printf("ERROR: File %s does not exist.\n", FILENAME);
+        printf("Try running fk20_512test_boostrap.\n");
+        exit(-1);
+    }
+
+    FILE *file = fopen(FILENAME, "r");
+
+    if (file == NULL){
+        printf("ERROR: Failed to open %s.\n", FILENAME);
+        exit(-1);
+
+    }
+
+    bytesRead += fread(xext_fft                 , 1,  16*512 * sizeof(g1p_t), file);
+    bytesRead += fread(polynomial               , 1,  512*4096 * sizeof(fr_t), file);
+    bytesRead += fread(toeplitz_coefficients    , 1,  512*16*512 * sizeof(fr_t), file);
+    bytesRead += fread(toeplitz_coefficients_fft, 1,  512*16*512 * sizeof(fr_t), file);
+    bytesRead += fread(hext_fft                 , 1,  512*512 * sizeof(g1p_t), file);
+    bytesRead += fread(h                        , 1,  512*512 * sizeof(g1p_t), file);
+    bytesRead += fread(h_fft                    , 1,  512*512 * sizeof(g1p_t), file);
+
+    if (bytesRead!=bytesExpected){
+        printf("ERROR: mismatch in read size: %lu, exp: %lu\n", bytesRead, bytesExpected);
+        printf("Try running fk20_512test_boostrap again.\n");
+        exit(-1);
+    }
+
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //

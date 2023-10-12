@@ -18,7 +18,8 @@ FK20TEST=test fk20test fk20test_poly fk20_testvector fk20test_fft fk20test_fft_r
 FK20TEST_TC=test fk20test_poly2toeplitz_coefficients polynomial toeplitz_coefficients
 FK20TEST_TCFFT=test fk20test_poly2toeplitz_coefficients_fft polynomial toeplitz_coefficients_fft
 FFTTEST=fftTest parseFFTTest
-FK20_512TEST=test fk20_512test xext_fft polynomial toeplitz_coefficients toeplitz_coefficients_fft hext_fft h h_fft
+FK20_512TEST=test fk20_512test #xext_fft polynomial toeplitz_coefficients toeplitz_coefficients_fft hext_fft h h_fft
+FK20_512TEST_BOOTSTRAP = test fk20_512test_bootstrap xext_fft polynomial toeplitz_coefficients toeplitz_coefficients_fft hext_fft h h_fft
 FK20BENCHMARK=fk20benchmark fk20_testvector
 FK20PROFILE=fk20profile fk20_testvector
 
@@ -42,6 +43,7 @@ FK20TEST_TC_OBJS=$(FK20TEST_TC:%=%.o)
 FK20TEST_TCFFT_OBJS=$(FK20TEST_TCFFT:%=%.o)
 FFTTEST_OBJS=$(FFTTEST:%=%.o)
 FK20_512TEST_OBJS=$(FK20_512TEST:%=%.o)
+FK20_512TEST_BOOSTRAP_OBJS=$(FK20_512TEST_BOOTSTRAP:%=%.o)
 FK20BENCHMARK_OBJS=$(FK20BENCHMARK:%=%.o)
 FK20PROFILE_OBJS=$(FK20PROFILE:%=%.o)
 
@@ -184,6 +186,9 @@ fk20_512test_objs: $(FK20_512TEST_OBJS)
 fk20_objs: $(OBJS)
 
 fk20_512test: $(FK20_512TEST_OBJS) $(OBJS)
+	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
+
+fk20_512test_bootstrap: $(FK20_512TEST_BOOSTRAP_OBJS) $(OBJS)
 	$(NVCC) $(NVARCH) -o $@ $^ # --resource-usage
 
 fk20benchmark: $(FK20BENCHMARK_OBJS) $(OBJS)
