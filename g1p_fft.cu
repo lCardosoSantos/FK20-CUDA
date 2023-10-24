@@ -7,6 +7,10 @@
 #include "g1.cuh"
 #include "fk20.cuh"
 
+#include "g1p_ptx.cuh"
+//#define g1p_addsub(p, q) g1m(OP_ADDSUB, q, p, q, p);
+
+
 // Workspace in shared memory
 
 extern __shared__ g1p_t g1p_tmp[];
@@ -17,7 +21,7 @@ extern __shared__ g1p_t g1p_tmp[];
  * This function must be called with 256 threads per block, i.e. dim3(256,1,1).
  * No interleaving of data for different FFTs
  * 
- * @param[out] output pointer to 512 elements array of g1p_t
+ * @param[out] output pointer to 512 elements array o g1p_t
  * @param[in] input pointer to 512 elements array of g1p_t
  * @return void
  */

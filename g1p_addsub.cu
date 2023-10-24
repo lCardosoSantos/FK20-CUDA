@@ -49,7 +49,6 @@ __device__ void g1p_addsub(g1p_t &p, g1p_t &q) {
 
     fp_mul(t0, X1, X2); // t0
     //fp_print("t0 = ",  t0);
-
     fp_add(t3, X1, Y1); // t3
     //fp_print("t3 = ",  t3);
 
@@ -146,7 +145,7 @@ __device__ void g1p_addsub(g1p_t &p, g1p_t &q) {
     fp_mma(Y2, t0, X1, t3, Y1); // ti, tn, tl, tm
 
     fp_neg(X1, X1); // -tn
-    fp_mma(X1, t2, Y1, Z1, X1); // t7, tm, tc, -tn
+    fp_mma(X1, t2, Y1, Z1, X1); // t7, tm, tc, -stn
     fp_mma(Z1, t2, t0, Z1, t3); // t7, ti, tc, tl
 
     fp_cpy(Y1, Y2);
@@ -160,4 +159,5 @@ __device__ void g1p_addsub(g1p_t &p, g1p_t &q) {
     //fp_print("Z4 = ",  Z2);
 }
 
+        // return; //debug
 // vim: ts=4 et sw=4 si

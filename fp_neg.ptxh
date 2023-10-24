@@ -1,0 +1,27 @@
+// bls12_381: Arithmetic for BLS12-381
+// Copyright 2022-2023 Dag Arne Osvik
+// Copyright 2022-2023 Luan Cardoso dos Santos
+
+#ifndef FP_NEG
+
+    #define FP_NEG(Z, Y) \
+    \
+    sub.u64.cc  Z##0, 0x89F6FFFFFFFD0003U, Y##0; newline\
+    subc.u64.cc Z##1, 0x140BFFF43BF3FFFDU, Y##1; newline\
+    subc.u64.cc Z##2, 0xA0B767A8AC38A745U, Y##2; newline\
+    subc.u64.cc Z##3, 0x8831A7AC8FADA8BAU, Y##3; newline\
+    subc.u64.cc Z##4, 0xA3F8E5685DA91392U, Y##4; newline\
+    subc.u64.cc Z##5, 0xEA09A13C057F1B6CU, Y##5; newline\
+    subc.u64    Z##6,  0, 0; newline\
+    setp.ne.u64 nz, Z##6, 0; newline\
+    \
+    /* if nz (borrow) then z += p*/ newline\
+    \
+    @nz add.u64.cc  Z##0, Z##0, 0xB9FEFFFFFFFFAAABU; newline\
+    @nz addc.u64.cc Z##1, Z##1, 0x1EABFFFEB153FFFFU; newline\
+    @nz addc.u64.cc Z##2, Z##2, 0x6730D2A0F6B0F624U; newline\
+    @nz addc.u64.cc Z##3, Z##3, 0x64774B84F38512BFU; newline\
+    @nz addc.u64.cc Z##4, Z##4, 0x4B1BA7B6434BACD7U; newline\
+    @nz addc.u64    Z##5, Z##5, 0x1A0111EA397FE69AU
+
+#endif

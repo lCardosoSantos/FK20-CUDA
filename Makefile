@@ -74,11 +74,15 @@ g1-run: g1test
 fk20-run: fk20test
 	./fk20test
 
+g1test_ptx-run: g1test_ptx
+	./g1test_ptx
+
 cubin: $(CUBIN)
 
 clean:
 	-rm -f $(OBJS) $(TEST_OBJS) $(CUBIN)
 	-rm -f xext_fft.cu polynomial.cu toeplitz_coefficients.cu toeplitz_coefficients_fft.cu hext_fft.cu h.cu h_fft.cu
+	-rm -f *.ptx
 
 shallowclean:
 	@(echo "Removing only objects that are fast to compile!")

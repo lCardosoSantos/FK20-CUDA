@@ -175,6 +175,8 @@ int main(int argc, char **argv) {
     benchSteps(rows);
     benchModules(rows);
     freeMemory();
+
+    printf("\n\n");
     return 0;
 }
 

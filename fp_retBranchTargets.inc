@@ -103,173 +103,105 @@ fp_ret: .branchtargets
 #define retg1p_add_32_        50
         retg1p_add_33,
 #define retg1p_add_33_        51
-        retg1p_sub_0,
-#define retg1p_sub_0_         52
-        retg1p_sub_1,
-#define retg1p_sub_1_         53
-        retg1p_sub_2,
-#define retg1p_sub_2_         54
-        retg1p_sub_3,
-#define retg1p_sub_3_         55
-        retg1p_sub_4,
-#define retg1p_sub_4_         56
-        retg1p_sub_5,
-#define retg1p_sub_5_         57
-        retg1p_sub_6,
-#define retg1p_sub_6_         58
-        retg1p_sub_7,
-#define retg1p_sub_7_         59
-        retg1p_sub_8,
-#define retg1p_sub_8_         60
-        retg1p_sub_9,
-#define retg1p_sub_9_         61
-        retg1p_sub_10,
-#define retg1p_sub_10_        62
-        retg1p_sub_11,
-#define retg1p_sub_11_        63
-        retg1p_sub_12,
-#define retg1p_sub_12_        64
-        retg1p_sub_13,
-#define retg1p_sub_13_        65
-        retg1p_sub_14,
-#define retg1p_sub_14_        66
-        retg1p_sub_15,
-#define retg1p_sub_15_        67
-        retg1p_sub_16,
-#define retg1p_sub_16_        68
-        retg1p_sub_17,
-#define retg1p_sub_17_        69
-        retg1p_sub_18,
-#define retg1p_sub_18_        70
-        retg1p_sub_19,
-#define retg1p_sub_19_        71
-        retg1p_sub_20,
-#define retg1p_sub_20_        72
-        retg1p_sub_21,
-#define retg1p_sub_21_        73
-        retg1p_sub_22,
-#define retg1p_sub_22_        74
-        retg1p_sub_23,
-#define retg1p_sub_23_        75
-        retg1p_sub_24,
-#define retg1p_sub_24_        76
-        retg1p_sub_25,
-#define retg1p_sub_25_        77
-        retg1p_sub_26,
-#define retg1p_sub_26_        78
-        retg1p_sub_27,
-#define retg1p_sub_27_        79
-        retg1p_sub_28,
-#define retg1p_sub_28_        80
-        retg1p_sub_29,
-#define retg1p_sub_29_        81
-        retg1p_sub_30,
-#define retg1p_sub_30_        82
-        retg1p_sub_31,
-#define retg1p_sub_31_        83
-        retg1p_sub_32,
-#define retg1p_sub_32_        84
-        retg1p_sub_33,
-#define retg1p_sub_33_        85
         retg1p_addsub_0,
-#define retg1p_addsub_0_      86
+#define retg1p_addsub_0_      52
         retg1p_addsub_1,
-#define retg1p_addsub_1_      87
+#define retg1p_addsub_1_      53
         retg1p_addsub_2,
-#define retg1p_addsub_2_      88
+#define retg1p_addsub_2_      54
         retg1p_addsub_3,
-#define retg1p_addsub_3_      89
+#define retg1p_addsub_3_      55
         retg1p_addsub_4,
-#define retg1p_addsub_4_      90
+#define retg1p_addsub_4_      56
         retg1p_addsub_5,
-#define retg1p_addsub_5_      91
+#define retg1p_addsub_5_      57
         retg1p_addsub_6,
-#define retg1p_addsub_6_      92
+#define retg1p_addsub_6_      58
         retg1p_addsub_7,
-#define retg1p_addsub_7_      93
+#define retg1p_addsub_7_      59
         retg1p_addsub_8,
-#define retg1p_addsub_8_      94
+#define retg1p_addsub_8_      60
         retg1p_addsub_9,
-#define retg1p_addsub_9_      95
+#define retg1p_addsub_9_      61
         retg1p_addsub_10,
-#define retg1p_addsub_10_     96
+#define retg1p_addsub_10_     62
         retg1p_addsub_11,
-#define retg1p_addsub_11_     97
+#define retg1p_addsub_11_     63
         retg1p_addsub_12,
-#define retg1p_addsub_12_     98
+#define retg1p_addsub_12_     64
         retg1p_addsub_13,
-#define retg1p_addsub_13_     99
+#define retg1p_addsub_13_     65
         retg1p_addsub_14,
-#define retg1p_addsub_14_    100
+#define retg1p_addsub_14_     66
         retg1p_addsub_15,
-#define retg1p_addsub_15_    101
+#define retg1p_addsub_15_     67
         retg1p_addsub_16,
-#define retg1p_addsub_16_    102
+#define retg1p_addsub_16_     68
         retg1p_addsub_17,
-#define retg1p_addsub_17_    103
+#define retg1p_addsub_17_     69
         retg1p_addsub_18,
-#define retg1p_addsub_18_    104
+#define retg1p_addsub_18_     70
         retg1p_addsub_19,
-#define retg1p_addsub_19_    105
+#define retg1p_addsub_19_     71
         retg1p_addsub_20,
-#define retg1p_addsub_20_    106
+#define retg1p_addsub_20_     72
         retg1p_addsub_21,
-#define retg1p_addsub_21_    107
+#define retg1p_addsub_21_     73
         retg1p_addsub_22,
-#define retg1p_addsub_22_    108
+#define retg1p_addsub_22_     74
         retg1p_addsub_23,
-#define retg1p_addsub_23_    109
+#define retg1p_addsub_23_     75
         retg1p_addsub_24,
-#define retg1p_addsub_24_    110
+#define retg1p_addsub_24_     76
         retg1p_addsub_25,
-#define retg1p_addsub_25_    111
+#define retg1p_addsub_25_     77
         retg1p_addsub_26,
-#define retg1p_addsub_26_    112
+#define retg1p_addsub_26_     78
         retg1p_addsub_27,
-#define retg1p_addsub_27_    113
+#define retg1p_addsub_27_     79
         retg1p_addsub_28,
-#define retg1p_addsub_28_    114
+#define retg1p_addsub_28_     80
         retg1p_addsub_29,
-#define retg1p_addsub_29_    115
+#define retg1p_addsub_29_     81
         retg1p_addsub_30,
-#define retg1p_addsub_30_    116
+#define retg1p_addsub_30_     82
         retg1p_addsub_31,
-#define retg1p_addsub_31_    117
+#define retg1p_addsub_31_     83
         retg1p_addsub_32,
-#define retg1p_addsub_32_    118
+#define retg1p_addsub_32_     84
         retg1p_addsub_33,
-#define retg1p_addsub_33_    119
+#define retg1p_addsub_33_     85
         retg1p_addsub_34,
-#define retg1p_addsub_34_    120
+#define retg1p_addsub_34_     86
         retg1p_addsub_35,
-#define retg1p_addsub_35_    121
+#define retg1p_addsub_35_     87
         retg1p_addsub_36,
-#define retg1p_addsub_36_    122
+#define retg1p_addsub_36_     88
         retg1p_addsub_37,
-#define retg1p_addsub_37_    123
+#define retg1p_addsub_37_     89
         retg1p_addsub_38,
-#define retg1p_addsub_38_    124
+#define retg1p_addsub_38_     90
         retg1p_addsub_39,
-#define retg1p_addsub_39_    125
+#define retg1p_addsub_39_     91
         retg1p_addsub_40,
-#define retg1p_addsub_40_    126
+#define retg1p_addsub_40_     92
         retg1p_addsub_41,
-#define retg1p_addsub_41_    127
+#define retg1p_addsub_41_     93
         retg1p_addsub_42,
-#define retg1p_addsub_42_    128
+#define retg1p_addsub_42_     94
         retg1p_addsub_43,
-#define retg1p_addsub_43_    129
+#define retg1p_addsub_43_     95
         retg1p_addsub_44,
-#define retg1p_addsub_44_    130
+#define retg1p_addsub_44_     96
         retg1p_addsub_45,
-#define retg1p_addsub_45_    131
+#define retg1p_addsub_45_     97
         retg1p_addsub_46,
-#define retg1p_addsub_46_    132
+#define retg1p_addsub_46_     98
         retg1p_addsub_47,
-#define retg1p_addsub_47_    133
+#define retg1p_addsub_47_     99
         retg1p_addsub_48,
-#define retg1p_addsub_48_    134
+#define retg1p_addsub_48_    100
         retg1p_addsub_49,
-#define retg1p_addsub_49_    135
+#define retg1p_addsub_49_    101
         retg1p_addsub_50;
-#define retg1p_addsub_50_    136
+#define retg1p_addsub_50_    102

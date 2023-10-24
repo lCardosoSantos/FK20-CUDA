@@ -338,4 +338,3 @@ retg1p_add_32:
     brx.idx.uni %fun, fp_fun;
 retg1p_add_33:
 	ret.uni;
-

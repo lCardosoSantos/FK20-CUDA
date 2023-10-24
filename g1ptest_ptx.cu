@@ -15,7 +15,7 @@
 #include "g1p_ptx.cuh"
 
 #define TESTVALS 256
-#define NTEST 5
+#define NTEST 5000
 typedef struct {
     uint64_t val[22];
 } testval_t;
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
     TEST(G1_ADD_PTX);
     //TEST(G1_SUB_PTX);
     TEST(G1_DBL_PTX);
-    //TEST(G1_ADDSUB_PTX);
+    TEST(G1_ADDSUB_PTX);
 
 
     return err;
@@ -108,8 +108,8 @@ __global__ void G1_ADD_PTX(testval_t *testval){
     bool pass = true;
     size_t count = 0;
 
-    g1p_t out1, out0, in1, in0;
-    g1p_t p, q, u, v;
+    g1p_t out1, out0, in0;
+    g1p_t p, q;
 
     g1p_gen(q); g1p_gen(p);
     g1p_gen(in0);
@@ -140,6 +140,7 @@ __global__ void G1_ADD_PTX(testval_t *testval){
 
 }
 
+#ifdef OP_SUB
 __global__ void G1_SUB_PTX(testval_t *testval){
     printf("== TEST %s \n", __func__);
 
@@ -183,6 +184,7 @@ __global__ void G1_SUB_PTX(testval_t *testval){
     }
 
 }
+#endif
 
 __global__ void G1_DBL_PTX(testval_t *testval){
     printf("== TEST %s \n", __func__);
@@ -190,7 +192,7 @@ __global__ void G1_DBL_PTX(testval_t *testval){
     size_t count = 0;
 
     g1p_t out1, out0, in1, in0;
-    g1p_t p, q, u, v;
+    g1p_t p;
 
     g1p_gen(p);
     g1p_gen(in0);
@@ -220,6 +222,49 @@ __global__ void G1_DBL_PTX(testval_t *testval){
     }
 
 __global__ void G1_ADDSUB_PTX(testval_t *testval){
-    printf("== TEST %s NOT IMPLEMENTED\n", __func__);
+    printf("== TEST %s \n", __func__);
+    bool pass = true;
+    size_t count = 0;
+
+    g1p_t p, q, x, y, t, u, tmpx, tmpy;
+
+    g1p_gen(p); // 1G
+    g1p_gen(q); // 1G
+    g1p_gen(x); // 1G
+    g1p_gen(y); // 1G
+
+    for (int i=0; pass & i<NTEST; i++){
+        g1p_cpy(t, p); 
+        g1p_cpy(u, q);
+        g1p_cpy(x, tmpx);
+        g1p_cpy(y, tmpy);
+
+        g1p_addsub(p, q);
+        g1m(OP_ADDSUB, tmpy, tmpx, y, x);
+        // g1p_print("t    =  ", t);
+        if (g1p_neq(p, tmpx) || g1p_neq(q, tmpy)) {
+            // g1p_print("t    =  ", t);
+            pass = false;
+            printf("FAIL after %d ok:\n", i);
+            g1p_print("t    =  ", t);
+            g1p_print("u    =  ", u); 
+            printf("\n");
+            g1p_print("p    =  ", p);
+            g1p_print("tmpx =  ", tmpx);
+            g1p_print("q    =  ", q); 
+            g1p_print("tmpy =  ", tmpy);
+            printf("\n");
+            g1p_print("x    =  ", x);
+            g1p_print("y    =  ", y); 
+        }
+        ++count;
+    }
+    
+
+    if (!pass || (blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) == 0){
+        printf("%ld tests\n", count);
+        PRINTPASS(pass);
+    }
+
 
 }

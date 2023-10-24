@@ -477,6 +477,11 @@ retg1p_addsub_48:
 retg1p_addsub_49:
 	FP_MOV(z, a)
 
+// BLOCK 4
+	// fp_cpy(Y1, Y2);
+	FP_MOV(y, v)
+
+// BLOCK 5
     // cal STORE1
     mov.u32 %fun, STORE1_;
     mov.u32 %ret, retg1p_addsub_50_;
