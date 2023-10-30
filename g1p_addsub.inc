@@ -482,8 +482,8 @@ retg1p_addsub_49:
 	FP_MOV(y, v)
 
 // BLOCK 5
-    // cal STORE1
-    mov.u32 %fun, STORE1_;
+    // cal STORE2
+    mov.u32 %fun, STORE2_;
     mov.u32 %ret, retg1p_addsub_50_;
     brx.idx.uni %fun, fp_fun;
 retg1p_addsub_50:

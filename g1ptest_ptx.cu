@@ -232,15 +232,17 @@ __global__ void G1_ADDSUB_PTX(testval_t *testval){
     g1p_gen(q); // 1G
     g1p_gen(x); // 1G
     g1p_gen(y); // 1G
+    
 
     for (int i=0; pass & i<NTEST; i++){
         g1p_cpy(t, p); 
         g1p_cpy(u, q);
-        g1p_cpy(x, tmpx);
-        g1p_cpy(y, tmpy);
+        // g1p_cpy(x, tmpx);
+        // g1p_cpy(y, tmpy);
 
         g1p_addsub(p, q);
-        g1m(OP_ADDSUB, tmpy, tmpx, y, x);
+        g1m(OP_ADDSUB, y, x, y, x);
+
         // g1p_print("t    =  ", t);
         if (g1p_neq(p, tmpx) || g1p_neq(q, tmpy)) {
             // g1p_print("t    =  ", t);

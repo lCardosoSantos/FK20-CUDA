@@ -8,7 +8,7 @@
 #include "fk20.cuh"
 
 #include "g1p_ptx.cuh"
-//#define g1p_addsub(p, q) g1m(OP_ADDSUB, q, p, q, p);
+#define g1p_addsub(p, q) g1m(OP_ADDSUB, q, p, q, p);
 
 
 // Workspace in shared memory
