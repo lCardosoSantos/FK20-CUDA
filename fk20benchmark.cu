@@ -112,7 +112,8 @@ for(int i=0; i<NSAMPLES; i++){\
     }\
     qsort(milliseconds, NSAMPLES, sizeof(milliseconds[0]), compare);\
     median = milliseconds[NSAMPLES/2];\
-    printf(FNAME COL(25) " %8.3f ms [%8.3f - %8.3f]\n", median, milliseconds[0], milliseconds[NSAMPLES-1]);
+    printf(FNAME COL(25) " %8.3f ms [%8.3f - %8.3f]\n", median, milliseconds[0], milliseconds[NSAMPLES-1]);\
+    fflush(stdout);
 
 
 /******************************************************************************/
@@ -131,8 +132,8 @@ int compare(const void *  a, const void *  b);
 void printHeader(unsigned rows);
 
 int main(int argc, char **argv) {
-    unsigned rows = 32;
-    NSAMPLES = 7;
+    unsigned rows = 512;
+    NSAMPLES = 3;
     int opt;
 
     while((opt = getopt(argc, argv, "r:s:h")) != -1){
@@ -238,15 +239,31 @@ void benchFull(int rows){
 
     printf("\n=== Test without stalling on Device\n");fflush(stdout);
 
-    BENCH_BEFORE;
-        fk20_poly2toeplitz_coefficients<<<rows, 256>>>(b_fr_tmp, b_polynomial);
-        fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);
-        fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
-        g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
-        fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
-        g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
-    BENCH_AFTER("FK20");
+    if(rows == 512){
+        fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>((g1a_t (*)[512][256])(xext_lut), xext_fft);
 
+        BENCH_BEFORE;
+            fk20_poly2toeplitz_coefficients<<<rows, 256>>>(b_fr_tmp, b_polynomial);
+            fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);
+            fk20_msm_comb<<<512, 256>>>((g1p_t (*)[512])(b_g1p_tmp), \
+                                        (const fr_t (*)[16][512])(b_toeplitz_coefficients_fft), \
+                                        (g1a_t (*)[512][256])(xext_lut));
+            g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+            fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
+            g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+        BENCH_AFTER("FK20");
+
+    } else {
+
+        BENCH_BEFORE;
+            fk20_poly2toeplitz_coefficients<<<rows, 256>>>(b_fr_tmp, b_polynomial);
+            fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);
+            fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
+            g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+            fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
+            g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+        BENCH_AFTER("FK20");
+    }
 }
 
 /**

@@ -17,13 +17,13 @@
     "\n\taddc.u64.cc "#Z"3, "#X"3, "#X"3;" \
     "\n\taddc.u64.cc "#Z"4, "#X"4, "#X"4;" \
     "\n\taddc.u64.cc "#Z"5, "#X"5, "#X"5;" \
-    "\n\taddc.u64    "#Z"6,     0,     0;" \
+    "\n\taddc.u32    "#Z"6,     0,     0;" \
  \
     /* gt = (z>>320) > (m>>320) */ \
     /* nz = (z>>384) > 0 */ \
  \
     "\n\tsetp.gt.u64 gt, "#Z"5, 0x1a0111ea397fe69aU;" \
-    "\n\tsetp.ne.u64 nz, "#Z"6, 0;" \
+    "\n\tsetp.ne.u32 nz, "#Z"6, 0;" \
  \
     /* If gt then subtract m */ \
  \
@@ -60,7 +60,8 @@ __device__ void fp_x2(
 
     asm volatile (
     "\n\t{"
-    "\n\t.reg .u64 z<7>, x<6>;"
+    "\n\t.reg .u64 z<6>, x<6>;"
+    "\n\t.reg .u32 z6;"
     "\n\t.reg .pred gt, nz;"
 
     "\n\tmov.u64 x0,  %6;"

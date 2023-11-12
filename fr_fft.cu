@@ -52,7 +52,7 @@ __device__ void fr_fft(fr_t *output, const fr_t *input) {
     //fr_mul(fr_smem[r], fr_roots[w]);
     fr_addsub(fr_smem[l], fr_smem[r]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 1
 
@@ -63,7 +63,7 @@ __device__ void fr_fft(fr_t *output, const fr_t *input) {
     if (w) fr_mul(fr_smem[r], fr_roots[w]);
     fr_addsub(fr_smem[l], fr_smem[r]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 2
 
@@ -74,7 +74,7 @@ __device__ void fr_fft(fr_t *output, const fr_t *input) {
     fr_mul(fr_smem[r], fr_roots[w]);
     fr_addsub(fr_smem[l], fr_smem[r]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 3
 
@@ -85,7 +85,7 @@ __device__ void fr_fft(fr_t *output, const fr_t *input) {
     fr_mul(fr_smem[r], fr_roots[w]);
     fr_addsub(fr_smem[l], fr_smem[r]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 4
 
@@ -96,7 +96,7 @@ __device__ void fr_fft(fr_t *output, const fr_t *input) {
     fr_mul(fr_smem[r], fr_roots[w]);
     fr_addsub(fr_smem[l], fr_smem[r]);
 
-    __syncthreads();
+    __syncwarp();
 
     //// Stage 5
 

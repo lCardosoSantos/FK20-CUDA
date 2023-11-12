@@ -49,7 +49,7 @@ __global__ void fk20_poly2toeplitz_coefficients(fr_t *toeplitz_coefficients, con
 
         __syncwarp(0xffffffff);
 
-        // Zero the other half of coefficients before FFT
+        // The other half of coefficients is all zero
 
         fr_zero(toeplitz_coefficients[512*i+tid+1]);
     }

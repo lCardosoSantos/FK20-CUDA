@@ -12,8 +12,8 @@
 // Maximum number of rows covered in the test.
 #define ROWS 512
 
-static __managed__ fr_t   fr[ROWS * 16 * 512]; // 256 KiB per threadblock
-static __managed__ g1p_t g1p[ROWS * 512];      //  72 KiB per threadblock
+static __managed__ fr_t   fr[ROWS * 16 * 512]; // 16 KiB per threadblock
+static __managed__ g1p_t g1p[ROWS * 512];      // 72 KiB per threadblock
 
 ////////////////////////////////////////////////////////////////////////////////
 

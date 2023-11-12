@@ -56,6 +56,8 @@ extern __device__ void g1p_sub(g1p_t &p, const g1p_t &q);
 extern __device__ void g1p_addsub(g1p_t &p, g1p_t &q);
 extern __device__ void g1p_mul(g1p_t &p, const fr_t &x);
 
+extern __device__ void g1p_add(g1p_t &p, const g1a_t &q);
+
 /*
  * Multifunctional G1 function
  * op  Name     Function

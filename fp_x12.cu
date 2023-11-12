@@ -7,10 +7,10 @@
 
 /**
  * @brief Multiplies the residue mod p x by 12 and stores the result into z.
- * 
- * @param[out] z 
- * @param[in] x 
- * @return void 
+ *
+ * @param[out] z
+ * @param[in] x
+ * @return void
  */
 __device__ void fp_x12(fp_t &z, const fp_t &x) {
     uint64_t
@@ -23,7 +23,8 @@ __device__ void fp_x12(fp_t &z, const fp_t &x) {
 
     asm volatile (
     "\n\t{"
-    "\n\t.reg .u64 z<7>, x<6>;"
+    "\n\t.reg .u64 z<6>, x<6>;"
+    "\n\t.reg .u32 z6;"
     "\n\t.reg .u64 t<6>;"
     "\n\t.reg .pred gt;"
 
@@ -48,7 +49,7 @@ FP_X12(z, x, t)
     "=l"(z0), "=l"(z1), "=l"(z2), "=l"(z3), "=l"(z4), "=l"(z5)
     :
     "l"(x0), "l"(x1), "l"(x2), "l"(x3), "l"(x4), "l"(x5)
-    ); 
+    );
 
     z[0] = z0, z[1] = z1, z[2] = z2, z[3] = z3, z[4] = z4, z[5] = z5;
 }

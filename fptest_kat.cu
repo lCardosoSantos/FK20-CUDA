@@ -637,9 +637,8 @@ __global__ void FpTestKAT(testval_t *) {
         for (int i=0; pass && (i<8); i++) {
             fp_inv(t, q[i]);
 
-            for (int j=0; j<6; j++)
-                if (t[j] != a[i][j])
-                    pass = false;
+            if (fp_neq(t, a[i]))
+                pass = false;
 
             if (!pass) {
                 printf("fp_inv: FAIL\n");

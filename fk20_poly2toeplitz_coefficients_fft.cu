@@ -58,7 +58,7 @@ __global__ void fk20_poly2toeplitz_coefficients_fft(fr_t *toeplitz_coefficients_
 
         __syncthreads();
 
-        // Zero the other half of coefficients before FFT
+        // The other half of coefficients is all zero
 
         fr_zero(fr[tid+1]);
 

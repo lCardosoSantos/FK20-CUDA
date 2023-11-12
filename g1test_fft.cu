@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "fr.cuh"
@@ -141,6 +142,8 @@ void G1TestFFT(unsigned rows) {
     bool pass = true;
     int i;
 
+    clock_t start, end;
+
     // Shared memory sizes
 
     const size_t g1p_sharedmem = 512*3*6*8; // 512 points * 3 residues/point * 6 words/residue * 8 bytes/word = 72 KiB
@@ -216,7 +219,11 @@ void G1TestFFT(unsigned rows) {
         for (i=0; i<512*512; i++) cmp[i] = 0;
 
         g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(T, P); CUDASYNC("g1p_ift_wrapper");
+        start = clock();
         g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(S, T); CUDASYNC("g1p_fft_wrapper");
+        end = clock();
+        printf("Time for %d G1p FFT-512: %.2f s\n", rows, (end - start) * (1.0 / CLOCKS_PER_SEC));
+
         if (c==1)
             g1p_gen(S[511]);
 

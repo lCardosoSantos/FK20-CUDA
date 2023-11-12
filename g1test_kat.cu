@@ -76,6 +76,7 @@ __global__ void G1TestKAT(testval_t *) {
     size_t  count   = 0;
 
     g1p_t p, q, r, t, u, v;
+    g1a_t a;
 
     // 0=0
 
@@ -312,6 +313,46 @@ __global__ void G1TestKAT(testval_t *) {
             }
             ++count;
         }
+    }
+
+    if (pass) {
+        g1p_gen(p);
+        g1a_gen(a);
+
+        g1p_add(p, a);
+
+        if (g1p_neq(p, g1p_x2)) {
+            pass = false;
+
+            printf("FAIL: Mixed addition: G+G != 2G\n");
+        }
+        ++count;
+
+        g1p_add(p, a);
+
+        if (g1p_neq(p, g1p_x3)) {
+            pass = false;
+
+            printf("FAIL: Mixed addition: 2G+G != 3G\n");
+        }
+        ++count;
+
+        g1a_fromG1p(a, p);
+        g1p_add(p, a);  // 6G
+
+        g1a_fromG1p(a, p);
+        g1p_add(p, a);  // 12G
+
+        g1a_fromG1p(a, p);
+        g1p_add(p, a);  // 24G
+
+        if (g1p_neq(p, g1p_x24)) {
+            pass = false;
+
+            printf("FAILED Mixed addition\n");
+            g1p_print("24G != ", p);
+        }
+        ++count;
     }
 
     if ((blockIdx.x | blockIdx.y | blockIdx.z | threadIdx.x | threadIdx.y | threadIdx.z) == 0)

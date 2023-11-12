@@ -54,7 +54,7 @@
 	
 	{
 	.reg .u64 z<6>, x<6>, y<6>;
-	.reg .u64 z6;
+	.reg .u32 z6;
 	.reg .pred gt, nz;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -118,7 +118,7 @@
 	
 	{
 	.reg .u64 z<6>, x<6>, y<6>;
-	.reg .u64 z6;
+	.reg .u32 z6;
 	.reg .pred gt, nz;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -199,7 +199,7 @@
 	mov.u64 y5, %rd18;
 
     FP_MUL(u, x, y);
-    FP_REDUCE12(u);
+    FP_REDUCE12(u, q, r);
 
 	mov.u64 %rd1,  u0;
 	mov.u64 %rd2,  u1;
@@ -251,7 +251,7 @@
 	mov.u64 x5, %rd12;
 	
     FP_SQR(u, x);
-    FP_REDUCE12(u);
+    FP_REDUCE12(u, q, r);
 
 	mov.u64 %rd1,  u0;
 	mov.u64 %rd2,  u1;
@@ -292,7 +292,7 @@
 	
 	{
 	.reg .u64 x<6>, z<6>;
-	.reg .u64 z6;
+	.reg .u32 z6;
 	.reg .pred gt, nz;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -342,7 +342,7 @@
 	
 	{
 	.reg .u64 t<6>, x<6>, z<6>;
-	.reg .u64 z6;
+	.reg .u32 z6;
 	.reg .pred gt;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -392,7 +392,7 @@
 	
 	{
 	.reg .u64 t<6>, x<6>, z<6>;
-	.reg .u64 z6;
+	.reg .u32 z6;
 	.reg .pred gt;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -442,7 +442,7 @@
 	
 	{
 	.reg .u64 x<6>, z<6>;
-	.reg .u64 z6;
+	.reg .u32 z6;
 	.reg .pred gt;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;
@@ -492,7 +492,7 @@
 	
 	{
 	.reg .u64 t<6>, x<6>, z<6>;
-	.reg .u64 z6;
+	.reg .u32 z6;
 	.reg .pred gt;
 	mov.u64 x0,  %rd7;
 	mov.u64 x1,  %rd8;

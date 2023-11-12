@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "g1.cuh"
@@ -67,7 +68,7 @@ int main(int argc, char **argv) {
     dim3 grid(82,1,1);
 #endif
 
-    unsigned rows = 2;
+    unsigned rows = 512;
 
     if (argc > 1)
         rows = atoi(argv[1]);
