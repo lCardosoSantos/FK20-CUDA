@@ -499,6 +499,9 @@ __global__ void FpTestKAT(testval_t *) {
     if (pass) {
         uint64_t
             q[][6] = {
+                { 1, 0, 0, 0, 0, 0 },
+                { 0, 1, 0, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0 },
                 { 0xcaf99e97cfdd2a55, 0x2a309e540031bb5b, 0x5d142f76332013e5, 0x0b5170efac5b0908, 0x2d5a18614d5d87dc, 0x8a28bc7a23b8ca27 },
                 { 0x2eaefeba75a027dc, 0x2b658a0ce546cc14, 0x24a6e8f76c1c85af, 0xc9041e4e1182ee8e, 0x3f8e1db0ff84a316, 0x9e34a7d7bfd03f35 },
                 { 0xe232fcf1e3ea21c4, 0xbd9edece603cd7ce, 0x25407371bb909e31, 0x4f7ef565a60c3557, 0x8e0c0ea2e6efeccc, 0x023f831fe9692b89 },
@@ -509,6 +512,9 @@ __global__ void FpTestKAT(testval_t *) {
                 { 0x789cdd11500578d3, 0xa9111fdacc5cbb39, 0x4f4034af157ec725, 0xe92045e05b0b1ae1, 0xe7f1740cb372b6b8, 0x2e0a1d0a32832d8e },
             },
             a[][6] = {
+                { 1, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 0, 0, 0 },
+                { 0, 0, 0, 0, 1, 0 },
                 { 0x1f8b0acedc008e08, 0x4a75446e7ddb973f, 0xcc2d9b595c27a3c3, 0x2233591dbd102e3b, 0xcb91dc2ff393dec9, 0x056a6de4c898189f },
                 { 0xaf4cb53437bf28d1, 0xe81245eb012f43cc, 0xbeeaceb0a64cb4c9, 0xca674ff0add0f7ee, 0x1442c5aacae669a6, 0x0dfebf9a180392ce },
                 { 0xfd79f6b6ff1b50dd, 0xe862843dadb66122, 0xf8ff7b7735f106be, 0xce6f5de3616d2ebd, 0xe11ff68500f8e620, 0x061270e7875966eb },
@@ -521,7 +527,7 @@ __global__ void FpTestKAT(testval_t *) {
 
         uint64_t t[6];
 
-        for (int i=0; pass && (i<8); i++) {
+        for (int i=0; pass && (i<11); i++) {
             fp_cpy(t, q[i]);
 
             fp_sqr(t, t);

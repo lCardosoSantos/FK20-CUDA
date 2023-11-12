@@ -123,24 +123,23 @@ int main(int argc, char **argv) {
         return err;
     }
 
-    TEST(FpTestFibonacci);
-    TEST(FpTestFibonacciPTX);
+    TEST(FpTestAdd);
+    TEST(FpTestAddPTX);
+    TEST(FpTestSub);
+    TEST(FpTestSubPTX);
+    TEST(FpTestSqr);
+    TEST(FpTestSqrPTX);
+    TEST(FpTestMul);
+    TEST(FpTestMulPTX);
+    TEST(FpTestInv);
 
     if (level >= 1) {
         printf("=== Tests level 1\n");
         TEST(FpTestCmp);
-        TEST(FpTestEqPTXInline);
         TEST(FpTestMulConst);
         TEST(FpTestMulConstPTX);
-        TEST(FpTestAdd);
-        TEST(FpTestAddPTX);
-        TEST(FpTestSub);
-        TEST(FpTestSubPTX);
-        TEST(FpTestSqr);
-        TEST(FpTestSqrPTX);
-        TEST(FpTestMul);
-        TEST(FpTestMulPTX);
-        TEST(FpTestInv);
+        TEST(FpTestFibonacci);
+        TEST(FpTestFibonacciPTX);
     }
 
     if (level >= 2) {
@@ -151,13 +150,14 @@ int main(int argc, char **argv) {
         TEST(FpTestCommutativeAddPTX);
         TEST(FpTestCommutativeMul);
         TEST(FpTestCommutativeMulPTX);
+        TEST(FpTestMMA);
+        TEST(FpTestEqPTXInline);
     }
 
     if (level >= 3) {
         printf("=== Tests level 3\n");
         TEST(FpTestAssociativeMul);
         TEST(FpTestAssociativeMulPTX);
-        TEST(FpTestMMA);
         TEST(FpTestAssociativeAdd);
         TEST(FpTestAssociativeAddPTX);
         TEST(FpTestAddDistributiveLeft);

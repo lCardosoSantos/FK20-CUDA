@@ -245,7 +245,7 @@ F_x2:   case F_x2:  fp_x2(AL, AL);      call = ret; break;
         case F_sub: fp_sub(AL, B, C);   call = ret; break;
 F_sqr:  case F_sqr: fp_sqr(A, B);       goto L_red; break;
 F_mul:  case F_mul: fp_mul(A, B, C);    // fall through to reduction
-L_red:  case F_red: fp_reduce12(A);     call = ret; break;
+L_red:  case F_red: fp_reduce12(AL, A); call = ret; break;
 
         //// G1 doubling ////
 

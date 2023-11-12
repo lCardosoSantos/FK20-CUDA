@@ -144,7 +144,7 @@ __device__ void g1p_dbl(g1p_t &p) {
         case F_sub: fp_sub(AL, B, C);   call = ret; break;
         case F_sqr: fp_sqr(A, B);       call = F_red; break;
         case F_mul: fp_mul(A, B, C);    // fall through to reduction
-        case F_red: fp_reduce12(A);     call = ret; break;
+        case F_red: fp_reduce12(AL, A); call = ret; break;
 
         case L_begin:
         fp_cpy(B, X);

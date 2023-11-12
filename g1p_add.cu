@@ -201,31 +201,31 @@ __device__ void g1p_add(g1p_t &p, const g1a_t &q) {
     // 11 mul, 0 square, 8 add, 3 sub, 2 x12, 1 x3.
 
     fp_mul(A, X1, X2);      // 1
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(t0, AL);
 
     fp_mul(A, Y1, Y2);      // 2
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(t1, AL);
 
     fp_add(t3, X2, Y2);     // 3
     fp_add(t4, X1, Y1);     // 4
 
     fp_mul(A, t3, t4);      // 5
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(t3, AL);
 
     fp_add(t4, t0, t1);     // 6
     fp_sub(t3, t3, t4);     // 7
 
     fp_mul(A, Y2, Z1);      // 8
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(t4, AL);
 
     fp_add(t4, t4, Y1);     // 9
 
     fp_mul(A, X2, Z1);      // 10
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(Y3, AL);
 
     fp_add(Y3, Y3, X1);     // 11
@@ -236,32 +236,33 @@ __device__ void g1p_add(g1p_t &p, const g1a_t &q) {
     fp_x12(Y3, Y3);         // 17
 
     fp_mul(A, t4, Y3);      // 18
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(X3, AL);
 
     fp_mul(A, t3, t1);      // 19
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(t2, AL);
 
     fp_sub(X3, t2, X3);     // 20
 
     fp_mul(A, Y3, t0);      // 21
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(Y3, AL);
 
     fp_mul(A, t1, Z3);      // 22
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(t1, AL);
 
     fp_add(Y3, t1, Y3);     // 23
 
     fp_mul(A, t0, t3);      // 24
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(t0, AL);
 
     fp_mul(A, Z3, t4);      // 25
-    fp_reduce12(A);
+    fp_reduce12(AL, A);
     fp_cpy(Z3, AL);
+
     fp_add(Z3, Z3, t0);     // 26
 
     fp_cpy(PX, X3);

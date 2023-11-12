@@ -2,251 +2,378 @@
 // Copyright 2022-2023 Dag Arne Osvik
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
-#ifndef FP_REDUCE12
+#ifndef FP_REDUCE12_CUH
+#define FP_REDUCE12_CUH
 
-/**
- * @brief Wide reduction over 12 words. Z ← Z%p
- * Reads Z0..Zb.
- * Writes Z0..Z5.
- * Modifies Q0..Q7 and S0..S6.
- */
-#define FP_REDUCE12(Z, Q, S) \
-\
-    /* q2 = q1 * mu; q3 = q2 / 2^448 */ \
-\
-    /* mu0 */ \
-\
-    "\n\tmul.hi.u64     "#Q"0, 0x13E207F56591BA2EU, "#Z"a;" \
-\
-    "\n\tmad.lo.u64.cc  "#Q"0, 0x13E207F56591BA2EU, "#Z"b, "#Q"0;" \
-    "\n\tmadc.hi.u64    "#Q"1, 0x13E207F56591BA2EU, "#Z"b,     0;" \
-\
-    /* mu1 */ \
-\
-    "\n\tmad.hi.u64.cc  "#Q"0, 0x997167A058F1C07BU, "#Z"9, "#Q"0;" \
-    "\n\tmadc.lo.u64.cc "#Q"1, 0x997167A058F1C07BU, "#Z"b, "#Q"1;" \
-    "\n\tmadc.hi.u64    "#Q"2, 0x997167A058F1C07BU, "#Z"b,     0;" \
-\
-    "\n\tmad.lo.u64.cc  "#Q"0, 0x997167A058F1C07BU, "#Z"a, "#Q"0;" \
-    "\n\tmadc.hi.u64.cc "#Q"1, 0x997167A058F1C07BU, "#Z"a, "#Q"1;" \
-    "\n\taddc.u64       "#Q"2, "#Q"2, 0;" \
-\
-    /* mu2 */ \
-\
-    "\n\tmad.lo.u64.cc  "#Q"0, 0xDF4771E0286779D3U, "#Z"9, "#Q"0;" \
-    "\n\tmadc.hi.u64.cc "#Q"1, 0xDF4771E0286779D3U, "#Z"9, "#Q"1;" \
-    "\n\tmadc.lo.u64.cc "#Q"2, 0xDF4771E0286779D3U, "#Z"b, "#Q"2;" \
-    "\n\tmadc.hi.u64    "#Q"3, 0xDF4771E0286779D3U, "#Z"b,     0;" \
-\
-    "\n\tmad.hi.u64.cc  "#Q"0, 0xDF4771E0286779D3U, "#Z"8, "#Q"0;" \
-    "\n\tmadc.lo.u64.cc "#Q"1, 0xDF4771E0286779D3U, "#Z"a, "#Q"1;" \
-    "\n\tmadc.hi.u64.cc "#Q"2, 0xDF4771E0286779D3U, "#Z"a, "#Q"2;" \
-    "\n\taddc.u64       "#Q"3, "#Q"3, 0;" \
-\
-    /* mu3 */ \
-\
-    "\n\tmad.hi.u64.cc  "#Q"0, 0x1B82741FF6A0A94BU, "#Z"7, "#Q"0;" \
-    "\n\tmadc.lo.u64.cc "#Q"1, 0x1B82741FF6A0A94BU, "#Z"9, "#Q"1;" \
-    "\n\tmadc.hi.u64.cc "#Q"2, 0x1B82741FF6A0A94BU, "#Z"9, "#Q"2;" \
-    "\n\tmadc.lo.u64.cc "#Q"3, 0x1B82741FF6A0A94BU, "#Z"b, "#Q"3;" \
-    "\n\tmadc.hi.u64    "#Q"4, 0x1B82741FF6A0A94BU, "#Z"b,     0;" \
-\
-    "\n\tmad.lo.u64.cc  "#Q"0, 0x1B82741FF6A0A94BU, "#Z"8, "#Q"0;" \
-    "\n\tmadc.hi.u64.cc "#Q"1, 0x1B82741FF6A0A94BU, "#Z"8, "#Q"1;" \
-    "\n\tmadc.lo.u64.cc "#Q"2, 0x1B82741FF6A0A94BU, "#Z"a, "#Q"2;" \
-    "\n\tmadc.hi.u64.cc "#Q"3, 0x1B82741FF6A0A94BU, "#Z"a, "#Q"3;" \
-    "\n\taddc.u64       "#Q"4, "#Q"4, 0;" \
-\
-    /* mu4 */ \
-\
-    "\n\tmad.lo.u64.cc  "#Q"0, 0x28101B0CC7A6BA29U, "#Z"7, "#Q"0;" \
-    "\n\tmadc.hi.u64.cc "#Q"1, 0x28101B0CC7A6BA29U, "#Z"7, "#Q"1;" \
-    "\n\tmadc.lo.u64.cc "#Q"2, 0x28101B0CC7A6BA29U, "#Z"9, "#Q"2;" \
-    "\n\tmadc.hi.u64.cc "#Q"3, 0x28101B0CC7A6BA29U, "#Z"9, "#Q"3;" \
-    "\n\tmadc.lo.u64.cc "#Q"4, 0x28101B0CC7A6BA29U, "#Z"b, "#Q"4;" \
-    "\n\tmadc.hi.u64    "#Q"5, 0x28101B0CC7A6BA29U, "#Z"b,     0;" \
-\
-    "\n\tmad.hi.u64.cc  "#Q"0, 0x28101B0CC7A6BA29U, "#Z"6, "#Q"0;" \
-    "\n\tmadc.lo.u64.cc "#Q"1, 0x28101B0CC7A6BA29U, "#Z"8, "#Q"1;" \
-    "\n\tmadc.hi.u64.cc "#Q"2, 0x28101B0CC7A6BA29U, "#Z"8, "#Q"2;" \
-    "\n\tmadc.lo.u64.cc "#Q"3, 0x28101B0CC7A6BA29U, "#Z"a, "#Q"3;" \
-    "\n\tmadc.hi.u64.cc "#Q"4, 0x28101B0CC7A6BA29U, "#Z"a, "#Q"4;" \
-    "\n\taddc.u64       "#Q"5, "#Q"5, 0;" \
-\
-    /* mu5 */ \
-\
-    "\n\tmad.hi.u64.cc  "#Q"0, 0xD835D2F3CC9E45CEU, "#Z"5, "#Q"0;" \
-    "\n\tmadc.lo.u64.cc "#Q"1, 0xD835D2F3CC9E45CEU, "#Z"7, "#Q"1;" \
-    "\n\tmadc.hi.u64.cc "#Q"2, 0xD835D2F3CC9E45CEU, "#Z"7, "#Q"2;" \
-    "\n\tmadc.lo.u64.cc "#Q"3, 0xD835D2F3CC9E45CEU, "#Z"9, "#Q"3;" \
-    "\n\tmadc.hi.u64.cc "#Q"4, 0xD835D2F3CC9E45CEU, "#Z"9, "#Q"4;" \
-    "\n\tmadc.lo.u64.cc "#Q"5, 0xD835D2F3CC9E45CEU, "#Z"b, "#Q"5;" \
-    "\n\tmadc.hi.u64    "#Q"6, 0xD835D2F3CC9E45CEU, "#Z"b,     0;" \
-\
-    "\n\tmad.lo.u64.cc  "#Q"0, 0xD835D2F3CC9E45CEU, "#Z"6, "#Q"0;" \
-    "\n\tmadc.hi.u64.cc "#Q"1, 0xD835D2F3CC9E45CEU, "#Z"6, "#Q"1;" \
-    "\n\tmadc.lo.u64.cc "#Q"2, 0xD835D2F3CC9E45CEU, "#Z"8, "#Q"2;" \
-    "\n\tmadc.hi.u64.cc "#Q"3, 0xD835D2F3CC9E45CEU, "#Z"8, "#Q"3;" \
-    "\n\tmadc.lo.u64.cc "#Q"4, 0xD835D2F3CC9E45CEU, "#Z"a, "#Q"4;" \
-    "\n\tmadc.hi.u64.cc "#Q"5, 0xD835D2F3CC9E45CEU, "#Z"a, "#Q"5;" \
-    "\n\taddc.u64       "#Q"6, "#Q"6, 0;" \
-\
-    /* mu6 */ \
-\
-    "\n\tmad.lo.u64.cc  "#Q"0, 0x0000000000000009U, "#Z"5, "#Q"0;" \
-    "\n\tmadc.hi.u64.cc "#Q"1, 0x0000000000000009U, "#Z"5, "#Q"1;" \
-    "\n\tmadc.lo.u64.cc "#Q"2, 0x0000000000000009U, "#Z"7, "#Q"2;" \
-    "\n\tmadc.hi.u64.cc "#Q"3, 0x0000000000000009U, "#Z"7, "#Q"3;" \
-    "\n\tmadc.lo.u64.cc "#Q"4, 0x0000000000000009U, "#Z"9, "#Q"4;" \
-    "\n\tmadc.hi.u64.cc "#Q"5, 0x0000000000000009U, "#Z"9, "#Q"5;" \
-    "\n\tmadc.lo.u64.cc "#Q"6, 0x0000000000000009U, "#Z"b, "#Q"6;" \
-    "\n\tmadc.hi.u64    "#Q"7, 0x0000000000000009U, "#Z"b,     0;" \
-\
-    "\n\tmad.hi.u64.cc  "#Q"0, 0x0000000000000009U, "#Z"4, "#Q"0;" \
-    "\n\tmadc.lo.u64.cc "#Q"1, 0x0000000000000009U, "#Z"6, "#Q"1;" \
-    "\n\tmadc.hi.u64.cc "#Q"2, 0x0000000000000009U, "#Z"6, "#Q"2;" \
-    "\n\tmadc.lo.u64.cc "#Q"3, 0x0000000000000009U, "#Z"8, "#Q"3;" \
-    "\n\tmadc.hi.u64.cc "#Q"4, 0x0000000000000009U, "#Z"8, "#Q"4;" \
-    "\n\tmadc.lo.u64.cc "#Q"5, 0x0000000000000009U, "#Z"a, "#Q"5;" \
-    "\n\tmadc.hi.u64.cc "#Q"6, 0x0000000000000009U, "#Z"a, "#Q"6;" \
-    "\n\taddc.u64       "#Q"7, "#Q"7, 0;" \
-\
-    /* r2 = q3 * m mod 2^448 */ \
-    /*  u contains z^2 */ \
-    /*  q contains q3 */ \
-    /*  produces r2 in r */ \
-\
-    /* m5 */ \
-\
-    "\n\tmul.lo.u64     "#S"5, 0x1A0111EA397FE69AU, "#Q"1       ;" \
-    "\n\tmul.hi.u64     "#S"6, 0x1A0111EA397FE69AU, "#Q"1       ;" \
-    "\n\tmad.lo.u64     "#S"6, 0x1A0111EA397FE69AU, "#Q"2, "#S"6;" \
-\
-    /* m4 */ \
-\
-    "\n\tmul.lo.u64     "#S"4, 0x4B1BA7B6434BACD7U, "#Q"1       ;" \
-    "\n\tmad.hi.u64.cc  "#S"5, 0x4B1BA7B6434BACD7U, "#Q"1, "#S"5;" \
-    "\n\tmadc.lo.u64    "#S"6, 0x4B1BA7B6434BACD7U, "#Q"3, "#S"6;" \
-\
-    "\n\tmad.lo.u64.cc  "#S"5, 0x4B1BA7B6434BACD7U, "#Q"2, "#S"5;" \
-    "\n\tmadc.hi.u64    "#S"6, 0x4B1BA7B6434BACD7U, "#Q"2, "#S"6;" \
-\
-    /* m3 */ \
-\
-    "\n\tmul.lo.u64     "#S"3, 0x64774B84F38512BFU, "#Q"1       ;" \
-    "\n\tmad.hi.u64.cc  "#S"4, 0x64774B84F38512BFU, "#Q"1, "#S"4;" \
-    "\n\tmadc.lo.u64.cc "#S"5, 0x64774B84F38512BFU, "#Q"3, "#S"5;" \
-    "\n\tmadc.hi.u64    "#S"6, 0x64774B84F38512BFU, "#Q"3, "#S"6;" \
-\
-    "\n\tmad.lo.u64.cc  "#S"4, 0x64774B84F38512BFU, "#Q"2, "#S"4;" \
-    "\n\tmadc.hi.u64.cc "#S"5, 0x64774B84F38512BFU, "#Q"2, "#S"5;" \
-    "\n\tmadc.lo.u64    "#S"6, 0x64774B84F38512BFU, "#Q"4, "#S"6;" \
-\
-    /* m2 */ \
-\
-    "\n\tmul.lo.u64     "#S"2, 0x6730D2A0F6B0F624U, "#Q"1       ;" \
-    "\n\tmad.hi.u64.cc  "#S"3, 0x6730D2A0F6B0F624U, "#Q"1, "#S"3;" \
-    "\n\tmadc.lo.u64.cc "#S"4, 0x6730D2A0F6B0F624U, "#Q"3, "#S"4;" \
-    "\n\tmadc.hi.u64.cc "#S"5, 0x6730D2A0F6B0F624U, "#Q"3, "#S"5;" \
-    "\n\tmadc.lo.u64    "#S"6, 0x6730D2A0F6B0F624U, "#Q"5, "#S"6;" \
-\
-    "\n\tmad.lo.u64.cc  "#S"3, 0x6730D2A0F6B0F624U, "#Q"2, "#S"3;" \
-    "\n\tmadc.hi.u64.cc "#S"4, 0x6730D2A0F6B0F624U, "#Q"2, "#S"4;" \
-    "\n\tmadc.lo.u64.cc "#S"5, 0x6730D2A0F6B0F624U, "#Q"4, "#S"5;" \
-    "\n\tmadc.hi.u64    "#S"6, 0x6730D2A0F6B0F624U, "#Q"4, "#S"6;" \
-\
-    /* m1 */ \
-\
-    "\n\tmul.lo.u64     "#S"1, 0x1EABFFFEB153FFFFU, "#Q"1       ;" \
-    "\n\tmad.hi.u64.cc  "#S"2, 0x1EABFFFEB153FFFFU, "#Q"1, "#S"2;" \
-    "\n\tmadc.lo.u64.cc "#S"3, 0x1EABFFFEB153FFFFU, "#Q"3, "#S"3;" \
-    "\n\tmadc.hi.u64.cc "#S"4, 0x1EABFFFEB153FFFFU, "#Q"3, "#S"4;" \
-    "\n\tmadc.lo.u64.cc "#S"5, 0x1EABFFFEB153FFFFU, "#Q"5, "#S"5;" \
-    "\n\tmadc.hi.u64    "#S"6, 0x1EABFFFEB153FFFFU, "#Q"5, "#S"6;" \
-\
-    "\n\tmad.lo.u64.cc  "#S"2, 0x1EABFFFEB153FFFFU, "#Q"2, "#S"2;" \
-    "\n\tmadc.hi.u64.cc "#S"3, 0x1EABFFFEB153FFFFU, "#Q"2, "#S"3;" \
-    "\n\tmadc.lo.u64.cc "#S"4, 0x1EABFFFEB153FFFFU, "#Q"4, "#S"4;" \
-    "\n\tmadc.hi.u64.cc "#S"5, 0x1EABFFFEB153FFFFU, "#Q"4, "#S"5;" \
-    "\n\tmadc.lo.u64    "#S"6, 0x1EABFFFEB153FFFFU, "#Q"6, "#S"6;" \
-\
-    /* m0 */ \
-\
-    "\n\tmul.lo.u64     "#S"0, 0xB9FEFFFFFFFFAAABU, "#Q"1       ;" \
-    "\n\tmad.hi.u64.cc  "#S"1, 0xB9FEFFFFFFFFAAABU, "#Q"1, "#S"1;" \
-    "\n\tmadc.lo.u64.cc "#S"2, 0xB9FEFFFFFFFFAAABU, "#Q"3, "#S"2;" \
-    "\n\tmadc.hi.u64.cc "#S"3, 0xB9FEFFFFFFFFAAABU, "#Q"3, "#S"3;" \
-    "\n\tmadc.lo.u64.cc "#S"4, 0xB9FEFFFFFFFFAAABU, "#Q"5, "#S"4;" \
-    "\n\tmadc.hi.u64.cc "#S"5, 0xB9FEFFFFFFFFAAABU, "#Q"5, "#S"5;" \
-    "\n\tmadc.lo.u64    "#S"6, 0xB9FEFFFFFFFFAAABU, "#Q"7, "#S"6;" \
-\
-    "\n\tmad.lo.u64.cc  "#S"1, 0xB9FEFFFFFFFFAAABU, "#Q"2, "#S"1;" \
-    "\n\tmadc.hi.u64.cc "#S"2, 0xB9FEFFFFFFFFAAABU, "#Q"2, "#S"2;" \
-    "\n\tmadc.lo.u64.cc "#S"3, 0xB9FEFFFFFFFFAAABU, "#Q"4, "#S"3;" \
-    "\n\tmadc.hi.u64.cc "#S"4, 0xB9FEFFFFFFFFAAABU, "#Q"4, "#S"4;" \
-    "\n\tmadc.lo.u64.cc "#S"5, 0xB9FEFFFFFFFFAAABU, "#Q"6, "#S"5;" \
-    "\n\tmadc.hi.u64    "#S"6, 0xB9FEFFFFFFFFAAABU, "#Q"6, "#S"6;" \
-\
-    /* r = r1 - r2 */ \
-    /*  r1 is in u */ \
-    /*  r2 is in r */ \
-\
-    /* z = r1 - r2 */ \
-\
-    "\n\tsub.u64.cc  "#Z"0, "#Z"0, "#S"0;" \
-    "\n\tsubc.u64.cc "#Z"1, "#Z"1, "#S"1;" \
-    "\n\tsubc.u64.cc "#Z"2, "#Z"2, "#S"2;" \
-    "\n\tsubc.u64.cc "#Z"3, "#Z"3, "#S"3;" \
-    "\n\tsubc.u64.cc "#Z"4, "#Z"4, "#S"4;" \
-    "\n\tsubc.u64    "#Z"5, "#Z"5, "#S"5;"
+#include <cstdio>
 
-__forceinline__
-__device__ void fp_reduce12(
-    uint64_t &z0,
-    uint64_t &z1,
-    uint64_t &z2,
-    uint64_t &z3,
-    uint64_t &z4,
-    uint64_t &z5,
-    uint64_t z6,
-    uint64_t z7,
-    uint64_t z8,
-    uint64_t z9,
-    uint64_t za,
-    uint64_t zb) {
+#include "fp.cuh"
+#include "ptx.cuh"
 
-    asm volatile (
-    "\n\t{"
-    "\n\t.reg .u64 z<10>, za, zb, q<8>, r<7>;"
+#define mB 0x1A0111EA
+#define mA 0x397FE69A
+#define m9 0x4B1BA7B6
+#define m8 0x434BACD7
+#define m7 0x64774B84
+#define m6 0xF38512BF
+#define m5 0x6730D2A0
+#define m4 0xF6B0F624
+#define m3 0x1EABFFFE
+#define m2 0xB153FFFF
+#define m1 0xB9FEFFFF
+#define m0 0xFFFFAAAB
 
-    "\n\tmov.u64 z0,  %0;"
-    "\n\tmov.u64 z1,  %1;"
-    "\n\tmov.u64 z2,  %2;"
-    "\n\tmov.u64 z3,  %3;"
-    "\n\tmov.u64 z4,  %4;"
-    "\n\tmov.u64 z5,  %5;"
-    "\n\tmov.u64 z6,  %6;"
-    "\n\tmov.u64 z7,  %7;"
-    "\n\tmov.u64 z8,  %8;"
-    "\n\tmov.u64 z9,  %9;"
-    "\n\tmov.u64 za, %10;"
-    "\n\tmov.u64 zb, %11;"
+#define muC 0x00000009U
+#define muB 0xD835D2F3U
+#define muA 0xCC9E45CEU
+#define mu9 0x28101B0CU
+#define mu8 0xC7A6BA29U
+#define mu7 0x1B82741FU
+#define mu6 0xF6A0A94BU
+#define mu5 0xDF4771E0U
+#define mu4 0x286779D3U
+#define mu3 0x997167A0U
+#define mu2 0x58F1C07BU
+#define mu1 0x13E207F5U
+#define mu0 0x6591BA2EU
 
-FP_REDUCE12(z, q, r)
+__device__ __forceinline__ void fp_reduce12(
+    uint64_t &z0, uint64_t &z1, uint64_t &z2, uint64_t &z3, uint64_t &z4, uint64_t &z5,
+    uint64_t  x0, uint64_t  x1, uint64_t  x2, uint64_t  x3, uint64_t  x4, uint64_t  x5,
+    uint64_t  x6, uint64_t  x7, uint64_t  x8, uint64_t  x9, uint64_t  xa, uint64_t  xb
+    )
+{
+    uint32_t
+        t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb,
+        tc, td, te, tf, tg, th, ti, tj, tk, tl, tm, tn,
+        l0, l1, h0, h1;
 
-    "\n\tmov.u64  %0,  z0;"
-    "\n\tmov.u64  %1,  z1;"
-    "\n\tmov.u64  %2,  z2;"
-    "\n\tmov.u64  %3,  z3;"
-    "\n\tmov.u64  %4,  z4;"
-    "\n\tmov.u64  %5,  z5;"
+    uint64_t
+        q0, q1, q2, q3, q4, q5, q6,
+        r0, r1, r2, r3, r4, r5, r6,
+        u0, u1, u2, u3, u4, u5, u6;
 
-    "\n\t}"
-    :
-    "+l"(z0), "+l"(z1), "+l"(z2), "+l"(z3), "+l"(z4), "+l"(z5)
-    :
-    "l"(z6), "l"(z7), "l"(z8), "l"(z9), "l"(za), "l"(zb)
-    );
+    unpack(t0, t1, x0);
+    unpack(t2, t3, x1);
+    unpack(t4, t5, x2);
+    unpack(t6, t7, x3);
+    unpack(t8, t9, x4);
+    unpack(ta, tb, x5);
+    unpack(tc, td, x6);
+    unpack(te, tf, x7);
+    unpack(tg, th, x8);
+    unpack(ti, tj, x9);
+    unpack(tk, tl, xa);
+    unpack(tm, tn, xb);
+
+    mul_wide_u32(u0, muC, tb);
+    mul_wide_u32(q0, muC, tc);
+
+
+    mad_wide_cc_u32 (u0, muB, tc, u0);
+    addc_u64        (u1, 0, 0);
+
+    mad_wide_cc_u32 (q0, muB, td, q0);
+    addc_u64        (q1, 0, 0);
+
+
+    mad_wide_cc_u32(u0, muA, td, u0);
+    madc_wide_u32  (u1, muC, td, u1);
+
+    mad_wide_cc_u32(q0, muA, te, q0);
+    madc_wide_u32  (q1, muC, te, q1);
+
+
+    mad_wide_cc_u32 (u0, mu9, te, u0);
+    madc_wide_cc_u32(u1, muB, te, u1);
+    addc_u64        (u2, 0, 0);
+
+    mad_wide_cc_u32 (q0, mu9, tf, q0);
+    madc_wide_cc_u32(q1, muB, tf, q1);
+    addc_u64        (q2, 0, 0);
+
+
+    mad_wide_cc_u32 (u0, mu8, tf, u0);
+    madc_wide_cc_u32(u1, muA, tf, u1);
+    madc_wide_u32   (u2, muC, tf, u2);
+
+    mad_wide_cc_u32 (q0, mu8, tg, q0);
+    madc_wide_cc_u32(q1, muA, tg, q1);
+    madc_wide_u32   (q2, muC, tg, q2);
+
+
+    mad_wide_cc_u32 (u0, mu7, tg, u0);
+    madc_wide_cc_u32(u1, mu9, tg, u1);
+    madc_wide_cc_u32(u2, muB, tg, u2);
+    addc_u64        (u3, 0, 0);
+
+    mad_wide_cc_u32 (q0, mu7, th, q0);
+    madc_wide_cc_u32(q1, mu9, th, q1);
+    madc_wide_cc_u32(q2, muB, th, q2);
+    addc_u64        (q3, 0, 0);
+
+
+    mad_wide_cc_u32 (u0, mu6, th, u0);
+    madc_wide_cc_u32(u1, mu8, th, u1);
+    madc_wide_cc_u32(u2, muA, th, u2);
+    madc_wide_u32   (u3, muC, th, u3);
+
+    mad_wide_cc_u32 (q0, mu6, ti, q0);
+    madc_wide_cc_u32(q1, mu8, ti, q1);
+    madc_wide_cc_u32(q2, muA, ti, q2);
+    madc_wide_u32   (q3, muC, ti, q3);
+
+
+    mad_wide_cc_u32 (u0, mu5, ti, u0);
+    madc_wide_cc_u32(u1, mu7, ti, u1);
+    madc_wide_cc_u32(u2, mu9, ti, u2);
+    madc_wide_cc_u32(u3, muB, ti, u3);
+    addc_u64        (u4, 0, 0);
+
+    mad_wide_cc_u32 (q0, mu5, tj, q0);
+    madc_wide_cc_u32(q1, mu7, tj, q1);
+    madc_wide_cc_u32(q2, mu9, tj, q2);
+    madc_wide_cc_u32(q3, muB, tj, q3);
+    addc_u64        (q4, 0, 0);
+
+
+    mad_wide_cc_u32 (u0, mu4, tj, u0);
+    madc_wide_cc_u32(u1, mu6, tj, u1);
+    madc_wide_cc_u32(u2, mu8, tj, u2);
+    madc_wide_cc_u32(u3, muA, tj, u3);
+    madc_wide_u32   (u4, muC, tj, u4);
+
+    mad_wide_cc_u32 (q0, mu4, tk, q0);
+    madc_wide_cc_u32(q1, mu6, tk, q1);
+    madc_wide_cc_u32(q2, mu8, tk, q2);
+    madc_wide_cc_u32(q3, muA, tk, q3);
+    madc_wide_u32   (q4, muC, tk, q4);
+
+
+    mad_wide_cc_u32 (u0, mu3, tk, u0);
+    madc_wide_cc_u32(u1, mu5, tk, u1);
+    madc_wide_cc_u32(u2, mu7, tk, u2);
+    madc_wide_cc_u32(u3, mu9, tk, u3);
+    madc_wide_cc_u32(u4, muB, tk, u4);
+    addc_u64        (u5, 0, 0);
+
+    mad_wide_cc_u32 (q0, mu3, tl, q0);
+    madc_wide_cc_u32(q1, mu5, tl, q1);
+    madc_wide_cc_u32(q2, mu7, tl, q2);
+    madc_wide_cc_u32(q3, mu9, tl, q3);
+    madc_wide_cc_u32(q4, muB, tl, q4);
+    addc_u64        (q5, 0, 0);
+
+
+    mad_wide_cc_u32 (u0, mu2, tl, u0);
+    madc_wide_cc_u32(u1, mu4, tl, u1);
+    madc_wide_cc_u32(u2, mu6, tl, u2);
+    madc_wide_cc_u32(u3, mu8, tl, u3);
+    madc_wide_cc_u32(u4, muA, tl, u4);
+    madc_wide_u32   (u5, muC, tl, u5);
+
+    mad_wide_cc_u32 (q0, mu2, tm, q0);
+    madc_wide_cc_u32(q1, mu4, tm, q1);
+    madc_wide_cc_u32(q2, mu6, tm, q2);
+    madc_wide_cc_u32(q3, mu8, tm, q3);
+    madc_wide_cc_u32(q4, muA, tm, q4);
+    madc_wide_u32   (q5, muC, tm, q5);
+
+
+    mad_wide_cc_u32 (u0, mu1, tm, u0);
+    madc_wide_cc_u32(u1, mu3, tm, u1);
+    madc_wide_cc_u32(u2, mu5, tm, u2);
+    madc_wide_cc_u32(u3, mu7, tm, u3);
+    madc_wide_cc_u32(u4, mu9, tm, u4);
+    madc_wide_cc_u32(u5, muB, tm, u5);
+    addc_u64        (u6, 0, 0);
+
+    mad_wide_cc_u32 (q0, mu1, tn, q0);
+    madc_wide_cc_u32(q1, mu3, tn, q1);
+    madc_wide_cc_u32(q2, mu5, tn, q2);
+    madc_wide_cc_u32(q3, mu7, tn, q3);
+    madc_wide_cc_u32(q4, mu9, tn, q4);
+    madc_wide_cc_u32(q5, muB, tn, q5);
+    addc_u64        (q6, 0, 0);
+
+
+    mad_wide_cc_u32 (u0, mu0, tn, u0);
+    madc_wide_cc_u32(u1, mu2, tn, u1);
+    madc_wide_cc_u32(u2, mu4, tn, u2);
+    madc_wide_cc_u32(u3, mu6, tn, u3);
+    madc_wide_cc_u32(u4, mu8, tn, u4);
+    madc_wide_cc_u32(u5, muA, tn, u5);
+    madc_wide_u32   (u6, muC, tn, u6);
+
+    //////////////////////////////////
+    // q += u >> 32
+    //////////////////////////////////
+
+    unpack(l0, h0, u0);                           unpack(l1, h1, q0);  add_cc_u32 (h0, h0, l1); pack(q0, l0, h0);
+    unpack(l0, h0, u1);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, q1);  addc_cc_u32(h0, h0, l1); pack(q1, l0, h0);
+    unpack(l0, h0, u2);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, q2);  addc_cc_u32(h0, h0, l1); pack(q2, l0, h0);
+    unpack(l0, h0, u3);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, q3);  addc_cc_u32(h0, h0, l1); pack(q3, l0, h0);
+    unpack(l0, h0, u4);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, q4);  addc_cc_u32(h0, h0, l1); pack(q4, l0, h0);
+    unpack(l0, h0, u5);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, q5);  addc_cc_u32(h0, h0, l1); pack(q5, l0, h0);
+    unpack(l0, h0, u6);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, q6);  addc_cc_u32(h0, h0, l1); pack(q6, l0, h0);
+
+    //////////////////////////////////
+    // r = q * m mod 2^416
+    //////////////////////////////////
+
+    unpack(l0, h0, q0);
+
+    mul_wide_u32(r0, m0, h0);
+    mul_wide_u32(r1, m2, h0);
+    mul_wide_u32(r2, m4, h0);
+    mul_wide_u32(r3, m6, h0);
+    mul_wide_u32(r4, m8, h0);
+    mul_wide_u32(r5, mA, h0);
+
+    mul_wide_u32(u0, m1, h0);
+    mul_wide_u32(u1, m3, h0);
+    mul_wide_u32(u2, m5, h0);
+    mul_wide_u32(u3, m7, h0);
+    mul_wide_u32(u4, m9, h0);
+    mul_wide_u32(u5, mB, h0);
+
+    unpack(l0, h0, q1);
+
+    mad_wide_cc_u32 (r1, m1, l0, r1);
+    madc_wide_cc_u32(r2, m3, l0, r2);
+    madc_wide_cc_u32(r3, m5, l0, r3);
+    madc_wide_cc_u32(r4, m7, l0, r4);
+    madc_wide_cc_u32(r5, m9, l0, r5);
+    madc_wide_u32   (r6, mB, l0,  0);
+
+    mad_wide_cc_u32 (u0, m0, l0, u0);
+    madc_wide_cc_u32(u1, m2, l0, u1);
+    madc_wide_cc_u32(u2, m4, l0, u2);
+    madc_wide_cc_u32(u3, m6, l0, u3);
+    madc_wide_cc_u32(u4, m8, l0, u4);
+    madc_wide_u32   (u5, mA, l0, u5);
+
+    mad_wide_cc_u32 (r1, m0, h0, r1);
+    madc_wide_cc_u32(r2, m2, h0, r2);
+    madc_wide_cc_u32(r3, m4, h0, r3);
+    madc_wide_cc_u32(r4, m6, h0, r4);
+    madc_wide_cc_u32(r5, m8, h0, r5);
+    madc_wide_u32   (r6, mA, h0, r6);
+
+    mad_wide_cc_u32 (u1, m1, h0, u1);
+    madc_wide_cc_u32(u2, m3, h0, u2);
+    madc_wide_cc_u32(u3, m5, h0, u3);
+    madc_wide_cc_u32(u4, m7, h0, u4);
+    madc_wide_u32   (u5, m9, h0, u5);
+
+    unpack(l0, h0, q2);
+
+    mad_wide_cc_u32 (r2, m1, l0, r2);
+    madc_wide_cc_u32(r3, m3, l0, r3);
+    madc_wide_cc_u32(r4, m5, l0, r4);
+    madc_wide_cc_u32(r5, m7, l0, r5);
+    madc_wide_u32   (r6, m9, l0, r6);
+
+    mad_wide_cc_u32 (u1, m0, l0, u1);
+    madc_wide_cc_u32(u2, m2, l0, u2);
+    madc_wide_cc_u32(u3, m4, l0, u3);
+    madc_wide_cc_u32(u4, m6, l0, u4);
+    madc_wide_u32   (u5, m8, l0, u5);
+
+    mad_wide_cc_u32 (r2, m0, h0, r2);
+    madc_wide_cc_u32(r3, m2, h0, r3);
+    madc_wide_cc_u32(r4, m4, h0, r4);
+    madc_wide_cc_u32(r5, m6, h0, r5);
+    madc_wide_u32   (r6, m8, h0, r6);
+
+    mad_wide_cc_u32 (u2, m1, h0, u2);
+    madc_wide_cc_u32(u3, m3, h0, u3);
+    madc_wide_cc_u32(u4, m5, h0, u4);
+    madc_wide_u32   (u5, m7, h0, u5);
+
+    unpack(l0, h0, q3);
+
+    mad_wide_cc_u32 (r3, m1, l0, r3);
+    madc_wide_cc_u32(r4, m3, l0, r4);
+    madc_wide_cc_u32(r5, m5, l0, r5);
+    madc_wide_u32   (r6, m7, l0, r6);
+
+    mad_wide_cc_u32 (u2, m0, l0, u2);
+    madc_wide_cc_u32(u3, m2, l0, u3);
+    madc_wide_cc_u32(u4, m4, l0, u4);
+    madc_wide_u32   (u5, m6, l0, u5);
+
+    mad_wide_cc_u32 (r3, m0, h0, r3);
+    madc_wide_cc_u32(r4, m2, h0, r4);
+    madc_wide_cc_u32(r5, m4, h0, r5);
+    madc_wide_u32   (r6, m6, h0, r6);
+
+    mad_wide_cc_u32 (u3, m1, h0, u3);
+    madc_wide_cc_u32(u4, m3, h0, u4);
+    madc_wide_u32   (u5, m5, h0, u5);
+
+    unpack(l0, h0, q4);
+
+    mad_wide_cc_u32 (r4, m1, l0, r4);
+    madc_wide_cc_u32(r5, m3, l0, r5);
+    madc_wide_u32   (r6, m5, l0, r6);
+
+    mad_wide_cc_u32 (u3, m0, l0, u3);
+    madc_wide_cc_u32(u4, m2, l0, u4);
+    madc_wide_u32   (u5, m4, l0, u5);
+
+    mad_wide_cc_u32 (r4, m0, h0, r4);
+    madc_wide_cc_u32(r5, m2, h0, r5);
+    madc_wide_u32   (r6, m4, h0, r6);
+
+    mad_wide_cc_u32 (u4, m1, h0, u4);
+    madc_wide_u32   (u5, m3, h0, u5);
+
+    unpack(l0, h0, q5);
+
+    mad_wide_cc_u32 (r5, m1, l0, r5);
+    madc_wide_u32   (r6, m3, l0, r6);
+
+    mad_wide_cc_u32 (u4, m0, l0, u4);
+    madc_wide_u32   (u5, m2, l0, u5);
+
+    mad_wide_cc_u32 (r5, m0, h0, r5);
+    madc_wide_u32   (r6, m2, h0, r6);
+
+    mad_wide_u32    (u5, m1, h0, u5);
+
+    unpack(l0, h0, q6);
+
+    mad_wide_cc_u32 (r6, m1, l0, r6);
+
+    mad_wide_cc_u32 (u5, m0, l0, u5);
+
+    mad_wide_cc_u32 (r6, m0, h0, r6);
+
+    //////////////////////////////////
+    // r += u << 32
+    // r %= 1 << 416
+    //////////////////////////////////
+
+    unpack(l0, h0, r0);                           unpack(l1, h1, u0);  add_cc_u32 (h0, h0, l1); pack(r0, l0, h0);
+    unpack(l0, h0, r1);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, u1);  addc_cc_u32(h0, h0, l1); pack(r1, l0, h0);
+    unpack(l0, h0, r2);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, u2);  addc_cc_u32(h0, h0, l1); pack(r2, l0, h0);
+    unpack(l0, h0, r3);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, u3);  addc_cc_u32(h0, h0, l1); pack(r3, l0, h0);
+    unpack(l0, h0, r4);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, u4);  addc_cc_u32(h0, h0, l1); pack(r4, l0, h0);
+    unpack(l0, h0, r5);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, u5);  addc_cc_u32(h0, h0, l1); pack(r5, l0, h0);
+    unpack(l0, h0, r6);  addc_cc_u32(l0, l0, h1); unpack(l1, h1, u6);  addc_cc_u32(h0, h0, l1); pack(r6, l0,  0);
+
+    //////////////////////////////////
+    // r = (x % (1 << 416)) - r
+    //////////////////////////////////
+
+    unpack(l0, h0, r0); sub_cc_u32 (t0, t0, l0); subc_cc_u32(t1, t1, h0); pack(z0, t0, t1);
+    unpack(l0, h0, r1); subc_cc_u32(t2, t2, l0); subc_cc_u32(t3, t3, h0); pack(z1, t2, t3);
+    unpack(l0, h0, r2); subc_cc_u32(t4, t4, l0); subc_cc_u32(t5, t5, h0); pack(z2, t4, t5);
+    unpack(l0, h0, r3); subc_cc_u32(t6, t6, l0); subc_cc_u32(t7, t7, h0); pack(z3, t6, t7);
+    unpack(l0, h0, r4); subc_cc_u32(t8, t8, l0); subc_cc_u32(t9, t9, h0); pack(z4, t8, t9);
+    unpack(l0, h0, r5); subc_cc_u32(ta, ta, l0); subc_cc_u32(tb, tb, h0); pack(z5, ta, tb);
+    unpack(l0, h0, r6); subc_cc_u32(tc, tc, l0);                          pack(r6, tc,  0);
 }
 
 #endif

@@ -3,6 +3,7 @@
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
 #include "fp.cuh"
+#include "ptx.cuh"
 #include "fp_mul.cuh"
 #include "fp_reduce12.cuh"
 
@@ -18,127 +19,111 @@
  * @return void
  */
 __device__ void fp_mma(fp_t &z, const fp_t &v, const fp_t &w, const fp_t &x, const fp_t &y) {
+#if 1
+    fp_t t, u;
+    fp_mul(t, v, w);
+    fp_mul(u, x, y);
+    fp_add(z, t, u);
+#else
     uint64_t
+        t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, tc,
+        u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, ua, ub,
         v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3], v4 = v[4], v5 = v[5],
         w0 = w[0], w1 = w[1], w2 = w[2], w3 = w[3], w4 = w[4], w5 = w[5],
         x0 = x[0], x1 = x[1], x2 = x[2], x3 = x[3], x4 = x[4], x5 = x[5],
         y0 = y[0], y1 = y[1], y2 = y[2], y3 = y[3], y4 = y[4], y5 = y[5],
         z0, z1, z2, z3, z4, z5;
 
-    asm volatile (
-    "\n\t{"
-    "\n\t.reg .u64 v<6>, w<6>, x<6>, y<6>;"
-    "\n\t.reg .u64 u<10>, ua, ub;"
-    "\n\t.reg .u64 uc;"
-    "\n\t.reg .u64 q<8>;"
-    "\n\t.reg .u64 r<7>;"
-    "\n\t.reg .pred nz;"
+    fp_print("v ", v);
+    fp_print("w ", w);
+    fp_print("x ", x);
+    fp_print("y ", y);
 
-    "\n\tmov.u64 v0,  %6;"
-    "\n\tmov.u64 v1,  %7;"
-    "\n\tmov.u64 v2,  %8;"
-    "\n\tmov.u64 v3,  %9;"
-    "\n\tmov.u64 v4, %10;"
-    "\n\tmov.u64 v5, %11;"
+    // t = v * w
+    fp_mul(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb, v0, v1, v2, v3, v4, v5, w0, w1, w2, w3, w4, w5);
 
-    "\n\tmov.u64 w0, %12;"
-    "\n\tmov.u64 w1, %13;"
-    "\n\tmov.u64 w2, %14;"
-    "\n\tmov.u64 w3, %15;"
-    "\n\tmov.u64 w4, %16;"
-    "\n\tmov.u64 w5, %17;"
+    printf("t #x%016lx%016lx%016lx%016lx%016lx%016lx%016lx%016lx%016lx%016lx%016lx%016lx\n",
+        tb, ta, t9, t8, t7, t6, t5, t4, t3, t2, t1, t0);
 
-    "\n\tmov.u64 x0, %18;"
-    "\n\tmov.u64 x1, %19;"
-    "\n\tmov.u64 x2, %20;"
-    "\n\tmov.u64 x3, %21;"
-    "\n\tmov.u64 x4, %22;"
-    "\n\tmov.u64 x5, %23;"
+    // u = x * y
+    fp_mul(u0, u1, u2, u3, u4, u5, u6, u7, u8, u9, ua, ub, x0, x1, x2, x3, x4, x5, y0, y1, y2, y3, y4, y5);
 
-    "\n\tmov.u64 y0, %24;"
-    "\n\tmov.u64 y1, %25;"
-    "\n\tmov.u64 y2, %26;"
-    "\n\tmov.u64 y3, %27;"
-    "\n\tmov.u64 y4, %28;"
-    "\n\tmov.u64 y5, %29;"
+    printf("u #x%016lx%016lx%016lx%016lx%016lx%016lx%016lx%016lx%016lx%016lx%016lx%016lx\n",
+        ub, ua, u9, u8, u7, u6, u5, u4, u3, u2, u1, u0);
 
-FP_MUL(u, v, w)
+    add_cc_u64 (t0, t0, u0);
+    addc_cc_u64(t1, t1, u1);
+    addc_cc_u64(t2, t2, u2);
+    addc_cc_u64(t3, t3, u3);
+    addc_cc_u64(t4, t4, u4);
+    addc_cc_u64(t5, t5, u5);
+    addc_cc_u64(t6, t6, u6);
+    addc_cc_u64(t7, t7, u7);
+    addc_cc_u64(t8, t8, u8);
+    addc_cc_u64(t9, t9, u9);
+    addc_cc_u64(ta, ta, ua);
+    addc_cc_u64(tb, tb, ub);
+    addc_u64   (tc,  0,  0);
+#if 1
+    if (tc > 0) {
+        sub_cc_u64 (t6, t6, 0x89f6fffffffd0003U);
+        subc_cc_u64(t7, t7, 0x140bfff43bf3fffdU);
+        subc_cc_u64(t8, t8, 0xa0b767a8ac38a745U);
+        subc_cc_u64(t9, t9, 0x8831a7ac8fada8baU);
+        subc_cc_u64(ta, ta, 0xa3f8e5685da91392U);
+        subc_cc_u64(tb, tb, 0xea09a13c057f1b6cU);
+        subc_u64   (tc, tc, 0);
 
-    "\n\tmov.u64 v0, u0;"
-    "\n\tmov.u64 v1, u1;"
-    "\n\tmov.u64 v2, u2;"
-    "\n\tmov.u64 v3, u3;"
-    "\n\tmov.u64 v4, u4;"
-    "\n\tmov.u64 v5, u5;"
+        if (tc > 0) {
+            sub_cc_u64 (t6, t6, 0x89f6fffffffd0003U);
+            subc_cc_u64(t7, t7, 0x140bfff43bf3fffdU);
+            subc_cc_u64(t8, t8, 0xa0b767a8ac38a745U);
+            subc_cc_u64(t9, t9, 0x8831a7ac8fada8baU);
+            subc_cc_u64(ta, ta, 0xa3f8e5685da91392U);
+            subc_cc_u64(tb, tb, 0xea09a13c057f1b6cU);
+            subc_u64   (tc, tc, 0);
+        }
+    }
+#else
+    uint64_t uc;
 
-    "\n\tmov.u64 w0, u6;"
-    "\n\tmov.u64 w1, u7;"
-    "\n\tmov.u64 w2, u8;"
-    "\n\tmov.u64 w3, u9;"
-    "\n\tmov.u64 w4, ua;"
-    "\n\tmov.u64 w5, ub;"
+    sub_cc_u64 (u6, t6, 0x89f6fffffffd0003U);
+    subc_cc_u64(u7, t7, 0x140bfff43bf3fffdU);
+    subc_cc_u64(u8, t8, 0xa0b767a8ac38a745U);
+    subc_cc_u64(u9, t9, 0x8831a7ac8fada8baU);
+    subc_cc_u64(ua, ta, 0xa3f8e5685da91392U);
+    subc_cc_u64(ub, tb, 0xea09a13c057f1b6cU);
+    subc_u64   (uc, tc, 0);
 
-FP_MUL(u, x, y)
+    t6 = tc > 0 ? u6 : t6;
+    t7 = tc > 0 ? u7 : t7;
+    t8 = tc > 0 ? u8 : t8;
+    t9 = tc > 0 ? u9 : t9;
+    ta = tc > 0 ? ua : ta;
+    tb = tc > 0 ? ub : tb;
+    tc = tc > 0 ? uc : tc;
 
-    // Double-width addition
+    sub_cc_u64 (u6, t6, 0x89f6fffffffd0003U);
+    subc_cc_u64(u7, t7, 0x140bfff43bf3fffdU);
+    subc_cc_u64(u8, t8, 0xa0b767a8ac38a745U);
+    subc_cc_u64(u9, t9, 0x8831a7ac8fada8baU);
+    subc_cc_u64(ua, ta, 0xa3f8e5685da91392U);
+    subc_cc_u64(ub, tb, 0xea09a13c057f1b6cU);
+    subc_u64   (uc, tc, 0);
 
-    "\n\tadd.u64.cc  u0, u0, v0;"
-    "\n\taddc.u64.cc u1, u1, v1;"
-    "\n\taddc.u64.cc u2, u2, v2;"
-    "\n\taddc.u64.cc u3, u3, v3;"
-    "\n\taddc.u64.cc u4, u4, v4;"
-    "\n\taddc.u64.cc u5, u5, v5;"
-    "\n\taddc.u64.cc u6, u6, w0;"
-    "\n\taddc.u64.cc u7, u7, w1;"
-    "\n\taddc.u64.cc u8, u8, w2;"
-    "\n\taddc.u64.cc u9, u9, w3;"
-    "\n\taddc.u64.cc ua, ua, w4;"
-    "\n\taddc.u64.cc ub, ub, w5;"
-    "\n\taddc.u64    uc,  0,  0;"
+    t6 = tc > 0 ? u6 : t6;
+    t7 = tc > 0 ? u7 : t7;
+    t8 = tc > 0 ? u8 : t8;
+    t9 = tc > 0 ? u9 : t9;
+    ta = tc > 0 ? ua : ta;
+    tb = tc > 0 ? ub : tb;
+    tc = tc > 0 ? uc : tc;
 
-    // Double-width reduction
+#endif
 
-    /* if u >= 2^768 then u -= mmu0 * 2^384 */
-
-    "\n\tsetp.ne.u64 nz, uc, 0;"
-    "\n@nz\tsub.u64.cc  u6, u6, 0x89f6fffffffd0003U;"
-    "\n@nz\tsubc.u64.cc u7, u7, 0x140bfff43bf3fffdU;"
-    "\n@nz\tsubc.u64.cc u8, u8, 0xa0b767a8ac38a745U;"
-    "\n@nz\tsubc.u64.cc u9, u9, 0x8831a7ac8fada8baU;"
-    "\n@nz\tsubc.u64.cc ua, ua, 0xa3f8e5685da91392U;"
-    "\n@nz\tsubc.u64.cc ub, ub, 0xea09a13c057f1b6cU;"
-    "\n@nz\tsubc.u64    uc, uc, 0;"
-
-    /* if u >= 2^768 then u -= mmu0 * 2^384 */
-
-    "\n\tsetp.ne.u64 nz, uc, 0;"
-    "\n@nz\tsub.u64.cc  u6, u6, 0x89f6fffffffd0003U;"
-    "\n@nz\tsubc.u64.cc u7, u7, 0x140bfff43bf3fffdU;"
-    "\n@nz\tsubc.u64.cc u8, u8, 0xa0b767a8ac38a745U;"
-    "\n@nz\tsubc.u64.cc u9, u9, 0x8831a7ac8fada8baU;"
-    "\n@nz\tsubc.u64.cc ua, ua, 0xa3f8e5685da91392U;"
-    "\n@nz\tsubc.u64.cc ub, ub, 0xea09a13c057f1b6cU;"
-
-FP_REDUCE12(u, q, r)
-
-    "\n\tmov.u64 %0,  u0;"
-    "\n\tmov.u64 %1,  u1;"
-    "\n\tmov.u64 %2,  u2;"
-    "\n\tmov.u64 %3,  u3;"
-    "\n\tmov.u64 %4,  u4;"
-    "\n\tmov.u64 %5,  u5;"
-
-    "\n\t}"
-    :
-    "=l"(z0), "=l"(z1), "=l"(z2), "=l"(z3), "=l"(z4), "=l"(z5)
-    :
-    "l"(v0), "l"(v1), "l"(v2), "l"(v3), "l"(v4), "l"(v5),
-    "l"(w0), "l"(w1), "l"(w2), "l"(w3), "l"(w4), "l"(w5),
-    "l"(x0), "l"(x1), "l"(x2), "l"(x3), "l"(x4), "l"(x5),
-    "l"(y0), "l"(y1), "l"(y2), "l"(y3), "l"(y4), "l"(y5)
-    );
-
-    z[0] = z0; z[1] = z1; z[2] = z2; z[3] = z3; z[4] = z4; z[5] = z5;
+    fp_reduce12(z0, z1, z2, z3, z4, z5, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, ta, tb);
+    fp_print("z ", z);
+#endif
 }
 
 // vim: ts=4 et sw=4 si
