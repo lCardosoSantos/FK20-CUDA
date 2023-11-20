@@ -298,10 +298,10 @@ __global__ void fk20_msm_comb(g1p_t he_fft[512][512], const fr_t tc_fft[512][16]
         for (int j=0; j<32; j++) {
             int word = j & 7;
 
-            // g1p_dbl(t0);
-            // g1p_add(t0, lut[ 0xff & mul[tid][word] ]);
+            g1p_dbl(t0);
+            g1p_add(t0, lut[ 0xff & mul[tid][word] ]);
 
-            g1p_multi(-4, &t0, NULL, &t0, &lut[ 0xff & mul[tid][word] ]);
+            // g1p_msm_multi(-4, &t0, NULL, &t0, &lut[ 0xff & mul[tid][word] ]);
 
             mul[tid][word] >>= 8;
         }
@@ -316,7 +316,10 @@ __global__ void fk20_msm_comb(g1p_t he_fft[512][512], const fr_t tc_fft[512][16]
         for (int j=0; j<32; j++) {
             int word = j & 7;
 
-            g1p_multi(-4, &t1, NULL, &t1, &lut[ 0xff & mul[tid][word] ]);
+            g1p_dbl(t1);
+            g1p_add(t1, lut[ 0xff & mul[tid][word] ]);
+
+            // g1p_msm_multi(-4, &t1, NULL, &t1, &lut[ 0xff & mul[tid][word] ]);
 
             mul[tid][word] >>= 8;
         }
