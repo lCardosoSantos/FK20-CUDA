@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
     //fk20_poly2toeplitz_coefficients_fft_test(rows); //Deprecated function
 
     if (rows != 512)
-        printf("\n--- [WARNING] comb msm was not tested: Only tests with rows = 512!\n");
+        printf("\n--- [WARNING] comb msm was not tested on full test: Only tests with rows = 512!\n");
     return 0;
 }
 
