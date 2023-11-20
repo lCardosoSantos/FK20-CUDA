@@ -198,14 +198,30 @@ bool preBenchTest(int rows){
     SET_SHAREDMEM(g1p_sharedmem, g1p_fft_wrapper);
     SET_SHAREDMEM(g1p_sharedmem, g1p_ift_wrapper);
 
-    DPRINTF("Pre-bench test %d rows ", rows); fflush(stdout);
+    DPRINTF("Pre-bench test %d rows \n", rows); fflush(stdout);
 
-        fk20_poly2toeplitz_coefficients<<<rows, 256>>>(b_fr_tmp, b_polynomial);
-        fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);
-        fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
-        g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
-        fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
-        g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+        if (rows == 512){
+            DPRINTF("Using comb msm\n")
+            fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>((g1a_t (*)[512][256])(xext_lut), xext_fft);
+
+            fk20_poly2toeplitz_coefficients<<<rows, 256>>>(b_fr_tmp, b_polynomial);
+            fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);
+            fk20_msm_comb<<<512, 256>>>((g1p_t (*)[512])(b_g1p_tmp), \
+                                        (const fr_t (*)[16][512])(b_fr_tmp), \
+                                        (g1a_t (*)[512][256])(xext_lut));
+            g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+            fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
+            g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+        }
+        else
+        {
+            fk20_poly2toeplitz_coefficients<<<rows, 256>>>(b_fr_tmp, b_polynomial);
+            fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);
+            fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
+            g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+            fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
+            g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+        }
 
     clearRes;
     g1p_eq_wrapper<<<16, 32>>>(cmp, rows*512, b_g1p_tmp, b_h_fft);
