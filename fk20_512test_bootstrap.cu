@@ -155,7 +155,7 @@ void test(){
     CHECK(h                        , 512*512 * sizeof(g1p_t));
     CHECK(h_fft                    , 512*512 * sizeof(g1p_t));
 
-    if (!cErr){
+    if (cErr){
         printf("Load check failed!\n");
     }
 

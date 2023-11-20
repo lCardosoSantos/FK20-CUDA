@@ -50,6 +50,7 @@ void fk20_poly2toeplitz_coefficients_512(unsigned rows);
 void fk20_poly2hext_fft_512(unsigned rows);
 void fk20_poly2h_fft_512(unsigned rows);
 void fk20_msmloop_512(unsigned rows);
+void fk20_msmcomb_512(unsigned rows);
 //void fk20_poly2toeplitz_coefficients_fft_test(unsigned rows);
 void fullTest_512(unsigned rows);
 void fullTestFalseability_512(unsigned rows);
@@ -98,6 +99,7 @@ int main(int argc, char **argv) {
 
     // MSM test
     fk20_msmloop_512(rows);
+    fk20_msmcomb_512(rows);
 
     // Full FK20 tests
     fk20_poly2h_fft_512(rows);
@@ -105,6 +107,8 @@ int main(int argc, char **argv) {
     fullTestFalseability_512(rows);
     //fk20_poly2toeplitz_coefficients_fft_test(rows); //Deprecated function
 
+    if (rows != 512)
+        printf("\n--- [WARNING] comb msm was not tested: Only tests with rows = 512!\n");
     return 0;
 }
 
@@ -175,44 +179,44 @@ void fullTest_512(unsigned rows){
 
     // tc_fft -> hext_fft
 
-    printf("tc_fft -> hext_fft\n"); fflush(stdout);
-
-    CLOCKSTART;
-    fk20_msm<<<rows, 256>>>((g1p_t *)g1p_tmp, (fr_t *)toeplitz_coefficients_fft, (g1p_t *)xext_fft);
-    CUDASYNC("fk20_msm");
-    CLOCKEND;
-
-    clearRes512;
-    g1p_eq_wrapper<<<16, 32>>>(cmp, rows*512, (g1p_t *)g1p_tmp, (g1p_t *)hext_fft);
-    CUDASYNC("g1p_eq_wrapper");
-    CMPCHECK(rows*512);
-    PRINTPASS(pass);
-
     if(rows != 512){ 
-        printf("     WARNING: msm_comb runs with 512 rows only! Testing with rows=512\n");
+        printf("tc_fft -> hext_fft\n"); fflush(stdout);
+        printf("     WARNING: msm_comb runs with 512 rows only!\n");
+
+        CLOCKSTART;
+        fk20_msm<<<rows, 256>>>((g1p_t *)g1p_tmp, (fr_t *)toeplitz_coefficients_fft, (g1p_t *)xext_fft);
+        CUDASYNC("fk20_msm");
+        CLOCKEND;
+
+        clearRes512;
+        g1p_eq_wrapper<<<16, 32>>>(cmp, rows*512, (g1p_t *)g1p_tmp, (g1p_t *)hext_fft);
+        CUDASYNC("g1p_eq_wrapper");
+        CMPCHECK(rows*512);
+        PRINTPASS(pass);
+    }else{
+        // Generate lookup tables for 8-way comb
+        printf("Generating lookup tables for MSM with comb multiplication\n"); fflush(stdout);
+
+        CLOCKSTART;
+        fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>(xext_lut, (const g1p_t (*)[512])(xext_fft));
+        CUDASYNC("fk20_msm_makelut");
+        CLOCKEND;
+
+        // TODO?: fk20_msm_checklut<<<dim3(512, 16, 1), 1>>>(xext_lut, xext_fft);
+
+        printf("MSM with comb multiplication\n"); fflush(stdout);
+
+        CLOCKSTART;
+        fk20_msm_comb<<<512, 256>>>(g1p_tmp, (const fr_t (*)[16][512])(toeplitz_coefficients_fft), xext_lut);
+        CUDASYNC("fk20_msm_comb");
+        CLOCKEND;
+
+        clearRes512;
+        g1p_eq_wrapper<<<16, 32>>>(cmp, 512*512, (g1p_t *)g1p_tmp, (g1p_t *)hext_fft);
+        CUDASYNC("g1p_eq_wrapper");
+        CMPCHECK(512*512);
+        PRINTPASS(pass);
     }
-    // Generate lookup tables for 8-way comb
-    printf("Generating lookup tables for MSM with comb multiplication\n"); fflush(stdout);
-
-    CLOCKSTART;
-    fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>(xext_lut, (const g1p_t (*)[512])(xext_fft));
-    CUDASYNC("fk20_msm_makelut");
-    CLOCKEND;
-
-    // TODO?: fk20_msm_checklut<<<dim3(512, 16, 1), 1>>>(xext_lut, xext_fft);
-
-    printf("MSM with comb multiplication\n"); fflush(stdout);
-
-    CLOCKSTART;
-    fk20_msm_comb<<<512, 256>>>(g1p_tmp, (const fr_t (*)[16][512])(toeplitz_coefficients_fft), xext_lut);
-    CUDASYNC("fk20_msm_comb");
-    CLOCKEND;
-
-    clearRes512;
-    g1p_eq_wrapper<<<16, 32>>>(cmp, 512*512, (g1p_t *)g1p_tmp, (g1p_t *)hext_fft);
-    CUDASYNC("g1p_eq_wrapper");
-    CMPCHECK(512*512);
-    PRINTPASS(pass);
 
     // hext_fft -> hext -> h
 
@@ -681,6 +685,47 @@ void fk20_msmloop_512(unsigned rows){
         CLOCKSTART;
         fk20_msm<<<rows, 256>>>((g1p_t *)g1p_tmp, (const fr_t*)toeplitz_coefficients_fft, (const g1p_t*)xext_fft);
         CUDASYNC("fk20_msm");
+        CLOCKEND;
+
+        clearRes;
+        g1p_eq_wrapper<<<16, 32>>>(cmp, rows*512, (g1p_t *)g1p_tmp, (g1p_t *)hext_fft);
+        CUDASYNC("g1p_eq_wrapper");
+
+        // Check result
+
+        if (testIDX == 0){
+            CMPCHECK(rows*512)
+            PRINTPASS(pass);
+            }
+        else{
+            NEGCMPCHECK(rows*512);
+            NEGPRINTPASS(pass);
+        }
+
+        varMangle((fr_t*)toeplitz_coefficients_fft, 8192*512, 512);
+    }
+}
+
+/**
+ * @brief Test for fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft
+ *
+ * @param rows number of blocks in the range [1,512]
+ */
+void fk20_msmcomb_512(unsigned rows){
+    CLOCKINIT;
+    cudaError_t err;
+    bool pass = true;
+
+    rows = 512;
+    fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>(xext_lut, (const g1p_t (*)[512])(xext_fft));
+    CUDASYNC("fk20_msm_makelut");
+
+    printf("=== RUN   %s\n", "fk20_msm_comb: Toeplitz_coefficients+xext_fft -> hext_fft");
+    printf("=== INFO  %s\n", "Overriding rows to 512");
+    for(int testIDX=0; testIDX<=1; testIDX++){
+        CLOCKSTART;
+        fk20_msm_comb<<<512, 256>>>(g1p_tmp, (const fr_t (*)[16][512])(toeplitz_coefficients_fft), xext_lut);
+        CUDASYNC("fk20_msm_comb");
         CLOCKEND;
 
         clearRes;
