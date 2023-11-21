@@ -29,6 +29,7 @@ void FK20TestFFT() {
     h_fft2h(h_fft, h);
     hext_fft2h(hext_fft, h);
     hext_fft2h_fft(hext_fft, h_fft);
+    graphFFT(hext_fft, h_fft);
 }
 
 /*
@@ -208,6 +209,66 @@ void hext_fft2h_fft(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]){
             NEGPRINTPASS(pass);
         }
         varMangle(hext_fft_l, 512, 64);
+    }
+}
+
+__managed__ g1p_t mp512A[512*512];
+__managed__ g1p_t mp512B[512*512];
+
+#undef CMPCHECK
+#define CMPCHECK(LENGTH)                                                                                               \
+    for (int i = 0;  i < LENGTH; i++) {                                                                         \
+        if (cmp[i] != 1) {                                                                                             \
+            printf("%s:%d %s() error idx %d...\n", __FILE__, __LINE__, __func__, i);                                   \
+            pass = false;\
+            break;                                                                                              \
+        }                                                                                                              \
+    }
+
+void graphFFT(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]) {
+    cudaError_t err;
+    bool pass = true;
+    CLOCKINIT;
+
+    printf("=== RUN   %s\n", "fk20_hext_fft_2_h_fft_512");
+    // checks only the first collum. Full check is done on fk20_512_test
+
+    // populate tmp
+    for (int i = 0; i < 512; i++) {
+        for (int j = 0; j < 512; j++) {
+            g1p_cpy(mp512A[i * 512 + j], hext_fft_l[j]);
+        }
+    }
+
+    // transpose input
+    g1p512SquareTranspose(mp512A);
+
+    for (int testIDX = 0; testIDX <= 1; testIDX++) {
+        CLOCKSTART;
+        fk20_hext_fft_2_h_fft_512(mp512B, mp512A);
+        CUDASYNC("fk20_hext_fft2h_fft");
+        CLOCKEND;
+
+        // transpose result
+        g1p512SquareTranspose(mp512B);
+
+        clearRes;
+        g1p_eq_wrapper<<<16, 32>>>(cmp, 512, h_fft_l, mp512B);
+        CUDASYNC("g1p_eq_wrapper");
+
+        if (testIDX == 0) {
+            CMPCHECK(512)
+            PRINTPASS(pass);
+        } else {
+            NEGCMPCHECK(512);
+            NEGPRINTPASS(pass);
+        }
+
+        for (int i = 0; i < 512; i++) {
+            for (int j = 0; j < 512; j++) {
+                g1p_inf(mp512A[i * 512 + j]);
+            }
+        }
     }
 }
 

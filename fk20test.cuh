@@ -27,6 +27,7 @@ void h2h_fft(g1p_t h_l[512], g1p_t h_fft_l[512]);
 void h_fft2h(g1p_t h_fft_l[512], g1p_t h_l[512]);
 void hext_fft2h(g1p_t hext_fft_l[512], g1p_t h_l[512]);
 void hext_fft2h_fft(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]);
+void graphFFT(g1p_t hext_fft_l[512], g1p_t h_fft_l[512]);
 
 void fullTest();
 void fullTestFalsifiability();

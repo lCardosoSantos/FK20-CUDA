@@ -69,14 +69,10 @@ __global__ void fk20_hext_fft2h_fft(g1p_t *h_fft, const g1p_t *hext_fft){
 
 #ifndef SHAREDMEMROOTS
 __device__ void ift(){
-    unsigned src, dst;
     unsigned l, r, w, tid;
     tid = threadIdx.x;
-    src = threadIdx.x;
-    dst = src;
 
     g1p_t gl, gr;
-    fr_t roots;
 //// Stage 8
 
     w = (tid & 255) << 0;
