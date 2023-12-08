@@ -45,6 +45,7 @@ void h2h_fft_512(unsigned rows);
 void h_fft2h_512(unsigned rows);
 void hext_fft2h_512(unsigned rows);
 void hext_fft2h_fft_512(unsigned rows);
+void hext_fft2h_fft_512_graph(unsigned rows);
 
 void fk20_poly2toeplitz_coefficients_512(unsigned rows);
 void fk20_poly2hext_fft_512(unsigned rows);
@@ -91,6 +92,7 @@ int main(int argc, char **argv) {
     h2h_fft_512(rows);
     h_fft2h_512(rows);
     hext_fft2h_512(rows);
+    hext_fft2h_fft_512_graph(rows);
     // hext_fft2h_fft_512(rows); //Deprecated function
 
     // Polynomial tests
@@ -636,15 +638,71 @@ void fk20_poly2h_fft_512(unsigned rows){
  *
  * @param rows number of blocks in the range [1,512]
  */
+void hext_fft2h_fft_512_graph(unsigned rows){
+    PTRN_G1PTMP;
+    cudaError_t err;
+    bool pass = true;
+    CLOCKINIT;
+
+    printf("=== RUN   %s\n", "hext_fft2h_fft_512 graph: hext_fft -> h_fft");
+    printf("=== WARN: rows set to 512 for this test");
+    //Init by preparing the input
+    rows = 512;
+    g1p_t *input; 
+    err = cudaMallocManaged(&input, 512*512*sizeof(g1p_t));
+    if (err != cudaSuccess)
+         printf("%s:%d  Error: %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err), "graph input");
+
+    for (int i = 0; i < 512; i++) {
+        for (int j = 0; j < 512; j++) {
+            g1p_cpy(input[i * 512 + j], hext_fft[i * 512 + j]);
+        }
+    }
+    
+    CLOCKSTART;
+    g1p512SquareTranspose(input);
+    end = clock(); 
+    printf(" (%.1f ms transpose overhead)\n", (end - start) * (1000. / ((__clock_t) 1000000)));
+
+    for(int testIDX=0; testIDX<=1; testIDX++){
+        CLOCKSTART;
+        fk20_hext_fft_2_h_fft_512((g1p_t *)g1p_tmp, input);
+        CUDASYNC("fk20_hext_fft_2_h_fft_512");
+        CLOCKEND;
+        
+        //transpose output
+        g1p512SquareTranspose((g1p_t *)g1p_tmp);
+
+        clearRes;
+        g1p_eq_wrapper<<<8, 32>>>(cmp, rows*512, (g1p_t *)g1p_tmp, h_fft);
+        CUDASYNC("g1p_eq_wrapper");
+
+        if (testIDX == 0){
+            CMPCHECK(rows*512)
+            PRINTPASS(pass);
+            }
+        else{
+            NEGCMPCHECK(rows*512);
+            NEGPRINTPASS(pass);
+        }
+
+        varMangle(input, 512*512, 32);
+    }
+}
+
+/**
+ * @brief Test for hext_fft2h_fft_512: hext_fft -> h_fft
+ * Using CUDA graph
+ *
+ * @param rows number of blocks in the range [1,512]
+ */
 void hext_fft2h_fft_512(unsigned rows){
     PTRN_G1PTMP;
     cudaError_t err;
     bool pass = true;
     CLOCKINIT;
 
-    SET_SHAREDMEM(g1p_sharedmem, fk20_hext_fft2h_fft);
-
-    printf("=== RUN   %s\n", "hext_fft2h_fft_512: hext_fft -> h_fft");
+    printf("=== RUN   %s\n", "hext_fft2h_fft_512 graph: hext_fft -> h_fft");
     for(int testIDX=0; testIDX<=1; testIDX++){
 
         CLOCKSTART;
