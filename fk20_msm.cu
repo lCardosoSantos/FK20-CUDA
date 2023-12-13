@@ -335,4 +335,158 @@ __global__ void fk20_msm_comb(g1p_t he_fft[512][512], const fr_t tc_fft[512][16]
     g1p_cpy(he_fft[tid+256][bid], sum1);
 }
 
+
+/*                 cudaGraph implementation                                   */
+
+//copy of base case for debugging.
+__global__ void fk20_msm_comb_tmp(g1p_t he_fft[512][512], const fr_t tc_fft[512][16][512], const g1a_t xe_lut[16][512][256], unsigned col);
+
+#define cudaErrCheck(fmt, ...)                                                                                         \
+    if (err != cudaSuccess)                                                                                            \
+    printf("%s:%d " fmt " Error: %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err), ##__VA_ARGS__)
+
+#define DEBUG
+
+#ifdef DEBUG
+    #define dprintf(...) fprintf(stderr, ##__VA_ARGS__)
+#else
+    #define dprintf(...)
+#endif
+
+//Control variables
+bool msmGraphCreated = false;
+g1p_t* msmGraphArgs[3];
+cudaGraph_t msmGraph;
+cudaGraphExec_t msmGraphExec;
+
+/**
+ * @brief 
+ *
+ * @param[out] he_fft G1p array with dimensions [512]    [512]
+ * @param[in]  tc_fft Fr  array with dimensions [512][16][512]
+ * @param[in]  xe_lut G1a array with dimensions      [16][512][256]
+ * @return void
+ */
+void fk20_msm_comb_graph(g1p_t he_fft[512][512], const fr_t tc_fft[512][16][512], const g1a_t xe_lut[16][512][256]){
+    cudaError_t err; 
+    cudaStream_t zeroStream;
+    cudaStreamCreate(&zeroStream);
+
+    const unsigned nCols = 512;
+    const unsigned nThreads = 256; 
+    const unsigned nBlocks = 2; 
+
+    
+
+    // TODO: Check for parameters too
+    if (!msmGraphCreated) {
+        dprintf("Graph init\n");
+        cudaStream_t sZero;
+        cudaStreamCreate(&sZero);
+
+        cudaEvent_t forkEvent, joinEvent[nCols];
+        cudaEventCreate(&forkEvent);
+        for (unsigned i = 0; i < nCols; i++) {
+            cudaEventCreate(&joinEvent[i]);
+        }
+
+        cudaStream_t colStreams[nCols];
+        for (unsigned i = 0; i < nCols; i++) {
+            cudaStreamCreate(&colStreams[i]);
+        }
+
+        // Start graph capture
+        cudaStreamBeginCapture(sZero, cudaStreamCaptureModeGlobal);
+        // Fork graph
+        cudaEventRecord(forkEvent, sZero);
+
+        ////////////////////////////////////////////////////////////////////////
+        for (int i = 0; i < 512; i++) {
+            cudaStreamWaitEvent(colStreams[i], forkEvent);
+            fk20_msm_comb_tmp<<<nBlocks, nThreads, 0, colStreams[i]>>>(he_fft, tc_fft, xe_lut, i);
+            cudaEventRecord(joinEvent[i],
+                            colStreams[i]); // Join all streams to sZero
+        }
+        ////////////////////////////////////////////////////////////////////////
+
+        // Join graph
+        for (unsigned i = 0; i < nCols; i++)
+            cudaStreamWaitEvent(sZero, joinEvent[i]);
+
+        // End graph capture
+        cudaStreamEndCapture(sZero, &msmGraph);
+        err = cudaGraphInstantiate(&msmGraphExec, msmGraph, 0);
+        cudaErrCheck("graph instantiate");
+
+        // destroy stream
+        cudaStreamDestroy(sZero);
+        for (unsigned i = 0; i < nCols; i++) {
+            cudaStreamDestroy(colStreams[i]);
+        }
+
+        // destroy events
+        cudaEventDestroy(forkEvent);
+        for (unsigned i = 0; i < nCols; i++)
+            cudaEventDestroy(joinEvent[i]);
+        
+        msmGraphCreated = true;
+    }
+
+    dprintf("Graph launch\n");
+    err = cudaGraphLaunch(msmGraphExec, zeroStream); 
+    cudaErrCheck("graph launch");
+}
+
+__global__ void fk20_msm_comb_tmp(g1p_t he_fft[512][512], const fr_t tc_fft[512][16][512], const g1a_t xe_lut[16][512][256], unsigned col) {
+    // if (gridDim.x  != 512) return;  // Number of MSMs (16-element columns) to process per row
+    if (gridDim.y  !=   1) return;
+    if (gridDim.z  !=   1) return;
+    // if (blockDim.x != 256) return;  // Rows/2.
+    if (blockDim.y !=   1) return;
+    if (blockDim.z !=   1) return;
+
+    unsigned tid = threadIdx.x; // Thread/row number
+    unsigned bid = blockIdx.x;  // Block/column number
+    unsigned idx = blockDim.x*bid+tid;
+
+    __shared__ g1p_t lut[256];          // Lookup table for all threads. 36 KiB, statically allocated.
+    __shared__ uint32_t mul[256][9];    // Multipliers, one per thread, padded to avoid bank conflicts. 9 KiB, statically allocated.
+
+    g1p_t sum0, sum1, t0, t1; // Running sums and temporaries in local (thread-interleaved global) memory
+
+    // Initialise running sums
+    g1p_inf(sum0);
+
+    for (unsigned i=0; i<16; i++) {
+
+        // Copy lookup table
+        g1p_fromG1a(lut[tid], xe_lut[i][col][tid]);
+
+        g1p_inf(t0);
+
+        // Load first multiplier from global memory, reorganise bits and store in shared memory
+        multiplier_reorg(mul[tid], (uint32_t *)&(tc_fft[idx][i][col]));
+
+        __syncthreads();
+
+        for (int j=0; j<32; j++) {
+            int word = j & 7;
+
+            g1p_dbl(t0);
+            g1p_add(t0, lut[ 0xff & mul[tid][word] ]);
+
+            // g1p_msm_multi(-4, &t0, NULL, &t0, &lut[ 0xff & mul[idx][word] ]);
+
+            mul[tid][word] >>= 8;
+        }
+
+        __syncthreads();
+
+        g1p_add(sum0, t0);
+    }
+
+    // Store results
+    g1p_cpy(he_fft[idx+  0][col], sum0);
+}
+
 // vim: ts=4 et sw=4 si

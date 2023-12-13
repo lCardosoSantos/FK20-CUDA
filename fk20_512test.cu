@@ -51,7 +51,10 @@ void fk20_poly2toeplitz_coefficients_512(unsigned rows);
 void fk20_poly2hext_fft_512(unsigned rows);
 void fk20_poly2h_fft_512(unsigned rows);
 void fk20_msmloop_512(unsigned rows);
+
 void fk20_msmcomb_512(unsigned rows);
+void fk20_msmcomb_512_graph(unsigned rows);
+
 //void fk20_poly2toeplitz_coefficients_fft_test(unsigned rows);
 void fullTest_512(unsigned rows);
 void fullTestFalseability_512(unsigned rows);
@@ -102,6 +105,8 @@ int main(int argc, char **argv) {
     // MSM test
     fk20_msmloop_512(rows);
     fk20_msmcomb_512(rows);
+    fk20_msmcomb_512_graph(rows);
+
 
     // Full FK20 tests
     fk20_poly2h_fft_512(rows);
@@ -109,9 +114,7 @@ int main(int argc, char **argv) {
     fullTestFalseability_512(rows);
     //fk20_poly2toeplitz_coefficients_fft_test(rows); //Deprecated function
 
-    if (rows != 512)
-        printf("\n--- [WARNING] comb msm was not tested on full test: Only tests with rows = 512!\n");
-    return 0;
+
 }
 
 /**
@@ -764,6 +767,7 @@ void fk20_msmloop_512(unsigned rows){
     }
 }
 
+static bool lut_compute = false;
 /**
  * @brief Test for fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft
  *
@@ -775,11 +779,15 @@ void fk20_msmcomb_512(unsigned rows){
     bool pass = true;
 
     rows = 512;
-    fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>(xext_lut, (const g1p_t (*)[512])(xext_fft));
-    CUDASYNC("fk20_msm_makelut");
+    if(!lut_compute){
+        printf("=== INFO  %s\n", "Computing LUT");
+        fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>(xext_lut, (const g1p_t (*)[512])(xext_fft));
+        CUDASYNC("fk20_msm_makelut");
+        lut_compute = true;
+    }
 
     printf("=== RUN   %s\n", "fk20_msm_comb: Toeplitz_coefficients+xext_fft -> hext_fft");
-    printf("=== INFO  %s\n", "Overriding rows to 512");
+    printf("=== INFO  %s\n", "Overriding rows to 512 for this test");
     for(int testIDX=0; testIDX<=1; testIDX++){
         CLOCKSTART;
         fk20_msm_comb<<<512, 256>>>(g1p_tmp, (const fr_t (*)[16][512])(toeplitz_coefficients_fft), xext_lut);
@@ -804,6 +812,52 @@ void fk20_msmcomb_512(unsigned rows){
         varMangle((fr_t*)toeplitz_coefficients_fft, 8192*512, 512);
     }
 }
+
+/**
+ * @brief Test for fk20_msm: Toeplitz_coefficients+xext_fft -> hext_fft
+ *
+ * @param rows number of blocks in the range [1,512]
+ */
+void fk20_msmcomb_512_graph(unsigned rows){
+    CLOCKINIT;
+    cudaError_t err;
+    bool pass = true;
+
+    rows = 512;
+    if(!lut_compute){
+        printf("=== INFO  %s\n", "Computing LUT");
+        fk20_msm_makelut<<<dim3(512, 16, 1), 1>>>(xext_lut, (const g1p_t (*)[512])(xext_fft));
+        CUDASYNC("fk20_msm_makelut");
+        lut_compute = true;
+    }
+
+    printf("=== RUN   %s\n", "fk20_msm_comb: Toeplitz_coefficients+xext_fft -> hext_fft");
+    printf("=== INFO  %s\n", "Overriding rows to 512 for this test");
+    for(int testIDX=0; testIDX<=1; testIDX++){
+        CLOCKSTART;
+        fk20_msm_comb_graph(g1p_tmp, (const fr_t (*)[16][512])(toeplitz_coefficients_fft), xext_lut);
+        CUDASYNC("fk20_msm_comb");
+        CLOCKEND;
+
+        clearRes;
+        g1p_eq_wrapper<<<16, 32>>>(cmp, rows*512, (g1p_t *)g1p_tmp, (g1p_t *)hext_fft);
+        CUDASYNC("g1p_eq_wrapper");
+
+        // Check result
+
+        if (testIDX == 0){
+            CMPCHECK(rows*512)
+            PRINTPASS(pass);
+            }
+        else{
+            NEGCMPCHECK(rows*512);
+            NEGPRINTPASS(pass);
+        }
+
+        varMangle((fr_t*)toeplitz_coefficients_fft, 8192*512, 512);
+    }
+}
+
 
 //Deprecated funtion
 #if 0

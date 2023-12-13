@@ -60,7 +60,7 @@ void g1p512SquareTranspose(g1p_t *M){
 
 
 /******************************************************************************/
-bool graphCreated = false;
+bool GraphCreated = false;
 g1p_t *graphPointer;
 cudaGraph_t graph;
 cudaGraphExec_t graphExec;
@@ -83,9 +83,9 @@ void fk20_hext_fft_2_h_fft_512(g1p_t *h_fft, const g1p_t *hext_fft){
     dprintf("memory copied\n");
     }
 
-    if(!graphCreated || graphPointer != h_fft){
+    if(!GraphCreated || graphPointer != h_fft){
         graphInit(h_fft);
-        graphCreated = true;
+        GraphCreated = true;
         graphPointer = h_fft;
         dprintf("Graph init\n");
         #ifdef DEBUG
