@@ -221,40 +221,31 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
             break;
     }
 
-    // NB: No code should be inserted here - it will be skipped.
-
     // Fully inlined code is too big; emulate function calls to compress it.
     // Workaround for compiler bug: use a loop with a switch instead of labels and goto.
 
     while (call != L_end) switch(call) {
 
         //// Fp functions ////
-#if 1
-        case F_x2:  fp_x2(AL, AL);      call = ret; break;
-        case F_x3:  fp_x3(AL, AL);      call = ret; break;
-        case F_x8:  fp_x8(AL, AL);      call = ret; break;
-        case F_x12: fp_x12(AL, AL);     call = ret; break;
-#else
-F_x3:   case F_x3:  fp_x3(AL, AL);      call = ret; break;
-F_x12:  case F_x12: fp_x3(AL, AL);      goto  L_x4; break;
-F_x8:   case F_x8:  fp_x2(AL, AL);
-F_x4:   case F_x4:  fp_x2(AL, AL);
+
 F_x2:   case F_x2:  fp_x2(AL, AL);      call = ret; break;
-#endif
-        case F_add: fp_add(AL, B, C);   call = ret; break;
-        case F_sub: fp_sub(AL, B, C);   call = ret; break;
-F_sqr:  case F_sqr: fp_sqr(A, B);       goto L_red; break;
+F_x3:   case F_x3:  fp_x3(AL, AL);      call = ret; break;
+F_x8:   case F_x8:  fp_x8(AL, AL);      call = ret; break;
+F_x12:  case F_x12: fp_x12(AL, AL);     call = ret; break;
+F_add:  case F_add: fp_add(AL, B, C);   call = ret; break;
+F_sub:  case F_sub: fp_sub(AL, B, C);   call = ret; break;
+F_sqr:  case F_sqr: fp_sqr(A, B);       goto F_red; break;
 F_mul:  case F_mul: fp_mul(A, B, C);    // fall through to reduction
-L_red:  case F_red: fp_reduce12(AL, A); call = ret; break;
+F_red:  case F_red: fp_reduce12(AL, A); call = ret; break;
 
         //// G1 doubling ////
 
-        case D_begin:
-            //if (op == -3) printf(" Dbl\n");
+        // P0 ← 2 * P0
 
+        case D_begin:
             fp_cpy(B, X1);
             fp_cpy(C, Y1);
-            //fp_mul(X1, X1, Y1);
+            //fp_mul(A, B, C);
             ret  = D_mul0;
             goto F_mul;
             break;
@@ -263,26 +254,23 @@ L_red:  case F_red: fp_reduce12(AL, A); call = ret; break;
             fp_cpy(X1, AL);
 
             fp_cpy(B, Z1);
-            //fp_sqr(t0, Z1);
+            //fp_sqr(A, B);
             ret = D_sqr0;
             goto F_sqr;
             break;
 
         case D_sqr0:
-#if 0
-            //fp_x12(t0, t0);
+            //fp_x12(AL, AL);
             ret = D_x12;
-            call = F_x12;
+            goto F_x12;
             break;
 
         case D_x12:
             fp_cpy(t0, AL);
-#else
-            fp_x12(t0, AL);
-#endif
+
             fp_cpy(B, Z1);
             fp_cpy(C, Y1);
-            //fp_mul(Z1, Z1, Y1);
+            //fp_mul(A, B, C);
             ret = D_mul1;
             goto F_mul;
             break;
@@ -291,7 +279,7 @@ L_red:  case F_red: fp_reduce12(AL, A); call = ret; break;
             fp_cpy(Z1, AL);
 
             fp_cpy(B, Y1);
-            //fp_sqr(Y1, Y1);
+            //fp_sqr(A, B);
             ret = D_sqr1;
             goto F_sqr;
             break;
@@ -300,53 +288,48 @@ L_red:  case F_red: fp_reduce12(AL, A); call = ret; break;
             fp_cpy(Y1, AL);
 
             fp_cpy(AL, t0);
-            //fp_x3(t1, t0);
+            //fp_x3(AL, AL);
             ret = D_x3;
-            call = F_x3;
+            goto F_x3;
             break;
 
         case D_x3:
-#if 0
             fp_cpy(C, AL);
             fp_cpy(B, Y1);
-            // fp_sub(t1, Y1, t1);
+            // fp_sub(AL, B, C);
             ret = D_sub0;
-            call = F_sub;
+            goto F_sub;
             break;
 
         case D_sub0:
             fp_cpy(t1, AL);
-#else
-            fp_sub(t1, Y1, AL);
-#endif
+
             fp_cpy(C, AL);
             fp_cpy(B, X1);
-            //fp_mul(X1, X1, t1);
+            //fp_mul(A, B, C);
             ret = D_mul2;
             goto F_mul;
             break;
 
         case D_mul2:
-            //fp_x2(X1, X1);
+            //fp_x2(AL, AL);
             ret = D_x2;
-            call = F_x2;
+            goto F_x2;
             break;
 
         case D_x2:
             fp_cpy(X1, AL);
-#if 1
+
             fp_cpy(B, Y1);
             fp_cpy(C, t0);
             //fp_add(Y1, Y1, t0);
             ret = D_add0;
-            call = F_add;
+            goto F_add;
             break;
 
         case D_add0:
             fp_cpy(Y1, AL);
-#else
-            fp_add(Y1, Y1, t0);
-#endif
+
             fp_cpy(C, t1);
             fp_cpy(B, Y1);
             //fp_mul(t1, Y1, t1);
@@ -355,33 +338,27 @@ L_red:  case F_red: fp_reduce12(AL, A); call = ret; break;
             break;
 
         case D_mul3:
-#if 0
             fp_cpy(t1, AL);
 
             //fp_cpy(B, Y1);
             fp_cpy(C, t0);
             //fp_sub(Y1, Y1, t0);
             ret = D_sub1;
-            call = F_sub;
+            goto F_sub;
             break;
 
         case D_sub1:
 
             //fp_x8(Y1, Y1);
             ret = D_x8;
-            call = F_x8;
+            goto F_x8;
             break;
 
         case D_x8:
             //fp_cpy(Y1, AL);
 
-            fp_cpy(C, AL);
-#else
-            fp_sub(Y1, AL, t0);
-            fp_x8(Y1, Y1);
-            fp_cpy(C, Y1);
-#endif
             fp_cpy(B, Z1);
+            fp_cpy(C, AL);
             //fp_mul(Z1, Z1, Y1);
             ret = D_mul4;
             goto F_mul;
@@ -399,23 +376,18 @@ L_red:  case F_red: fp_reduce12(AL, A); call = ret; break;
 
         case D_mul5:
             //fp_cpy(Y1, AL);
-#if 0
+
             fp_cpy(B, AL);
             fp_cpy(C, t1);
             //fp_add(Y1, Y1, t1);
             ret = D_add1;
-            call = F_add;
+            goto F_add;
             break;
 
         case D_add1:
             fp_cpy(Y1, AL);
-#else
-            fp_add(Y1, AL, t1);
-#endif
-            if (op < 0)
-                call = L_compose;
-            else
-                call = M_add;
+
+            call = L_end;
             break;
 
         //// G1 addition ////

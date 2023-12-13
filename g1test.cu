@@ -46,7 +46,7 @@ void init() {
     err = cudaDeviceSynchronize(); \
     end = clock(); \
     if (err != cudaSuccess) printf("Error %d (%s)\n", err, cudaGetErrorName(err)); \
-    printf(" (%.2f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
+    printf(" (%.3f s)\n", (end - start) * (1.0 / CLOCKS_PER_SEC));
 
 ////////////////////////////////////////////////////////////
 
