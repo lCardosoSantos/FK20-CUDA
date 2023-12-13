@@ -2,7 +2,8 @@
 // Copyright 2022-2023 Dag Arne Osvik
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
 #include "g1.cuh"
 #include "fk20.cuh"
@@ -25,11 +26,11 @@ extern __shared__ g1p_t g1p_tmp[];
  */
 __device__ void g1p_fft(g1p_t *output, const g1p_t *input) {
 
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x != 256) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x == 256);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
@@ -179,11 +180,11 @@ __device__ void g1p_fft(g1p_t *output, const g1p_t *input) {
  */
 __device__ void g1p_ift(g1p_t *output, const g1p_t *input) {
 
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x != 256) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x == 256);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number

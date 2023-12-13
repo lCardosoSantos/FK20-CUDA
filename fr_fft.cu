@@ -2,6 +2,8 @@
 // Copyright 2022-2023 Dag Arne Osvik
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
+#include <cassert>
+
 #include "fr.cuh"
 #include "fk20.cuh"
 
@@ -315,11 +317,11 @@ __device__ void fr_ift(fr_t *output, const fr_t *input) {
  */
 __global__ void fr_fft_wrapper(fr_t *output, const fr_t *input) {
 
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x != 256) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x == 256);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     // Adjust IO pointers to point at each thread block's data
 
@@ -344,11 +346,11 @@ __global__ void fr_fft_wrapper(fr_t *output, const fr_t *input) {
  */
 __global__ void fr_ift_wrapper(fr_t *output, const fr_t *input) {
 
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x != 256) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x == 256);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     // Adjust IO pointers to point at each thread block's data
 

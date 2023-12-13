@@ -2,7 +2,8 @@
 // Copyright 2022-2023 Dag Arne Osvik
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
 #include "fr.cuh"
 #include "g1.cuh"
@@ -20,11 +21,11 @@
  * @return void
  */
 __global__ void fk20_msm(g1p_t *he_fft, const fr_t *tc_fft, const g1p_t *xe_fft) {
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x != 256) return;  // k
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x == 256);  // k
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block/row number
@@ -76,12 +77,12 @@ __global__ void fk20_msm(g1p_t *he_fft, const fr_t *tc_fft, const g1p_t *xe_fft)
  */
 
 __global__ void fk20_msm_makelut(g1a_t xe_lut[16][512][256], const g1p_t xe_fft[16][512]) {
-    if (gridDim.x  != 512) return;
-    if (gridDim.y  !=  16) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x !=   1) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.x  == 512);
+    assert(gridDim.y  ==  16);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x ==   1);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     __shared__ g1p_t lut[256];  // 36 KiB
 
@@ -260,12 +261,12 @@ __device__ void multiplier_reorg(uint32_t z[8], const uint32_t x[8]) {
  * @return void
  */
 __global__ void fk20_msm_comb(g1p_t he_fft[512][512], const fr_t tc_fft[512][16][512], const g1a_t xe_lut[16][512][256]) {
-    if (gridDim.x  != 512) return;  // Number of MSMs (16-element columns) to process per row
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x != 256) return;  // Rows/2.
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.x  == 512);  // Number of MSMs (16-element columns) to process per row
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x == 256);  // Rows/2.
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     unsigned tid = threadIdx.x; // Thread/row number
     unsigned bid = blockIdx.x;  // Block/column number

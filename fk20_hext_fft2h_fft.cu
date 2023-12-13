@@ -2,7 +2,9 @@
 // Copyright 2022-2023 Dag Arne Osvik
 // Copyright 2022-2023 Luan Cardoso dos Santos
 //#define SHAREDMEMROOTS
-#include <stdio.h>
+
+#include <cassert>
+#include <cstdio>
 
 #include "g1.cuh"
 #include "fk20.cuh"
@@ -23,11 +25,11 @@ __device__ void wsm_fr(unsigned index, fr_t &input);
 __device__ void rsm_fr(unsigned index, fr_t &output);
 
 __global__ void fk20_hext_fft2h_fft(g1p_t *h_fft, const g1p_t *hext_fft){
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x != 256) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x == 256);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number

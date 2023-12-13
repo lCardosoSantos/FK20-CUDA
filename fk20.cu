@@ -2,7 +2,8 @@
 // Copyright 2022-2023 Dag Arne Osvik
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
 #include "fr.cuh"
 #include "g1.cuh"
@@ -26,12 +27,12 @@
  */
 __global__ void fk20_setup2xext_fft(g1p_t *xext_fft, const g1p_t *setup) {
     //TODO: Not passing test, probably bad block indexing
-    if (gridDim.x  !=  16) return;
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x != 256) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.x  ==  16);
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x == 256);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number

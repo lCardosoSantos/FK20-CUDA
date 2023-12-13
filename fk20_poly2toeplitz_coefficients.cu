@@ -2,6 +2,8 @@
 // Copyright 2022-2023 Dag Arne Osvik
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
+#include <cassert>
+
 #include "fr.cuh"
 #include "g1.cuh"
 #include "fk20.cuh"
@@ -23,11 +25,11 @@
 __global__ void fk20_poly2toeplitz_coefficients(fr_t *toeplitz_coefficients, const fr_t *polynomial) {
 
     // gridDim.x is the number of rows
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x != 256) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x == 256);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number

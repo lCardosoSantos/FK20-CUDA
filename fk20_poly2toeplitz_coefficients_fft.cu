@@ -2,7 +2,8 @@
 // Copyright 2022-2023 Dag Arne Osvik
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
 #include "fr.cuh"
 #include "fk20.cuh"
@@ -23,11 +24,11 @@ static __device__ fr_t fr_tmp[512*16*512];     // 256 KiB memory per threadblock
 __global__ void fk20_poly2toeplitz_coefficients_fft(fr_t *toeplitz_coefficients_fft, const fr_t *polynomial) {
 
     // gridDim.x is the number of rows
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.x != 256) return;  // k
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.x == 256);  // k
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number

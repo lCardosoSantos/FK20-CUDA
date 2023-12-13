@@ -2,7 +2,8 @@
 // Copyright 2022-2023 Dag Arne Osvik
 // Copyright 2022-2023 Luan Cardoso dos Santos
 
-#include <stdio.h>
+#include <cassert>
+#include <cstdio>
 
 #include "g1.cuh"
 #include "fk20.cuh"
@@ -409,11 +410,11 @@ void graphInit(g1p_t *h_fft){   //via api capture
 
 __global__ void fftStage0_1(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r){
 
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
-    if (blockDim.x * gridDim.x != 512) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
+    assert(blockDim.x * gridDim.x == 512);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
@@ -439,11 +440,11 @@ __global__ void fftStage0_1(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsi
     // }
 }
 __global__ void fftStageN(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r){
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
-    if (blockDim.x * gridDim.x != 512) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
+    assert(blockDim.x * gridDim.x == 512);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
@@ -457,11 +458,11 @@ __global__ void fftStageN(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsign
     
 }
 __global__ void fftStage1(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r){
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
-    if (blockDim.x * gridDim.x != 512) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
+    assert(blockDim.x * gridDim.x == 512);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
@@ -475,11 +476,11 @@ __global__ void fftStage1(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsign
     
 }
 __global__ void fftStage0(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r){
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
-    if (blockDim.x * gridDim.x != 512) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
+    assert(blockDim.x * gridDim.x == 512);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
@@ -493,11 +494,11 @@ __global__ void fftStage0(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsign
     
 }
 __global__ void iftStage0(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r){
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
-    if (blockDim.x * gridDim.x != 512) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
+    assert(blockDim.x * gridDim.x == 512);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
@@ -513,11 +514,11 @@ __global__ void iftStage0(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsign
 }
 
 __global__ void iftStage1(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r){
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
-    if (blockDim.x * gridDim.x != 512) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
+    assert(blockDim.x * gridDim.x == 512);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
@@ -533,11 +534,11 @@ __global__ void iftStage1(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsign
     g1p_mul(h_fft[r][idx], rootr);
 }
 __global__ void iftStageN(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r, bool dbg=0){
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
-    if (blockDim.x * gridDim.x != 512) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
+    assert(blockDim.x * gridDim.x == 512);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
@@ -566,11 +567,11 @@ __global__ void iftStageN(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsign
  * @return __global__ 
  */
 __global__ void setRowInfinity(g1p_t h_fft[][512], unsigned COL){
-    if (gridDim.y  !=   1) return;
-    if (gridDim.z  !=   1) return;
-    if (blockDim.y !=   1) return;
-    if (blockDim.z !=   1) return;
-    if (blockDim.x * gridDim.x != 512) return;
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
+    assert(blockDim.x * gridDim.x == 512);
 
     unsigned tid = threadIdx.x; // Thread number
     unsigned bid = blockIdx.x;  // Block number
