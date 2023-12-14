@@ -173,12 +173,12 @@ int main(int argc, char **argv) {
         // results are incorrect, hence why just a warning instead of halting execution.
         printf("WARNING: An error was detected during the pre-benchmark test! Continuing... \n");
     }else{
-        printf("INFO: Prebench and spinup sucessful! \n");
+        // printf("INFO: Prebench and spinup successful! \n");
     }
 
     benchFull(rows);
     benchSteps(rows);
-    benchModules(rows);
+    // benchModules(rows); //old functions
     freeMemory();
     return 0;
 }
@@ -336,9 +336,15 @@ void benchSteps(unsigned rows){
         fr_fft_wrapper<<<rows*16, 256, fr_sharedmem>>>(b_fr_tmp, b_fr_tmp);
     BENCH_AFTER("tc -> tc_fft");
 
+    // BENCH_BEFORE;
+    //     fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
+    // BENCH_AFTER("tc_fft -> hext_fft (msm)"); //old msm
+
     BENCH_BEFORE;
-        fk20_msm<<<rows, 256>>>(b_g1p_tmp, b_fr_tmp,  (g1p_t *)xext_fft);
-    BENCH_AFTER("tc_fft -> hext_fft (msm)");
+    fk20_msm_comb<<<512, 256>>>((g1p_t (*)[512])(b_g1p_tmp), \
+                                (const fr_t (*)[16][512])(b_toeplitz_coefficients_fft), \
+                                (g1a_t (*)[512][256])(xext_lut));
+    BENCH_AFTER("fk20_msm_comb");
 
     if (rows == 512){
         BENCH_BEFORE;
@@ -347,17 +353,17 @@ void benchSteps(unsigned rows){
         printf("INFO: canonical fft below for reference\n");
     }
 
-    BENCH_BEFORE;
-        g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
-    BENCH_AFTER("hext_fft -> hext");
+    // BENCH_BEFORE; 
+    //     g1p_ift_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+    // BENCH_AFTER("hext_fft -> hext");
 
-    BENCH_BEFORE;
-        fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
-    BENCH_AFTER("hext -> h");
+    // BENCH_BEFORE;
+    //     fk20_hext2h<<<rows, 256>>>(b_g1p_tmp);
+    // BENCH_AFTER("hext -> h");
 
-    BENCH_BEFORE;
-        g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
-    BENCH_AFTER("h -> h_fft");
+    // BENCH_BEFORE;
+    //     g1p_fft_wrapper<<<rows, 256, g1p_sharedmem>>>(b_g1p_tmp, b_g1p_tmp);
+    // BENCH_AFTER("h -> h_fft"); //old fft
 }
 
 /**
