@@ -654,7 +654,7 @@ void hext_fft2h_fft_512_graph(unsigned rows){
     g1p_t *input; 
     err = cudaMallocManaged(&input, 512*512*sizeof(g1p_t));
     if (err != cudaSuccess)
-         printf("%s:%d  Error: %d (%s)\n", __FILE__, __LINE__, err, cudaGetErrorName(err), "graph input");
+         printf("%s:%d  Error: %d (%s) %s\n", __FILE__, __LINE__, err, cudaGetErrorName(err), "graph input");
 
     for (int i = 0; i < 512; i++) {
         for (int j = 0; j < 512; j++) {

@@ -153,10 +153,10 @@ void graphInit(g1p_t *h_fft){   //via api capture
     //Fork graph
     cudaEventRecord(forkEvent, sZero);
 
-    //for graph debugging
-    struct eventGraphDebug{
-        unsigned l, r;
-    } egd[EventDepth][nCols*2]={0};
+    // //for graph debugging
+    // struct eventGraphDebug{
+    //     unsigned l, r;
+    // } egd[EventDepth][nCols*2]={0};
 
 
 
@@ -164,9 +164,7 @@ void graphInit(g1p_t *h_fft){   //via api capture
                        cudaEventRecord(eventGraph[DEPTH][r], sFFT[COL]); 
 
 #define eWAIT(DEPTH)  cudaStreamWaitEvent(sFFT[COL], eventGraph[DEPTH][l]); \
-                      cudaStreamWaitEvent(sFFT[COL], eventGraph[DEPTH][r]); \
-                      egd[DEPTH][COL].l = l; egd[DEPTH][COL].r = r;
-
+                      cudaStreamWaitEvent(sFFT[COL], eventGraph[DEPTH][r]); 
     // LAUNCH KERNELS
             //--------- IFT --------- 
     for(unsigned COL=0; COL<nCols; COL++){
@@ -440,9 +438,9 @@ __global__ void Stage(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l
     assert(blockDim.z ==   1);
     assert(blockDim.x * gridDim.x == 512);
 
-    unsigned tid = threadIdx.x; // Thread number
-    unsigned bid = blockIdx.x;  // Block number
-    unsigned idx = blockDim.x*bid+tid;
+    // unsigned tid = threadIdx.x; // Thread number
+    // unsigned bid = blockIdx.x;  // Block number
+    // unsigned idx = blockDim.x*bid+tid;
     g1p_fft_accel(h_fft[l], h_fft[r], w);
 
 }

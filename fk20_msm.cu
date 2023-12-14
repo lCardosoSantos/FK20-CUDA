@@ -452,7 +452,7 @@ __global__ void fk20_msm_comb_tmp(g1p_t he_fft[512][512], const fr_t tc_fft[512]
     __shared__ g1p_t lut[256];          // Lookup table for all threads. 36 KiB, statically allocated.
     __shared__ uint32_t mul[256][9];    // Multipliers, one per thread, padded to avoid bank conflicts. 9 KiB, statically allocated.
 
-    g1p_t sum0, sum1, t0, t1; // Running sums and temporaries in local (thread-interleaved global) memory
+    g1p_t sum0, t0; // Running sums and temporaries in local (thread-interleaved global) memory
 
     // Initialise running sums
     g1p_inf(sum0);
