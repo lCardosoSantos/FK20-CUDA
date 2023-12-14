@@ -349,8 +349,8 @@ void benchSteps(unsigned rows){
     if (rows == 512){
         BENCH_BEFORE;
         fk20_hext_fft_2_h_fft_512(b_g1p_tmp, b_g1p_tmp);
-        BENCH_AFTER("hext_fft -> h_fft (graph)");
-        printf("INFO: canonical fft below for reference\n");
+        BENCH_AFTER("hext_fft -> h_fft graph");
+        // printf("INFO: canonical fft below for reference\n");
     }
 
     // BENCH_BEFORE; 
