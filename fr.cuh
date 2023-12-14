@@ -28,6 +28,7 @@ typedef uint64_t fr_t[4];
  *
  */
 extern __constant__ fr_t fr_roots[515];
+extern fr_t fr_roots_host[513];
 
 extern __device__ __host__ void fr_fromUint64(fr_t &z, const uint64_t *x);
 extern __device__ void fr_toUint64(const fr_t &x, uint64_t *z);
