@@ -96,14 +96,14 @@ int main(int argc, char **argv) {
     h_fft2h_512(rows);
     hext_fft2h_512(rows);
     hext_fft2h_fft_512_graph(rows);
-    // hext_fft2h_fft_512(rows); //Deprecated function
+    // // hext_fft2h_fft_512(rows); //Deprecated function
 
     // Polynomial tests
     fk20_poly2toeplitz_coefficients_512(rows);
     fk20_poly2hext_fft_512(rows);
 
     // MSM test
-    fk20_msmloop_512(rows);
+    fk20_msmloop_512(rows);    
     fk20_msmcomb_512(rows);
     fk20_msmcomb_512_graph(rows);
 

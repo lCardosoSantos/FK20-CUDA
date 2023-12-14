@@ -7,6 +7,7 @@
 
 #include "g1.cuh"
 #include "fk20.cuh"
+#include "g1p_fft_accel.cuh"
 // #include "g1p_ptx.cuh"
 // #define g1p_addsub(p, q) g1m(OP_ADDSUB, q, p, q, p);
 // #include "fk20_hext_fft2h_fft_512.cuh"
@@ -26,6 +27,8 @@
 
 
 void graphInit(g1p_t *h_fft);
+
+__global__ void Stage(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r);
 
 __global__ void fftStage0_1(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r);
 __global__ void fftStageN(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r);
@@ -93,6 +96,10 @@ void fk20_hext_fft_2_h_fft_512(g1p_t *h_fft, const g1p_t *hext_fft){
         #endif 
     }
     //Launch code
+
+    dprintf("accel init\n");
+    g1p_fft_accel_init();
+
     dprintf("Graph launch\n");
     err = cudaGraphLaunch(graphExec, zeroStream); 
     cudaErrCheck("graph launch");
@@ -166,14 +173,15 @@ void graphInit(g1p_t *h_fft){   //via api capture
         //conects each collum to the graph start;
         cudaStreamWaitEvent(sFFT[COL], forkEvent);
     }
-
+    
     for(unsigned COL=0; COL<nCols; COL++){
         //Stage8
             w = (COL & 255) << 0;
             l = COL + (COL & -256U);
             r = l | 256;
             
-            iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            // iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, 512-w, l, r);
             eRECORD(0);
     }
 
@@ -183,7 +191,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
             l = COL + (COL & -128U);
             r = l | 128;
             eWAIT(0);
-            iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            // iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, 512-w, l, r);
             eRECORD(1);
     }
     
@@ -193,7 +202,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
             l = COL + (COL & -64U);
             r = l | 64;
             eWAIT(1);
-            iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            // iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, 512-w, l, r);
             eRECORD(2);
     }
     for(unsigned COL=0; COL<nCols; COL++){
@@ -202,7 +212,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
             l = COL + (COL & -32U);
             r = l | 32;
             eWAIT(2);
-            iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            // iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, 512-w, l, r);
             eRECORD(3);
     }
     for(unsigned COL=0; COL<nCols; COL++){
@@ -211,7 +222,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
             l = COL + (COL & -16U);
             r = l | 16;
             eWAIT(3);
-            iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            // iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, 512-w, l, r);
             eRECORD(4);
     }
     for(unsigned COL=0; COL<nCols; COL++){
@@ -220,7 +232,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
             l = COL + (COL & -8U);
             r = l | 8;
             eWAIT(4);
-            iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            // iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, 512-w, l, r);
             eRECORD(5);
     }
 
@@ -230,7 +243,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
             l = COL + (COL & -4U);
             r = l | 4;
             eWAIT(5);
-            iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            // iftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r, false);
+            Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, 512-w, l, r);
             eRECORD(6);
     }
 
@@ -242,6 +256,7 @@ void graphInit(g1p_t *h_fft){   //via api capture
             
             eWAIT(6);
             iftStage1<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
+            // Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, 512-w, l, r); //TODO: Error here
             eRECORD(7);
     }
 
@@ -252,7 +267,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
             r = l | 1;
 
             eWAIT(7);
-            iftStage0<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
+            // iftStage0<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
+            Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, 512-w, l, r);
             eRECORD(8);
     }
 
@@ -277,7 +293,9 @@ void graphInit(g1p_t *h_fft){   //via api capture
         l = 2 * COL;
         r = l | 1;
         eWAIT(9);
-        fftStage0<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        // fftStage0<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
+
         eRECORD(10);
     }
     //// Stage 1
@@ -286,7 +304,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
         l = COL + (COL & -2U);
         r = l | 2;
         eWAIT(10);
-        fftStage1<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        // fftStage1<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
         eRECORD(11);
     }
     for (unsigned COL = 0; COL < nCols; COL++) {
@@ -296,7 +315,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
         l = COL + (COL & -4U);
         r = l | 4;
         eWAIT(11);
-        fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        // fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
         eRECORD(12);
     }
     for (unsigned COL = 0; COL < nCols; COL++) {
@@ -306,7 +326,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
         l = COL + (COL & -8U);
         r = l | 8;
         eWAIT(12);
-        fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        // fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
         eRECORD(13);
     }
     //// Stage 4
@@ -315,7 +336,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
         l = COL + (COL & -16U);
         r = l | 16;
         eWAIT(13);
-        fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        // fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
         eRECORD(14);
     }
     //// Stage 5
@@ -324,7 +346,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
         l = COL + (COL & -32U);
         r = l | 32;
         eWAIT(14);
-        fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        // fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
         eRECORD(15);
     }
     //// Stage 6
@@ -333,7 +356,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
         l = COL + (COL & -64U);
         r = l | 64;
         eWAIT(15);
-        fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        // fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
         eRECORD(16);
     }
     //// Stage 7
@@ -342,7 +366,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
         l = COL + (COL & -128U);
         r = l | 128;
         eWAIT(16);
-        fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        // fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
         eRECORD(17);
     }
     //// Stage 8
@@ -351,7 +376,8 @@ void graphInit(g1p_t *h_fft){   //via api capture
         l = COL + (COL & -256U);
         r = l | 256;
         eWAIT(17);
-        fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        // fftStageN<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t(*)[512])h_fft, COL, w, l, r);
+        Stage<<<nBlocks, nThreads, 0, sFFT[COL]>>>((g1p_t (*)[512])h_fft, COL, w, l, r);
         // eRECORD(8);
     }
 
@@ -407,6 +433,20 @@ void graphInit(g1p_t *h_fft){   //via api capture
 //for debug
 #define TARGETCOL 1
 /*                          FFT and IFT KERNELS                                */
+__global__ void Stage(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r){
+    assert(gridDim.y  ==   1);
+    assert(gridDim.z  ==   1);
+    assert(blockDim.y ==   1);
+    assert(blockDim.z ==   1);
+    assert(blockDim.x * gridDim.x == 512);
+
+    unsigned tid = threadIdx.x; // Thread number
+    unsigned bid = blockIdx.x;  // Block number
+    unsigned idx = blockDim.x*bid+tid;
+    g1p_fft_accel(h_fft[l], h_fft[r], w);
+
+}
+
 
 __global__ void fftStage0_1(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r){
 
@@ -439,6 +479,7 @@ __global__ void fftStage0_1(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsi
     //     printf("%s returned", __func__);
     // }
 }
+
 __global__ void fftStageN(g1p_t h_fft[][512], unsigned COL,  unsigned w,  unsigned l,  unsigned r){
     assert(gridDim.y  ==   1);
     assert(gridDim.z  ==   1);

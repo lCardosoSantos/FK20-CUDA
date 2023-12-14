@@ -83,6 +83,12 @@ extern __device__ __host__ void g1p_gen(g1p_t &p);
 extern __device__ void g1p_fft(g1p_t *output, const g1p_t *input);
 extern __device__ void g1p_ift(g1p_t *output, const g1p_t *input);
 
+// FFt accelerator
+__device__ void g1p_fft_accel(g1p_t *p, g1p_t *q, unsigned w);
+__global__ void g1p_fft_accel_wrapper(g1p_t *p, g1p_t *q, unsigned w);
+__host__ void g1p_fft_accel_init();
+
+
 // Kernel wrappers for device-side FFT functions
 
 __global__ void g1p_fft_wrapper(g1p_t *output, const g1p_t *input);

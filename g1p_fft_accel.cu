@@ -77,6 +77,7 @@
 
 __managed__ static uint8_t code[0x2A000];
 __managed__ static uint32_t library[513];   // entry points
+static bool accel_initd = false;
 
 /**
  * @brief G1p accelerator for 512-point FFT/NTT
@@ -105,7 +106,7 @@ __device__ void g1p_fft_accel(g1p_t *p, g1p_t *q, unsigned w) {
     assert(q != nullptr);
     assert(w <= 512);
 
-    assert(gridDim.x == 1);
+    // assert(gridDim.x == 1);
     assert(gridDim.y == 1);
     assert(gridDim.z == 1);
 //  assert(blockDim.x == 256);
@@ -198,8 +199,8 @@ __device__ void g1p_fft_accel(g1p_t *p, g1p_t *q, unsigned w) {
 
     // Adjust pointers
 
-    p += threadIdx.x;
-    q += threadIdx.x;
+    p += blockDim.x * blockIdx.x + threadIdx.x;
+    q += blockDim.x * blockIdx.x + threadIdx.x;
 
     // Outer loop
 
@@ -846,9 +847,15 @@ __global__ void g1p_fft_accel_wrapper(g1p_t *p, g1p_t *q, unsigned w) {
 }
 
 __host__ void g1p_fft_accel_init() {
+    if(accel_initd){
+        return;
+    }
+
+
     uint8_t *ip = code; // instruction pointer
     uint32_t *pi = library; // program index
-
+    accel_initd = true;
+    
     for (unsigned w=0; w<513; w++) {
 
         // Save entry point
@@ -1168,7 +1175,7 @@ __host__ void g1p_fft_accel_init() {
 
 // Enable this to generate a standalone test program.
 
-#if 1
+#if 0
 __global__ void g1p_fft_accel_test() {
     g1p_t p, q, pref, qref, ptest, qtest;
 
