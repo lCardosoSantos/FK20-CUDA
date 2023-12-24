@@ -135,11 +135,16 @@ void printHeader(unsigned rows);
 
 int main(int argc, char **argv) {
     unsigned rows = 512;
+    unsigned device = 0;
+    cudaError_t err;
     NSAMPLES = 3;
     int opt;
 
-    while((opt = getopt(argc, argv, "r:s:h")) != -1){
+    while((opt = getopt(argc, argv, "d:r:s:h")) != -1){
         switch (opt) {
+            case 'd':
+                device = atoi(optarg);
+                break;
             case 'r':
                 rows = abs(atoi(optarg));
                 rows = rows>512?512:rows;
@@ -162,6 +167,13 @@ int main(int argc, char **argv) {
             default:
                 return 1;
         }
+    }
+
+    err = cudaSetDevice(device);
+
+    if (err != cudaSuccess) {
+        printf("Error cudaSetDevice: %s:%d, error %d (%s)\n", __FILE__, __LINE__-3, err, cudaGetErrorName(err));
+        return -1;
     }
 
     printHeader(rows);
