@@ -22,6 +22,7 @@
 #include "fp_sub.cuh"
 #include "fp_sqr.cuh"
 #include "fp_mul.cuh"
+#include "fp_reduce7.cuh"
 #include "fp_reduce12.cuh"
 
 #include "g1p_fft_accel.cuh"
@@ -39,6 +40,7 @@
 // Accumulator
 
 #define A a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, aa, ab
+#define A7 a0, a1, a2, a3, a4, a5, a6
 #define AL a0, a1, a2, a3, a4, a5
 
 // Operands
@@ -315,10 +317,11 @@ __device__ void g1p_fft_accel(g1p_t *p, g1p_t *q, unsigned w) {
 
             //// Fp functions ////
 
-    F_x2:   case F_x2:  fp_x2(AL, AL);      call = ret; break;
-    F_x3:   case F_x3:  fp_x3(AL, AL);      call = ret; break;
-    F_x8:   case F_x8:  fp_x8(AL, AL);      call = ret; break;
-    F_x12:  case F_x12: fp_x12(AL, AL);     call = ret; break;
+    F_x2:   case F_x2:  fp_x2(A7, AL);      goto F_red7;
+    F_x3:   case F_x3:  fp_x3(A7, AL);      goto F_red7;
+    F_x8:   case F_x8:  fp_x8(A7, AL);      goto F_red7;
+    F_x12:  case F_x12: fp_x12(A7, AL);
+    F_red7:             fp_reduce7(AL, A7); call = ret; break;
     F_add:  case F_add: fp_add(AL, B, C);   call = ret; break;
     F_sub:  case F_sub: fp_sub(AL, B, C);   call = ret; break;
     F_sqr:  case F_sqr: fp_sqr(A, B);       goto F_red; break;

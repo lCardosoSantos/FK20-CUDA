@@ -376,5 +376,32 @@ __device__ __forceinline__ void fp_reduce12(
     unpack(l0, h0, r6); subc_cc_u32(tc, tc, l0);                          pack(r6, tc,  0);
 }
 
+#undef mB
+#undef mA
+#undef m9
+#undef m8
+#undef m7
+#undef m6
+#undef m5
+#undef m4
+#undef m3
+#undef m2
+#undef m1
+#undef m0
+
+#undef muC
+#undef muB
+#undef muA
+#undef mu9
+#undef mu8
+#undef mu7
+#undef mu6
+#undef mu5
+#undef mu4
+#undef mu3
+#undef mu2
+#undef mu1
+#undef mu0
+
 #endif
 // vim: ts=4 et sw=4 si
