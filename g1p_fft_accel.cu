@@ -199,6 +199,10 @@ __device__ void g1p_fft_accel(g1p_t *p, g1p_t *q, unsigned w) {
 
     ip = code + library[w];
 
+    uint32_t insn_prefetch;
+
+    ldu_u8(insn_prefetch, ip);
+
     // Adjust pointers
 
     p += blockDim.x * blockIdx.x + threadIdx.x;
@@ -210,7 +214,9 @@ __device__ void g1p_fft_accel(g1p_t *p, g1p_t *q, unsigned w) {
 
         // Load instruction
 
-        uint8_t insn = *ip++;
+        uint8_t insn = insn_prefetch;
+
+        ldu_u8(insn_prefetch, ++ip);
 
         // printf("%x: %s\n", insn, insn_name[insn]);
 
@@ -1168,6 +1174,10 @@ __host__ void g1p_fft_accel_init() {
         *ip++ = stq;
         *ip++ = end;
     }
+
+    // Ensure prefetching will not read past the last instruction
+
+    *ip++ = end;
 
     assert((ip-code) < sizeof(code));
 

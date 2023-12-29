@@ -163,6 +163,9 @@ __device__ __forceinline__ void xor_b64(uint64_t &d, const uint64_t &a, const ui
 { asm volatile ( "\n\txor.b64    %0, %1, %2;" : "=l"(d) : "l"(a), "l"(b) ); }
 
 
+__device__ __forceinline__ void ldu_u8(uint32_t &d, const uint8_t *a)
+{ asm ( "\n\tldu.u8 %0, [%1];" : "=r"(d) : "l"(a)); }
+
 #endif
 
 // vim: ts=4 et sw=4 si
