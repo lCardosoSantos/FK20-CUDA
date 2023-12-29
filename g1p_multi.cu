@@ -43,6 +43,7 @@
 // Accumulator
 
 #define A a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, aa, ab
+#define A7 a0, a1, a2, a3, a4, a5, a6
 #define AL a0, a1, a2, a3, a4, a5
 
 // Operands
@@ -75,22 +76,16 @@
  * @param[in] s
  * @return void
  *
- * >=0 Mul:     p ← r*fr_roots[op]
  *  -1 Dbl:     p ← 2*r
  *  -2 Add:     p ← r+s
- *  -3 Addsub:  (p,q) ← (r+s,r-s)
- *  -4 Dbladd:  p ← 2*r+s
- *  -5 Dbladd2: p ← 2*q+r+s
  */
 __noinline__
 __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_t *s) {
 
     uint64_t A, B, C, t0, t1, t2, t3, X1, Y1, Z1, X2, Y2, Z2;
-    uint64_t mul;    // partial multiplier
     uint32_t
         call,   // next state / function to call
-        ret,    // return state
-        ctr;    // repetition counter for point multiplication
+        ret;    // return state
 
     // Labels for the state machine
 
@@ -165,59 +160,28 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
         A_add10,
         A_add11,
 
-        // G1 multiplication by 512-roots of unity
-
-        M_dbl,
-        M_add,
-
-        // Compositition
-
-        L_compose,
-
         // The end
 
         L_end
     };
 
+    fp_cpy(X1, RX);
+    fp_cpy(Y1, RY);
+    fp_cpy(Z1, RZ);
+
     switch(op) {
         case -1: // Dbl
-        case -4: // Dbladd
-            fp_cpy(X1, RX);
-            fp_cpy(Y1, RY);
-            fp_cpy(Z1, RZ);
             call = D_begin;
             break;
-#if SUPPORT_DBLADD2
-        case -5: // Dbladd2
-            fp_cpy(X1, QX);
-            fp_cpy(Y1, QY);
-            fp_cpy(Z1, QZ);
-            call = D_begin;
-            break;
-#endif
         case -2: // Add
-        case -3: // Addsub
-            //printf("Addsub\n");
-            fp_cpy(X1, RX);
-            fp_cpy(Y1, RY);
-            fp_cpy(Z1, RZ);
             fp_cpy(X2, SX);
             fp_cpy(Y2, SY);
             fp_cpy(Z2, SZ);
             call = A_begin;
             break;
         default:
-            if ((op < 0) || (op > 514))
-                return;
-            fp_cpy(X2, RX);
-            fp_cpy(Y2, RY);
-            fp_cpy(Z2, RZ);
-            // g1p_inf(X1, Y1, Z1);
-            X15 = X14 = X13 = X12 = X11 = X10 = 0;
-            Y15 = Y14 = Y13 = Y12 = Y11 = 0; Y10 = 1;
-            Z15 = Z14 = Z13 = Z12 = Z11 = Z10 = 0;
-            ctr = 255;
-            call = M_add;
+            printf("%s:%d: Invalid G1 operation %d\n", __FILE__, __LINE__, op);
+            call = L_end;
             break;
     }
 
@@ -228,10 +192,11 @@ __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, const g1p_
 
         //// Fp functions ////
 
-F_x2:   case F_x2:  fp_x2(AL, AL);      call = ret; break;
-F_x3:   case F_x3:  fp_x3(AL, AL);      call = ret; break;
-F_x8:   case F_x8:  fp_x8(AL, AL);      call = ret; break;
-F_x12:  case F_x12: fp_x12(AL, AL);     call = ret; break;
+F_x2:   case F_x2:  fp_x2(A7, AL);      goto F_red7;
+F_x3:   case F_x3:  fp_x3(A7, AL);      goto F_red7;
+F_x8:   case F_x8:  fp_x8(A7, AL);      goto F_red7;
+F_x12:  case F_x12: fp_x12(A7, AL);
+F_red7:             fp_reduce7(AL, A7); call = ret; break;
 F_add:  case F_add: fp_add(AL, B, C);   call = ret; break;
 F_sub:  case F_sub: fp_sub(AL, B, C);   call = ret; break;
 F_sqr:  case F_sqr: fp_sqr(A, B);       goto F_red; break;
@@ -741,111 +706,7 @@ F_red:  case F_red: fp_reduce12(AL, A); call = ret; break;
             fp_add(Y1, Y1, AL); // Y3
             fp_add(Z1, Z1, X2); // Z3
 #endif
-            if (op < 0)
-                call = L_compose;
-            else
-                call = M_dbl;
-            break;
-
-
-        // Handle composite operations
-
-        case L_compose:
-            //printf("op = %d\n", op);
-            switch (op) {
-                case -1:
-                case -2:
-                    call = L_end;
-                    break;
-
-                case -3:
-                    // NB: Addition is already done
-
-                    // load r
-                    fp_cpy(AL, RX);
-                    fp_cpy(B,  RY);
-                    fp_cpy(C,  RZ);
-
-                    // load s
-                    fp_cpy(X2, SX);
-                    fp_cpy(Y2, SY);
-                    fp_cpy(Z2, SZ);
-
-                    // save r+s to *p
-                    fp_cpy(PX, X1);
-                    fp_cpy(PY, Y1);
-                    fp_cpy(PZ, Z1);
-
-                    fp_cpy(X1, AL);
-                    fp_cpy(Y1, B);
-                    fp_cpy(Z1, C);
-
-                    // negate s
-                    fp_neg(Y2, Y2);
-
-                    // let p=q => r-s will be saved to q
-                    p = q;
-
-                    // call addition to compute r-s
-                    op = -2;
-                    //printf(" Sub\n");
-                    call = A_begin;
-                    break;
-
-                case -4:
-                    // load s
-                    fp_cpy(X2, SX);
-                    fp_cpy(Y2, SY);
-                    fp_cpy(Z2, SZ);
-
-                    op = -2;
-                    call = A_begin;
-                    break;
-#if SUPPORT_DBLADD2
-                case -5:
-                    // load r
-                    fp_cpy(X2, RX);
-                    fp_cpy(Y2, RY);
-                    fp_cpy(Z2, RZ);
-
-                    op = -4;
-                    call = A_begin;
-                    break;
-#endif
-            }
-            break;
-
-        case M_add:
-            // Load multiplier word
-            if ((ctr & 63) == 63)
-                mul = fr_roots[op][ctr >> 6];
-
-            if (mul & (1ULL << 63)) {
-                fp_cpy(X2, RX);
-                fp_cpy(Y2, RY);
-                fp_cpy(Z2, RZ);
-                call = A_begin;
-            }
-            else
-                call = M_dbl;
-
-            //printf("M_add: ctr = %3d, mul = %016llx -> %s\n", ctr, mul, (mul & (1ULL << 63)) ? "add" : "");
-
-            // shift up the multiplier word
-            mul <<= 1;
-
-            break;
-
-        case M_dbl:
-
-            if (ctr > 0)
-                call = D_begin;
-            else
-                call = L_end;
-
-            // count down the number of bits
-            ctr--;
-
+            call = L_end;;
             break;
 
         default: call = L_end; break;

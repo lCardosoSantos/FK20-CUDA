@@ -11,7 +11,6 @@
 // #include "g1p_ptx.cuh"
 // #define g1p_addsub(p, q) g1m(OP_ADDSUB, q, p, q, p);
 // #include "fk20_hext_fft2h_fft_512.cuh"
-#define g1p_addsub(p, q) g1p_multi(-3, &p, &q, &p, &q)
 
 // #define DEBUG
 

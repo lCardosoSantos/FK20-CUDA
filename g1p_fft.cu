@@ -8,8 +8,6 @@
 #include "g1.cuh"
 #include "fk20.cuh"
 
-#define g1p_addsub(p, q) g1p_multi(-3, &p, &q, &p, &q)
-
 // Workspace in shared memory
 
 extern __shared__ g1p_t g1p_tmp[];

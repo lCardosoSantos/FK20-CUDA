@@ -70,7 +70,7 @@ extern __device__ void g1p_multi(int op, g1p_t *p, g1p_t *q, const g1p_t *r, con
 
 inline __device__ void g1p_dbl(g1p_t &p)                    { g1p_multi(-1, &p, nullptr, &p, &p); }
 inline __device__ void g1p_add(g1p_t &p, const g1p_t &q)    { g1p_multi(-2, &p, nullptr, &p, &q); }
-inline __device__ void g1p_addsub(g1p_t &p, g1p_t &q)       { g1p_multi(-3, &p, &q, &p, &q); }
+extern __device__ void g1p_addsub(g1p_t &p, g1p_t &q);
 
 extern __device__ __host__ void g1a_inf(g1a_t &a);
 extern __device__ __host__ void g1a_gen(g1a_t &a);
