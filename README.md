@@ -7,7 +7,7 @@
 FK20 for GPU
 ================================================================================
 <!--- Introduction to fk20 here-->
-This repository implements the "[Fast amortized KZG proofs](eprint.iacr.org/2023/033.pdf)", described by Dankrad Feist and Dmitry Khovratovich, which is a way of computing [KZG proofs](https://www.iacr.org/archive/asiacrypt2010/6477178/6477178.pdf) in superlinear time. This implementation leverages modern GPUs to parallelize the execution of (up to) 512 instances of FK20 with the same setup.
+This repository implements the "[Fast amortized KZG proofs](https://eprint.iacr.org/2023/033.pdf)", described by Dankrad Feist and Dmitry Khovratovich, which is a way of computing [KZG proofs](https://www.iacr.org/archive/asiacrypt2010/6477178/6477178.pdf) in superlinear time. This implementation leverages modern GPUs to parallelize the execution of (up to) 512 instances of FK20 with the same setup.
 
 ## Compilation
 
